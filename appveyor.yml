@@ -28,7 +28,7 @@ build_script:
 # Need to convert from shallow to complete for Pkg.clone to work
   - IF EXIST .git\shallow (git fetch --unshallow)
   - C:\projects\julia\bin\julia -e "versioninfo();
-      Pkg.clone(pwd(), \"JPDJPD\"); Pkg.build(\"JPDJPD\")"
+      Pkg.clone(pwd(), \"ARCTR\"); Pkg.build(\"ARCTR\")"
 
 test_script:
-  - C:\projects\julia\bin\julia --check-bounds=yes -e "Pkg.test(\"JPDJPD\")"
+  - C:\projects\julia\bin\julia --check-bounds=yes -e "Pkg.test(\"ARCTR\")"

@@ -1,0 +1,11 @@
+for (offset, f) in enumerate((:foo1, :foo2, :foo3))
+    @eval begin
+        function $f(x)
+            println("This is ", $f)
+            x + $offset
+        end
+        function $f(x,y)
+            return $f(x)
+        end
+    end
+end 

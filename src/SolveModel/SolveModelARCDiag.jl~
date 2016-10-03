@@ -1,0 +1,35 @@
+function solve_modelARCDiag(PData :: PDataFact, α:: Float64)
+    # Solve the ARC subproblem once diagonalized into Δ using the norm |Δ|
+
+    # Setup the problem
+    M = ones(PData.Δ)
+
+    ϵ = 1.0e-10 * (1.0 + PData.λ)
+    λ = max(ϵ,PData.λ+ϵ)
+
+    d̃ = -(PData.Δ+λ*M) .\ PData.g̃
+    normd̃ = sqrt(d̃⋅d̃)
+    seuil = normd̃/α
+
+    
+    # Solve the subproblem (Δ + λ I) d̃ = -g̃ such that λ = ||d̃||/α
+    d̃,λ = solve_diag(λ,PData.Δ,PData.g̃,seuil,α,ϵ)
+
+    PData.λ = λ
+    # Transform back d̃ into d
+
+    #d̂ = PData.Q * d̃
+    #ĝ = PData.Q * PData.g̃
+
+    #println("*******SolveModelDiag:  ĝ⋅d̂ = $(ĝ⋅d̂), 0.5 d̂'PData.Dd̂ = $(0.5*(PData.D \ d̂)⋅d̂)")
+
+    d = TtildeInv(PData,d̃)  
+
+    #try assert((PData.g̃ + 0.5*PData.Δ .* d̃)⋅d̃ <= 0.0)  catch  @bp  end
+
+    #println("*******SolveModelDiag:  PData.g̃⋅d̃ = $(PData.g̃⋅d̃), 0.5 d̃'PData.Δd̃ = $(0.5*(PData.Δ .* d̃)⋅d̃)")
+
+    
+
+    return d, λ
+end

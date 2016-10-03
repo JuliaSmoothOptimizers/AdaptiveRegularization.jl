@@ -1,0 +1,36 @@
+function solve_diagTR(λ,Δ,g̃,δ,ϵ)
+    # λ underestimates the required value λstar such that ||d̃(λstar)|| = δ
+    # where d̃(λ) =  -(Δ+λ*M) .\ g̃
+    M = ones(Δ)
+    λin = λ
+    d̃ = -(Δ+λ*M) .\ g̃
+    d̃d̃ = d̃⋅d̃
+    normd̃ = sqrt(d̃d̃)
+    
+    tolerance = 1e-06
+    # Newton iterations
+    iter_nwt = 0
+    #println(" Nwt $iter_nwt : λ = $λ  normd̃ = $normd̃  δ = $δ)")
+    while (normd̃ >= (δ+tolerance*normd̃)) && (iter_nwt<40) 
+        dotd̃ = (Δ+λ*M) .\ d̃
+        Δλ = ((normd̃-δ)/δ) * (d̃d̃/(d̃ ⋅ dotd̃))
+        λ =  max(λ + Δλ, λin+1.0e-10)
+        d̃ = -(Δ+λ*M) .\ g̃
+        d̃d̃ = d̃⋅d̃
+        normd̃ = sqrt(d̃d̃)
+        assert(λ>=0.0)
+        #nwt_iter += 1
+        iter_nwt += 1
+        #println(" Nwt $iter_nwt : λ = $λ   Δλ = $(Δλ) normd̃ = $(normd̃)")
+        #if nwt_iter>=30 
+        #    println(" $normd̃   $(norm(dotd̃))   $(normd̃ + λ*α*(λ*(dotd̃ ⋅ dotd̃)/normd̃))")
+        #end
+        #assert(nwt_iter<30)
+    end
+
+    #assert((g̃ + 0.5*Δ.*d̃)⋅d̃ <= 0.0)
+    #try assert((g̃ + 0.5*Δ.*d̃)⋅d̃ <= 0.0)  catch  @bp  end
+#println("*******SolveDiagTR:  g̃⋅d̃ = $(g̃⋅d̃), 0.5 d̃'Δd̃ = $(0.5*(Δ .* d̃)⋅d̃)")
+
+    return d̃,λ
+end
