@@ -1,8 +1,0 @@
-type TparamsST_TR <: Tparams  # specific parameters for this Krylov variant
-    τ :: Float64
-    
-    function TparamsST_TR()
-        τ = 0.5
-        return new(τ)
-    end
-end
