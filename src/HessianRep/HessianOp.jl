@@ -1,3 +1,3 @@
 function hessian_operator(nlp,x)
-    return LinearOperator(length(x), Float64, v -> hprod(nlp,x,v))
+    return LinearOperator(nlp.meta.nvar, nlp.meta.nvar, true, true, v -> hprod(nlp,x,v))
 end
