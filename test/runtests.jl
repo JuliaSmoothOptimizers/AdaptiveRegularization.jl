@@ -38,7 +38,7 @@ function run_solver(solver :: Symbol, nlp :: AbstractNLPModel; args...)
   return optimal ? (nlp.counters.neval_obj, nlp.counters.neval_grad, nlp.counters.neval_hprod) : (-nlp.counters.neval_obj, -nlp.counters.neval_grad, -nlp.counters.neval_hprod)
 end
 
-
+include("../src/Utilities/testLDLt.jl")
 
 models = [AmplModel("dixmaanj.nl"), MathProgNLPModel(dixmaanj(), name="dixmaanj")]
 @static if is_unix()
@@ -51,7 +51,7 @@ for solver in solvers
   println(solver)
   for model in models
     stats = run_solver(solver, model, verbose=false)
-    assert(all([stats...] .>= 0))
+    @test (all([stats...] .>= 0))
     reset!(model)
   end
 end
