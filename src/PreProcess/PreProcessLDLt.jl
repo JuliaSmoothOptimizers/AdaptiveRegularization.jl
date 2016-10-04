@@ -1,5 +1,10 @@
 function preprocessLDLt(H ,g, params::Tparams,n1,n2)
-    global L, D, P, rho, ncomp  # For globalize the result within the try-catch
+    L = Array(Float64,2)
+    D = Array(Float64,2)
+    P = Array(Float64,2)
+    ρ = Float64
+    ncomp = Int64
+    
     try
         (L, D, P, rho, ncomp) = ldlt_symm(H,'r')
     catch

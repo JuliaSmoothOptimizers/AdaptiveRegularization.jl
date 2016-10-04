@@ -134,7 +134,7 @@ function  ldlt_symm(A0 :: Array{Float64,2}, piv :: Char='r')
                 A[k+1:n,k] = A[k+1:n,k]/A[k,k];
                 L[k+1:n,k] = A[k+1:n,k];
                 i = k+1:n;
-                A[i,i] = A[i,i] - A[i,k] * A[k,i];
+                A[i,i] = A[i,i] - A[i,k:k] * A[k:k,i];
                 A[i,i] = 0.5 * (A[i,i] + A[i,i]');
                 
             elseif s == 2
@@ -146,8 +146,7 @@ function  ldlt_symm(A0 :: Array{Float64,2}, piv :: Char='r')
                 temp = C/E;
                 L[i,k:k+1] = temp;
                 A[i,k+2:n] = A[i,k+2:n] - temp*C';
-                A[i,i] = 0.5 * (A[i,i] + A[i,i]');
-                         
+                A[i,i] = 0.5 * (A[i,i] + A[i,i]');                         
             end
             
             # Ensure diagonal real (see LINPACK User's Guide, p. 5.17).
