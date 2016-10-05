@@ -40,7 +40,7 @@ end
 
 include("../src/Utilities/testLDLt.jl")
 
-models = [AmplModel("dixmaanj.nl"), MathProgNLPModel(dixmaanj(), name="dixmaanj")]
+models = [MathProgNLPModel(dixmaanj(), name="dixmaanj"), AmplModel("dixmaanj.nl")]
 @static if is_unix()
   using CUTEst
   push!(models, CUTEstModel("DIXMAANJ", "-param", "M=30"))
