@@ -19,7 +19,11 @@ end
 
 
 function preprocessMA97(H ,g, params::Tparams,n1,n2)
-    global PLD, ret, vD1, vD2, pivot, vD
+    PLD = Ma97;
+    pivot = Array(Int32,1)
+    vD1 = Array(Float64,2)
+    vD2 = Array(Float64,2)
+
     H = convert(SparseMatrixCSC{Float64,Int64},H)
     try
         PLD = Ma97(H, print_level=-1)
@@ -41,8 +45,8 @@ function preprocessMA97(H ,g, params::Tparams,n1,n2)
         z(a)= a==0
         pivot[find(z,pivot)] = collect(1:length(pivot))[find(z,pivot)]
 
-        vD1 = copy(vD[1,:])'[:,1]
-        vD2 = copy(vD[2,1:end-1])'[:,1]
+        vD1 = copy(vD[1:1,:])'[:,1:1]
+        vD2 = copy(vD[2:2,1:end-1])'[:,1:1]
     catch
  	println("*******   Problem after MA97")
         println(" Cond(H) = $(cond(full(H)))")
@@ -57,7 +61,7 @@ function preprocessMA97(H ,g, params::Tparams,n1,n2)
     vQ1 = ones(vD1)       # vector representation of orthogonal matrix Q
     vQ2 = zeros(vD2)      #
     vQ2 = zeros(vD2)      #
-    vQ2m = zeros(vD2)      #
+    vQ2m = zeros(vD2)     #
     veig = copy(vD1)      # vector of eigenvalues of D, initialized to diagonal of D
                           # if D diagonal, nothing more will be computed
     

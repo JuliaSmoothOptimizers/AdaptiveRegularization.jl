@@ -4,7 +4,7 @@ using NLPModels
 using OptimizationProblems
 using LinearOperators
 using Krylov
-using Profiles
+#using BenchmarkProfiles
 using Compat
 import Compat.String
 # package code goes here
@@ -17,6 +17,6 @@ include("TRARC.jl")
 
 export ARCSpectral
 
-include("solvers.jl")
+include("Solvers/solvers.jl")
 
 end # module
