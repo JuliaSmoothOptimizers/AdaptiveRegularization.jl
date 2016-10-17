@@ -47,8 +47,10 @@ models = [MathProgNLPModel(dixmaanj(), name="dixmaanj"), AmplModel("dixmaanj.nl"
 end
 #solvers = [:ARCSpectral, :ARCSpectral_abs, :ARCLDLt, :ARCqKOp, :ARCqKsparse, :ARCqKdense]
 
+nbsolver = 0
 for solver in solvers
-  println(solver)
+  nbsolver += 1
+  println(nbsolver,"  ",solver)
   for model in models
     stats = run_solver(solver, model, verbose=false)
     @test (all([stats...] .>= 0))
