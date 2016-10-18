@@ -1,99 +1,100 @@
 #export ARCSpectral, ARCSpectral_abs, ARCLDLt, ARCqKOp
-export solvers
+export ALL_solvers
 # Valid combinations
 #
 
 
 
-solvers = Array(Symbol,1)
+ALL_solvers = Symbol[] #Array(Symbol,1)
 
 
 include("ARCSpectral.jl")
-push!(solvers,fname)
+push!(ALL_solvers,fname)
 
 include("ARCSpectral_abs.jl")
-push!(solvers,fname)
+push!(ALL_solvers,fname)
 
 
 
 include("TRSpectral.jl")
-push!(solvers,fname)
+push!(ALL_solvers,fname)
 
 include("TRSpectral_abs.jl")
-push!(solvers,fname)
+push!(ALL_solvers,fname)
 
 
 
 include("ARCLDLt.jl")
-push!(solvers,fname)
+push!(ALL_solvers,fname)
 
 include("ARCLDLt_abs.jl")
-push!(solvers,fname)
+push!(ALL_solvers,fname)
 
 
 
 include("TRLDLt.jl")
-push!(solvers,fname)
+push!(ALL_solvers,fname)
 
 include("TRLDLt_abs.jl")
-push!(solvers,fname)
+push!(ALL_solvers,fname)
 
 
 
 include("ARCqKOp.jl")
-push!(solvers,fname)
+push!(ALL_solvers,fname)
+
 
 include("ARCqKsparse.jl")
-push!(solvers,fname)
+push!(ALL_solvers,fname)
 
 include("ARCqKdense.jl")
-push!(solvers,fname)
+push!(ALL_solvers,fname)
 
 
 
 include("TRKOp.jl")
-push!(solvers,fname)
+push!(ALL_solvers,fname)
 
 include("TRKsparse.jl")
-push!(solvers,fname)
+push!(ALL_solvers,fname)
 
 include("TRKdense.jl")
-push!(solvers,fname)
+push!(ALL_solvers,fname)
 
 
 
 include("ST_TROp.jl")
-push!(solvers,fname)
+push!(ALL_solvers,fname)
 
 include("ST_TRsparse.jl")
-push!(solvers,fname)
+push!(ALL_solvers,fname)
 
 include("ST_TRdense.jl")
-push!(solvers,fname)
+push!(ALL_solvers,fname)
 
 
 
 include("ST_ARCOp.jl")
-push!(solvers,fname)
+push!(ALL_solvers,fname)
 
 include("ST_ARCsparse.jl")
-push!(solvers,fname)
+push!(ALL_solvers,fname)
 
 include("ST_ARCdense.jl")
-push!(solvers,fname)
+push!(ALL_solvers,fname)
 
 
 
 include("ARCMA97.jl")
-push!(solvers,fname)
+push!(ALL_solvers,fname)
 
 include("ARCMA97_abs.jl")
-push!(solvers,fname)
+push!(ALL_solvers,fname)
 
 include("TRMA97.jl")
-push!(solvers,fname)
+push!(ALL_solvers,fname)
 
 include("TRMA97_abs.jl")
-push!(solvers,fname)
+push!(ALL_solvers,fname)
 
-deleteat!(solvers,1)
+#deleteat!(ALL_solvers,1)

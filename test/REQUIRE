@@ -1,9 +1,3 @@
 ARCTR
 JuMP
 NLPModels
-AmplNLReader
-OptimizationProblems
-LinearOperators
-DistributedArrays
-Krylov
-

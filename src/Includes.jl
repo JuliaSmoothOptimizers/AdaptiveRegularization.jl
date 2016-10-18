@@ -19,7 +19,7 @@ include("./SolveModel/SolveDiagTR.jl")
 include("./SolveModel/SolveModelST_TR.jl")
 include("./SolveModel/SolveModelST_ARC.jl")
 include("./SolveModel/cgARC.jl")
-include("./SolveModel/krylov_aux.jl")
+#include("./SolveModel/krylov_aux.jl")
 
 include("./Utilities/ldlt_symm.jl")
 include("./PreProcess/TParamsKARC.jl")
