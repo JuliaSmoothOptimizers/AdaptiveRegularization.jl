@@ -85,16 +85,16 @@ push!(ALL_solvers,fname)
 
 
 
-include("ARCMA97.jl")
-push!(ALL_solvers,fname)
+#include("ARCMA97.jl")
+#push!(ALL_solvers,fname)
 
-include("ARCMA97_abs.jl")
-push!(ALL_solvers,fname)
+#include("ARCMA97_abs.jl")
+#push!(ALL_solvers,fname)
 
-include("TRMA97.jl")
-push!(ALL_solvers,fname)
+#include("TRMA97.jl")
+#push!(ALL_solvers,fname)
 
-include("TRMA97_abs.jl")
-push!(ALL_solvers,fname)
+#include("TRMA97_abs.jl")
+#push!(ALL_solvers,fname)
 
 #deleteat!(ALL_solvers,1)

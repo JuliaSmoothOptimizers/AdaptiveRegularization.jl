@@ -4,7 +4,7 @@ import Compat.String
 
 const home = "https://github.com/JuliaSmoothOptimizers"
 const deps = Dict{String, String}(
-              "Krylov" => "develop"
+              "Krylov" => "develop",
               )
 
 
