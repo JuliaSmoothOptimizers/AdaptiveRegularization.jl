@@ -5,10 +5,8 @@ import Compat.String
 const home = "https://github.com/JuliaSmoothOptimizers"
 const deps = Dict{String, String}(
               "Krylov" => "develop"
-)
+              )
 
-const unix_deps = Dict{String, String}(
-              "CUTEst" => "develop")
 
 function dep_installed(dep)
   try
@@ -32,4 +30,3 @@ function deps_install(deps)
 end
 
 deps_install(deps)
-#@static if is_unix() deps_install(unix_deps); end
