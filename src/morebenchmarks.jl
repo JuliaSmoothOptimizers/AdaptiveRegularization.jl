@@ -9,7 +9,7 @@ ampl_probs = [Symbol(split(p, ".")[1]) for p in filter(x -> contains(x, ".nl"), 
 
 # Example 1: benchmark two solvers on a set of problems
 function two_solvers()
-  solvers = [:trunk, :lbfgs]
+  solvers = [trunk, lbfgs]
   title = @sprintf("f+g+hprod on %d problems of size about %d", length(mpb_probs), n)
   bmark_args = Dict{Symbol, Any}(:format => :mpb, :skipif => model -> model.meta.ncon > 0)
   profile_args = Dict{Symbol, Any}(:title => title)
@@ -17,7 +17,7 @@ function two_solvers()
 end
 
 # Example 1b: benchmark solvers on a set of problems
-solvers = [:ST_TROp, :trunk, :lbfgs]
+solvers = [ST_TROp, trunk, lbfgs]
 function compare_solvers(solvers,probs)
   title = @sprintf("f+g+hprod on %d problems of size about %d", length(probs), n)
   bmark_args = Dict{Symbol, Any}(:format => :mpb, :skipif => model -> model.meta.ncon > 0)

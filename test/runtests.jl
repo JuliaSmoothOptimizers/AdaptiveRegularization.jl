@@ -6,8 +6,8 @@ using JuMP
 # test with the well known Woods test function
 include("woods.jl")
 
-function run_solver(solver :: Symbol, nlp :: AbstractNLPModel; args...)
-  solver_f = eval(solver)
+function run_solver(solver_f :: Function, nlp :: AbstractNLPModel; args...)
+  #solver_f = eval(solver)
   args = Dict(args)
   skip = haskey(args, :skipif) ? pop!(args, :skipif) : x -> false
   skip(nlp) && throw(SkipException())
