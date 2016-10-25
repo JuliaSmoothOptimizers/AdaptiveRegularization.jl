@@ -2,11 +2,11 @@
 function TRARC(nlp :: AbstractNLPModel,
                x₀ :: Array{Float64,1},
                TR :: TrustRegion, c :: Combi;
-               atol :: Float64 = 1e-5,
+               atol :: Float64 = 1e-8,
                rtol :: Float64 = 1.0e-6,
                itmax :: Int=5000, 
                max_f :: Int=5000,
-               max_calls :: Int = 10000,
+               max_calls :: Int = 40000,
                verbose :: Bool = true
                )                
 
@@ -24,6 +24,17 @@ function TRARC(nlp :: AbstractNLPModel,
     gnext = Array(Float64,n)    
     
     f = obj(nlp,x)
+    if isnan(f) | (f==Inf)
+        OK = false
+	println("f nan or ∞");
+	xopt=f
+	gopt=f
+	fopt=f
+        niter = Inf
+        calls = [Inf, Inf, Inf, Inf]
+	return xopt,gopt,gopt,fopt,niter,calls,OK,:Bad_x0
+    end
+
     fopt = f
     grad!(nlp,x,g)
     norm_g = stop_norm(g)
@@ -31,7 +42,7 @@ function TRARC(nlp :: AbstractNLPModel,
     gopt = g
     H = hessian_rep(nlp,x)
     
-    optimal = norm_g < atol
+    optimal = (norm_g < atol) || (isinf(f) & (f<0.0))
     tired = false
     stalled = false
     finish = optimal || tired || stalled
