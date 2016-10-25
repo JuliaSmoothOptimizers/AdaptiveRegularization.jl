@@ -84,15 +84,17 @@ push!(ALL_solvers,eval(fname))
 
 
 
-include("ARCMA97.jl")
-push!(ALL_solvers,eval(fname))
+#include("ARCMA97.jl")
+#push!(ALL_solvers,eval(fname))
 
-include("ARCMA97_abs.jl")
-push!(ALL_solvers,eval(fname))
+#include("ARCMA97_abs.jl")
+#push!(ALL_solvers,eval(fname))
 
-include("TRMA97.jl")
-push!(ALL_solvers,eval(fname))
+#include("TRMA97.jl")
+#push!(ALL_solvers,eval(fname))
 
-include("TRMA97_abs.jl")
-push!(ALL_solvers,eval(fname))
+#include("TRMA97_abs.jl")
+#push!(ALL_solvers,eval(fname))
 
+ARC_solvers = ALL_solvers[[1,2,5,6,9:11,18:20]]
+TR_solvers = ALL_solvers[[3,4,7,8,12:17]]
