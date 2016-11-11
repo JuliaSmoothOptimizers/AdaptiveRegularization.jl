@@ -1,12 +1,12 @@
 function preprocessLDLt(H ,g, params::Tparams,n1,n2)
     L = Array(Float64,2)
     D = Array(Float64,2)
-    P = Array(Float64,2)
+    pp = Array(Int,1)
     ρ = Float64
     ncomp = Int64
     
     try
-        (L, D, P, rho, ncomp) = ldlt_symm(H,'r')
+        (L, D, pp, rho, ncomp) = ldlt_symm(H,'r')
     catch
  	println("*******   Problem in LDLt")
         res = PDataLDLt()
@@ -24,20 +24,22 @@ function preprocessLDLt(H ,g, params::Tparams,n1,n2)
 
     DiagD, Q = eig(D)
     l_m, = findmin(DiagD)
-    ĝ = L\(P*g)   #(P'*L)\g
+    ĝ = L\(g[pp]) 
     g̃ = Q'*ĝ
     n_g = norm(g)
     λ =  max(-l_m,0.0) 
-    return  PDataLDLt(L,D,P,DiagD,Q,g̃,λ,true,true)
+    return  PDataLDLt(L,D,pp,DiagD,Q,g̃,λ,true,true)
 end
 
 
 function TtildeInv(X :: PDataLDLt, d̃ ::  Array{Float64,1})
     d̂ = X.Q*d̃
-    return X.P'*(X.L'\d̂)
+    u = X.L'\d̂
+    return u[invperm(X.pp)]
 end
 
 
 function reconstructH(X :: PDataLDLt)
-    return X.P'*X.L*X.D*X.L'*X.P
+    A = X.L*X.D*X.L'
+    return A[X.pp.X.pp]
 end

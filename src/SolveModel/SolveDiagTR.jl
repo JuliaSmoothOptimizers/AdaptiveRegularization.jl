@@ -21,6 +21,7 @@ function solve_diagTR(λ,Δ,g̃,δ,ϵ)
         assert(λ>=0.0)
         iter_nwt += 1
     end
+#println(" λ computation, iter_nwt : $iter_nwt  λ  $λ")
 
     return d̃,λ
 end

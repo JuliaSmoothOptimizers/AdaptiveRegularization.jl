@@ -172,7 +172,7 @@ function  ldlt_symm(A0 :: Array{Float64,2}, piv :: Char='r')
         end
         
     end
-    P=eye(n)
-    P = P[pp,:]
-    return L, D, P, ρ, ncomp
+    #P=eye(n)
+    #P = P[pp,:]
+    return L, D, pp, ρ, ncomp
 end

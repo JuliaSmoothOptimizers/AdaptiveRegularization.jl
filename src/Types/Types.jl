@@ -37,8 +37,11 @@ end
 type PDataLDLt <: PDataFact
     L::Array{Float64,2}  # could be sparse
     D::Array{Float64,2}  # block diagonal 1X1 and 2X2
-    P::Array{Float64,2}  # permutation matrix: should be vector
+    #P::Array{Float64,2}  # permutation matrix: should be vector
                          # LDL' = PHP'
+    pp::Array{Int,1}     # permutation vector LDL' = H[pp,pp]
+                         # P*v = v[pp]
+                         # P'*v = v[invperm(pp)]
     Δ::Array{Float64,1}  # diagonal, eigenvalues of D
     Q::Array{Float64,2}  # orthogonal matrix, eigenvectors of D:  should be sparse
                          # QΔQ'  =  D
@@ -48,7 +51,7 @@ type PDataLDLt <: PDataFact
     OK::Bool
 
     PDataLDLt() = new()
-    PDataLDLt(L,D,P,DiagD,Q,g,l,success,OK) = new(L,D,P,DiagD,Q,g,l,success,OK)
+    PDataLDLt(L,D,pp,DiagD,Q,g,l,success,OK) = new(L,D,pp,DiagD,Q,g,l,success,OK)
 end
 
 type PDataSpectral <: PDataFact
