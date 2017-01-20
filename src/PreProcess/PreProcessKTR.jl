@@ -14,7 +14,7 @@ function preprocessKTR(Hop, g, params::Tparams, calls, max_calls)
                                            atol = 1.0e-8,
                                            rtol = precision,
                                            verbose=false,
-    check_curvature=true)
+                                           check_curvature=true)
 
     positives = collect(findfirst(stats.flagged,false):length(stats.flagged))
     
@@ -34,7 +34,6 @@ function decreaseKTR(X :: PDataK, α:: Float64, TR:: TrustRegion)
     α2 = X.norm_dirs[p_imin]
 
     # fix α to its "ideal" value to satisfy α=||d||
-    # α2 = X.Ndirs[p_imin]
     # while ensuring α decreases enough
     targetα = α*TR.decrease_factor
 

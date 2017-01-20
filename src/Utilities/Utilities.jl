@@ -11,8 +11,8 @@ type TrustRegion
     acceptance_threshold :: Float64
     increase_threshold :: Float64
     reduce_threshold :: Float64
-    decrease_factor :: Float64
     increase_factor :: Float64
+    decrease_factor :: Float64
     max_unsuccinarow :: Int
     #params :: Tparams
     
@@ -20,9 +20,9 @@ type TrustRegion
                          max_α :: Float64=1.0/sqrt(eps(Float64)),
                          acceptance_threshold :: Float64=0.1,
                          increase_threshold :: Float64=0.75,
-                         recude_threshold :: Float64=0.1,
-                         decrease_factor :: Float64=0.1,
+                         reduce_threshold :: Float64=0.1,
                          increase_factor :: Float64=5.0,
+                         decrease_factor :: Float64=0.1,
                          max_unsuccinarow :: Int = 30)
                          #params :: Tparams = Void)
         
@@ -32,8 +32,8 @@ type TrustRegion
         (0.0 < decrease_factor < 1.0 < increase_factor) || throw(TrustRegionException("Invalid decrease/increase factors"))
         
         return new(α₀, α₀, max_α,
-                   acceptance_threshold, increase_threshold,recude_threshold,
-                   decrease_factor, increase_factor,max_unsuccinarow)#, params)
+                   acceptance_threshold, increase_threshold, reduce_threshold,
+                   increase_factor, decrease_factor, max_unsuccinarow)#, params)
     end
 end
 

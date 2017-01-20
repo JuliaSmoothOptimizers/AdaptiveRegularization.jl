@@ -1,7 +1,8 @@
-function solve_diagTR(λ,Δ,g̃,δ,ϵ)
+function solve_diagTR(λ,Δ,g̃,δ,ϵ; M = [0.0])
     # λ underestimates the required value λstar such that ||d̃(λstar)|| = δ
     # where d̃(λ) =  -(Δ+λ*M) .\ g̃
-    M = ones(Δ)
+    if M==[0.0]  M = ones(Δ) ; end
+assert(minimum(M)>0.0)
     λin = λ
     d̃ = -(Δ+λ*M) .\ g̃
     d̃d̃ = d̃⋅d̃
@@ -12,7 +13,7 @@ function solve_diagTR(λ,Δ,g̃,δ,ϵ)
     iter_nwt = 0
     #println(" Nwt $iter_nwt : λ = $λ  normd̃ = $normd̃  δ = $δ)")
     while (normd̃ >= (δ+tolerance*normd̃)) && (iter_nwt<40) 
-        dotd̃ = (Δ+λ*M) .\ d̃
+        dotd̃ = (Δ+λ*M) .\ (M .* d̃)
         Δλ = ((normd̃-δ)/δ) * (d̃d̃/(d̃ ⋅ dotd̃))
         λ =  max(λ + Δλ, λin+1.0e-10)
         d̃ = -(Δ+λ*M) .\ g̃

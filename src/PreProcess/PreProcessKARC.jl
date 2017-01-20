@@ -14,7 +14,7 @@ function preprocessKARC(Hop, g, params::Tparams, calls, max_calls)
                                            atol = 1.0e-8,
                                            rtol = precision,
                                            verbose=false,
-    check_curvature=true)
+                                           check_curvature=true)
 
     positives = collect(findfirst(stats.flagged,false):length(stats.flagged))
     
@@ -36,6 +36,8 @@ function decreaseKARC(X :: PDataK, α:: Float64, TR:: TrustRegion)
 
     targetα = α*TR.decrease_factor
 
+    # fix α to its "ideal" value to satisfy αλ=||d||^τ
+    # while ensuring α decreases enough
     while α2 > targetα
         X.indmin += 1
         p_imin = X.positives[X.indmin]
@@ -45,7 +47,5 @@ function decreaseKARC(X :: PDataK, α:: Float64, TR:: TrustRegion)
     X.d = X.xShift[:,p_imin]
     X.λ = X.shifts[p_imin]
     
-    # fix α to its "ideal" value to satisfy αλ=||d||^τ
-    #α = X.Ndirs[p_imin]^X.τ/X.shifts[p_imin]
     return α2
 end

@@ -22,17 +22,17 @@ function preprocessLDLt(H ,g, params::Tparams,n1,n2)
         return res
     end
 
-    DiagD, Q = eig(D)
-    l_m, = findmin(DiagD)
+    Δ, Q = eig(D)
+    l_m, = findmin(Δ)
     ĝ = L\(g[pp]) 
     g̃ = Q'*ĝ
     n_g = norm(g)
     λ =  max(-l_m,0.0) 
-    return  PDataLDLt(L,D,pp,DiagD,Q,g̃,λ,true,true)
+    return  PDataLDLt(L,D,pp,Δ,Q,g̃,λ,true,true)
 end
 
 
-function TtildeInv(X :: PDataLDLt, d̃ ::  Array{Float64,1})
+function AInv(X :: PDataLDLt, d̃ ::  Array{Float64,1})
     d̂ = X.Q*d̃
     u = X.L'\d̂
     return u[invperm(X.pp)]

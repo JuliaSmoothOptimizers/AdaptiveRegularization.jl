@@ -11,7 +11,7 @@ type PDataMA97 <: PDataFact
     g::Array{Float64,1}  # untransformed gradient 
     λ::Float64
     success::Bool        # previous iteration was successfull
-    OK::Bool
+    OK::Bool             # preprocess success
 
     PDataMA97() = new()
     PDataMA97(PLD,Δ,D,H,pivot,Q,g̃,g,l,success,OK) = new(PLD,Δ,D,H,pivot,Q,g̃,g,l,success,OK)
@@ -24,12 +24,10 @@ function preprocessMA97(H ,g, params::Tparams,n1,n2)
     vD1 = Array(Float64,2)
     vD2 = Array(Float64,2)
 
-    H = convert(SparseMatrixCSC{Float64,Int64},H)
+    H97 = convert(SparseMatrixCSC{Float64,Int64},H)
     try
-        PLD = Ma97(H, print_level=-1)
-        #PLD.control.print_level = -1
+        PLD = Ma97(H97, print_level=-1)
         ma97_factorize(PLD)
-        #ret = ma97_inquire(PLD)
     catch
  	println("*******   Problem in MA97")
         res = PDataMA97()
@@ -99,7 +97,7 @@ function preprocessMA97(H ,g, params::Tparams,n1,n2)
     return  PDataMA97(PLD,Δ,D,H,pivot,Q,g̃,g,λ,true,true)
 end
 
-function TtildeInv(X :: PDataMA97, d̃ ::  Array{Float64,1})
+function AInv(X :: PDataMA97, d̃ ::  Array{Float64,1})
     d̂ = X.Q * d̃
 
     ma97_solve!(X.PLD, d̂, job=:LPS)

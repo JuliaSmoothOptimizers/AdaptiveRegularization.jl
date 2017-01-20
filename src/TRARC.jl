@@ -1,12 +1,12 @@
-#@debug 
 function TRARC(nlp :: AbstractNLPModel,
                x₀ :: Array{Float64,1},
                TR :: TrustRegion, c :: Combi;
                atol :: Float64 = 1e-8,
                rtol :: Float64 = 1.0e-6,
-               itmax :: Int=5000, 
-               max_f :: Int=5000,
-               max_calls :: Int = 40000,
+               max_eval :: Int = 5000,
+               itmax :: Int=20000, 
+               #max_f :: Int=5000,
+               #max_eval :: Int = 5000,
                verbose :: Bool = true
                )                
 
@@ -60,11 +60,7 @@ function TRARC(nlp :: AbstractNLPModel,
     
     while ~finish
 
-        PData = pre_process(H,g,params,calls,max_calls)
-#                println("===>>> cond(H) = $(cond(H))  cond(L) = $(cond(PData.L))")
-#                println(" ||H - P'LDL'P|| = $(norm(H - PData.P'*PData.L*PData.D*PData.L'*PData.P))")
-        #if cond(PData.L) > 10000.0*cond(H) println("===>>> cond(H) = $(cond(H))  cond(L) = $(cond(PData.L))")
-        #end
+        PData = pre_process(H,g,params,calls,max_eval)
         
         if ~PData.OK return x,fopt,norm_g,Inf,Inf,[Inf,Inf,Inf,Inf],false,:PreFailed;  end
         
@@ -78,22 +74,11 @@ function TRARC(nlp :: AbstractNLPModel,
 
                 return x,fopt,norm_g,norm(gopt),iter,calls,false,:AscentDir
             end
-            #println("******* TRARC:  g⋅d = $(g⋅d), 0.5 d'*H*d = $(0.5*(H * d)⋅d)")
 
             Δq = -(g + 0.5*H*d)⋅d
 
             if Δq<0.0 println("*******   Ascent direction in SolveModel: Δq = $Δq")
                 println("  g⋅d = $(g⋅d), 0.5 d'Hd = $(0.5*(H*d)⋅d)  α = $α  λ = $λ")
-#@bp
-                #try println(" cond(H) = $(cond(full(H)))") catch println("sparse hessian, no cond") end
-                #D,Q=eig(full(H))
-                #lm=findmin(D);lM=findmax(D)
-                #println("λ min (H) = $lm  λ max (H) = $lM")
-                #try printtln(" cond(L) = $(cond(PData.L))") catch println("Spectral") end
-                #try println(" ||H - reconstructH|| = $(norm(H-reconstructH(PData)))") 
-                #catch
-                #    println(" reconstruct H no available ")
-                #end
                 println("  calls  $calls   iters $verysucc; $succ; $unsucc")
 
                 return x,fopt,norm_g,norm(gopt),iter,calls,false,:AscentDir
@@ -122,7 +107,7 @@ function TRARC(nlp :: AbstractNLPModel,
 	        unsucc=unsucc+1
 	        unsuccinarow = unsuccinarow +1
 	        α = decrease(PData, α, TR)
-                fbidon = obj(nlp,x)
+                #fbidon = obj(nlp,x)
 	    else
 	        success = true
                 
@@ -161,7 +146,7 @@ function TRARC(nlp :: AbstractNLPModel,
         calls = [nlp.counters.neval_obj,  nlp.counters.neval_grad, nlp.counters.neval_hess, nlp.counters.neval_hprod]
 
         optimal = (norm_g < atol)| (norm_g <( rtol * norm_g0)) | (isinf(f) & (f<0.0))
-        tired = (iter >= itmax) | (sum(calls) > max_calls)
+        tired = (iter >= itmax) | (sum(calls) > max_eval)
         stalled = unsuccinarow >= max_unsuccinarow
 
 

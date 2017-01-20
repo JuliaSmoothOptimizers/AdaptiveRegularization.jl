@@ -1,6 +1,6 @@
-function solve_diag(λ,Δ,g̃,seuil,α,ϵ)
+function solve_diag(λ,Δ,g̃,seuil,α,ϵ; M = [0.0])
 
-    M = ones(Δ)
+    if M==[0.0]  M = ones(Δ) ; end
     λin = λ
     λtry = seuil
     dtry = -(Δ+λtry*M) .\ g̃
@@ -13,7 +13,7 @@ function solve_diag(λ,Δ,g̃,seuil,α,ϵ)
     # secant like heuristic to help Newton process by providing a good starting point
     iter_bis= 0
     if λin < seuil
-        while λtry > seuiltry
+        while λtry > seuiltry && (iter_bis<10)
             λtry = λ + (λtry - λ)/max((seuil-seuiltry),2.0)
             dtry = -(Δ+λtry*M) .\ g̃
             normdtry = sqrt(dtry⋅dtry)
@@ -31,7 +31,7 @@ function solve_diag(λ,Δ,g̃,seuil,α,ϵ)
     # Newton iterations
     iter_nwt = 0
     while (abs(seuil - λ)/max(seuil,λ) > ϵ) && (iter_nwt<40)
-        dotd̃ = (Δ+λ*M) .\ d̃
+        dotd̃ = (Δ+λ*M) .\ (M .* d̃)
         Δλ = λ*(seuil - λ) / (seuil + λ*(λ*(d̃ ⋅ dotd̃)/(d̃ ⋅ d̃)))
         λ =  max(λ + Δλ, λin+1.0e-10)
         d̃ = -(Δ+λ*M) .\ g̃

@@ -18,7 +18,7 @@ function solve_modelARCDiag(PData :: PDataFact, α:: Float64)
     PData.λ = λ
     # Transform back d̃ into d
 
-    d = TtildeInv(PData,d̃)  
+    d = AInv(PData,d̃)  
 
     return d, λ
 end

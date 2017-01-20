@@ -32,7 +32,7 @@ function solve_modelTRDiag(PData :: PDataFact, δ:: Float64)
     PData.λ = λ
 
     # Transform back d̃ into d
-    d = TtildeInv(PData,d̃)  
+    d = AInv(PData,d̃)  
 
     #try assert((PData.g̃ + 0.5*PData.Δ .* d̃)⋅d̃ <= 0.0)  catch  @bp  end
 
