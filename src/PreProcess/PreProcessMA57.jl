@@ -28,13 +28,13 @@ function preprocessMA57(H ,g, params::Tparams,n1,n2)
     ρ = Float64
     ncomp = Int64
     
-    H57 = convert(SparseMatrixCSC{Cdouble,Int32}, H)  #  Hard coded Cdouble
+    H57 = convert(SparseMatrixCSC{Float64,Int}, H)  #  Hard coded Int
     try
-        M = Ma57(H,print_level=-1)
+        M = Ma57(H57,print_level=-1)
         ma57_factorize(M)
     catch
  	println("*******   Problem in MA57_0")
-        M = Ma57(H,print_level=-1)
+        M = Ma57(H57,print_level=-1)
         ma57_factorize(M)        
         res = PDataMA57()
         res.OK = false
