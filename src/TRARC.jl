@@ -4,9 +4,10 @@ function TRARC(nlp :: AbstractNLPModel,
                atol :: Float64 = 1e-8,
                rtol :: Float64 = 1.0e-6,
                max_eval :: Int = 5000,
-               itmax :: Int=20000, 
+               max_iter :: Int=20000, 
                #max_f :: Int=5000,
                #max_eval :: Int = 5000,
+               robust :: Bool = true,
                verbose :: Bool = true
                )                
 
@@ -66,7 +67,8 @@ function TRARC(nlp :: AbstractNLPModel,
         
         success = false
         
-        while ~success & (iter < itmax) & (unsuccinarow < TR.max_unsuccinarow)
+#        while ~success & (iter < max_iter) & (unsuccinarow < TR.max_unsuccinarow)
+        while ~success & (iter < max_iter) & (~stalled)
             try
                 d,λ = solve_model(PData,α)
             catch
@@ -100,13 +102,18 @@ function TRARC(nlp :: AbstractNLPModel,
 
             Δf = f - fnext
                         
-            r, good_grad, gnext = compute_r(nlp,f,Δf,Δq,slope,d,xnext,gnext)
+            r, good_grad, gnext = compute_r(nlp,f,Δf,Δq,slope,d,xnext,gnext,robust)
             
             if r<TR.acceptance_threshold
                 verbose && display_failure(iter,fnext,λ,α)
 	        unsucc=unsucc+1
 	        unsuccinarow = unsuccinarow +1
-	        α = decrease(PData, α, TR)
+                stalled = unsuccinarow >= max_unsuccinarow
+	        try
+                    α = decrease(PData, α, TR)
+                catch
+                    stalled = true
+                end
                 #fbidon = obj(nlp,x)
 	    else
 	        success = true
@@ -146,8 +153,7 @@ function TRARC(nlp :: AbstractNLPModel,
         calls = [nlp.counters.neval_obj,  nlp.counters.neval_grad, nlp.counters.neval_hess, nlp.counters.neval_hprod]
 
         optimal = (norm_g < atol)| (norm_g <( rtol * norm_g0)) | (isinf(f) & (f<0.0))
-        tired = (iter >= itmax) | (sum(calls) > max_eval)
-        stalled = unsuccinarow >= max_unsuccinarow
+        tired = (iter >= max_iter) | (sum(calls) > max_eval)
 
 
 

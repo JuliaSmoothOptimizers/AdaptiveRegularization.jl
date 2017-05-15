@@ -17,7 +17,7 @@
                                                                   c;
                                                                   kwargs...)
         
-        return (x, f, gnorm2, iter, optimal, status == :UserLimit, status)
+        return (x, f, gNorm, iter, optimal, status == :UserLimit, status)
     end 
     #
     function $fname(nlp :: AbstractNLPModel; kwargs ...)

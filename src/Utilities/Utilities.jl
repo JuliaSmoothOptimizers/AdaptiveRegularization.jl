@@ -43,10 +43,10 @@ end
 Δq = q - q_trial is the reduction predicted by the model q of f.
 We assume that q is being minimized, and therefore that Δq > 0.
 """
-function compute_r(nlp,f,Δf,Δq,slope,d,xnext,gnext)
+function compute_r(nlp,f,Δf,Δq,slope,d,xnext,gnext,robust)
     # If ever the next gradient is computed for round off errors reason, signal it.
     good_grad = false
-    if (Δq < 10000*eps()) | (abs(Δf)<10000*eps()*abs(f)) 
+    if robust & ((Δq < 10000*eps()) | (abs(Δf)<10000*eps()*abs(f)) )
         # trap potential cancellation errors
         grad!(nlp,xnext,gnext);
         good_grad = true

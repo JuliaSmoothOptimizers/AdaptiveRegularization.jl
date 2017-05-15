@@ -3,6 +3,7 @@ using NLPModels
 
 using LinearOperators
 using Krylov
+#using Stopping
 
 
 include("Includes.jl")
