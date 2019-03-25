@@ -2,11 +2,11 @@ using Compat
 using LinearOperators
 
 
-"Abstract type for statistics returned by a solver"
-abstract KrylovStats;
+"Abstract  for statistics returned by a solver"
+abstract type KrylovStats end
 
 "Type for statistics returned by non-Lanczos solvers"
-type SimpleStats <: KrylovStats
+mutable struct SimpleStats <: KrylovStats
   solved :: Bool
   inconsistent :: Bool
   residuals :: Array{Float64,1}
@@ -26,7 +26,7 @@ end
 #
 # Try to adapt a stopping criterion based on regulα for the ARCq.
 #
-# First reformulate the TR case using the characteristic function to confirm it is 
+# First reformulate the TR case using the characteristic function to confirm it is
 # equivalent to the usual implementation. A must be symmetric to define a quadratic objective
 # q(x) = 0.5*x'*A*x - b'*x
 #
@@ -37,24 +37,25 @@ include("krylov_aux.jl")
 export cgARC
 # Methods for various argument types.
 #include("cg_methods.jl")
-cgARC{TA <: Number, Tb <: Number}(A :: Array{TA,2}, b :: Array{Tb,1};
-                               atol :: Float64=1.0e-8, rtol :: Float64=1.0e-6, itmax :: Int=0, regulα :: Float64=1.0, verbose :: Bool=false) =
-  cgARC(LinearOperator(A), b, atol=atol, rtol=rtol, itmax=itmax, regulα=regulα, verbose=verbose);
+# cgARC{TA <: Number, Tb <: Number}(A :: Array{TA,2}, b :: Array{Tb,1};
+#                                atol :: Float64=1.0e-8, rtol :: Float64=1.0e-6, itmax :: Int=0, regulα :: Float64=1.0, verbose :: Bool=false)
+cgARC(A::Array{TA, 2}, b::Array{Tb, 1}; atol::Float64 = 1e-08, rtol::Float64 = 1e-06, itmax::Int = 0, regulα::Float64 = 1, verbose::Bool = false) where {TA <: Number, Tb <: Number}  = cgARC(LinearOperator(A), b, atol=atol, rtol=rtol, itmax=itmax, regulα=regulα, verbose=verbose);
 
-cgARC{TA <: Number, Tb <: Number, IA <: Integer}(A :: SparseMatrixCSC{TA,IA}, b :: Array{Tb,1};
-                                              atol :: Float64=1.0e-8, rtol ::
-                                              Float64=1.0e-6, itmax :: Int=0, regulα :: Float64=1.0,  verbose :: Bool=false) =
-  cgARC(LinearOperator(A), b, atol=atol, rtol=rtol, itmax=itmax, regulα=regulα, verbose=verbose);
+# cgARC{TA <: Number, Tb <: Number, IA <: Integer}(A :: SparseMatrixCSC{TA,IA}, b :: Array{Tb,1};
+#                                               atol :: Float64=1.0e-8, rtol ::
+#                                               Float64=1.0e-6, itmax :: Int=0, regulα :: Float64=1.0,  verbose :: Bool=false) =
+cgARC(A::SparseMatrixCSC{TA, IA}, b::Array{Tb, 1}; atol::Float64 = 1e-08, rtol::Float64 = 1e-06, itmax::Int = 0, regulα::Float64 = 1, verbose::Bool = false) where {TA <: Number, Tb <: Number, IA <: Integer}  = cgARC(LinearOperator(A), b, atol=atol, rtol=rtol, itmax=itmax, regulα=regulα, verbose=verbose);
 
 
+
+# function cgARC{T <: Real}(A :: LinearOperator, b :: Array{T,1};
+#                        atol :: Float64=1.0e-8, rtol :: Float64=1.0e-6, itmax :: Int=0,
+#                        regulα :: Float64=1.0, verbose :: Bool=false)
 """The conjugate gradient method to solve the symmetric linear system Ax=b.
 
 The method does _not_ abort if A is not definite.
 """
-function cgARC{T <: Real}(A :: LinearOperator, b :: Array{T,1};
-                       atol :: Float64=1.0e-8, rtol :: Float64=1.0e-6, itmax :: Int=0,
-                       regulα :: Float64=1.0, verbose :: Bool=false)
-
+function cgARC(A::LinearOperator, b::Array{T, 1}; atol::Float64 = 1e-08, rtol::Float64 = 1e-06, itmax::Int = 0, regulα::Float64 = 1, verbose::Bool = false) where T <: Real
   n = size(b, 1);
   (size(A, 1) == n & size(A, 2) == n) || error("Inconsistent problem size");
   #isequal(triu(A)',tril(A)) || error("Must supply Hermitian matrix")
@@ -86,11 +87,11 @@ function cgARC{T <: Real}(A :: LinearOperator, b :: Array{T,1};
   on_boundary = false;
   status = "unknown";
 
-  q = s ->  0.5 * dot(s, copy(A * s)) - dot(b, s) 
+  q = s ->  0.5 * dot(s, copy(A * s)) - dot(b, s)
 
   m = s ->  q(s) + norm(s)^3/(3*regulα)
   #hO = α -> m(x+α*p)
-  
+
 
   while ! (solved || tired)
     Ap = copy(A * p);  # Bug in LinearOperators? A side effect spoils the computation without the copy.

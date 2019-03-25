@@ -1,9 +1,12 @@
 function solve_diag(λ,Δ,g̃,seuil,α,ϵ; M = [0.0])
 
-    if M==[0.0]  M = ones(Δ) ; end
+    if M==[0.0]
+        # M = ones(Δ) ;
+        M = fill(1, size(Δ));
+    end
     λin = λ
     λtry = seuil
-    dtry = -(Δ+λtry*M) .\ g̃
+    dtry = -(Δ + λtry*M) .\ g̃
     normdtry = sqrt(dtry⋅dtry)
     seuiltry = normdtry/α
     d̃ = dtry
@@ -15,7 +18,7 @@ function solve_diag(λ,Δ,g̃,seuil,α,ϵ; M = [0.0])
     if λin < seuil
         while λtry > seuiltry && (iter_bis<10)
             λtry = λ + (λtry - λ)/max((seuil-seuiltry),2.0)
-            dtry = -(Δ+λtry*M) .\ g̃
+            dtry = -(Δ + λtry*M) .\ g̃
             normdtry = sqrt(dtry⋅dtry)
             seuiltry = normdtry/α
             iter_bis += 1
@@ -27,7 +30,7 @@ function solve_diag(λ,Δ,g̃,seuil,α,ϵ; M = [0.0])
         seuil = seuiltry
     end
 
-    
+
     # Newton iterations
     iter_nwt = 0
     while (abs(seuil - λ)/max(seuil,λ) > ϵ) && (iter_nwt<40)
@@ -39,7 +42,7 @@ function solve_diag(λ,Δ,g̃,seuil,α,ϵ; M = [0.0])
         seuil = normd̃/α
 #println(" λ computation,  iter_nwt : $iter_nwt  λ  $λ")
 
-        assert(λ>=0.0)
+        @assert λ >= 0.0
         iter_nwt += 1
     end
 #println(" λ computation, iter_bis : $iter_bis  iter_nwt : $iter_nwt  λ  $λ")

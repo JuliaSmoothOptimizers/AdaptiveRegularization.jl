@@ -1,10 +1,10 @@
 function preprocessLDLt(H ,g, params::Tparams,n1,n2)
-    L = Array(Float64,2)
-    D = Array(Float64,2)
-    pp = Array(Int,1)
-    ρ = Float64
-    ncomp = Int64
-    
+    global L = Array(Float64,2)
+    global D = Array(Float64,2)
+    global pp = Array(Int,1)
+    global ρ = Float64
+    global ncomp = Int64
+
     try
         (L, D, pp, rho, ncomp) = ldlt_symm(H,'r')
     catch
@@ -14,7 +14,7 @@ function preprocessLDLt(H ,g, params::Tparams,n1,n2)
         return res
     end
 
-    if true in isnan(D) 
+    if true in isnan(D)
  	println("*******   Problem in D from LDLt: NaN")
         println(" cond (H) = $(cond(H))")
         res = PDataLDLt()
@@ -24,10 +24,10 @@ function preprocessLDLt(H ,g, params::Tparams,n1,n2)
 
     Δ, Q = eig(D)
     l_m, = findmin(Δ)
-    ĝ = L\(g[pp]) 
+    ĝ = L\(g[pp])
     g̃ = Q'*ĝ
     n_g = norm(g)
-    λ =  max(-l_m,0.0) 
+    λ =  max(-l_m,0.0)
     return  PDataLDLt(L,D,pp,Δ,Q,g̃,λ,true,true)
 end
 

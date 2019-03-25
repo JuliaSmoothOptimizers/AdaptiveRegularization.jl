@@ -1,6 +1,9 @@
 using ARCTR
-using Base.Test
+using LinearAlgebra
+using Test
+using Printf
 using NLPModels
+using NLPModelsJuMP
 using JuMP
 
 # first test the LDLt function
@@ -10,7 +13,7 @@ include("../src/Utilities/testLDLt.jl")
 include("woods.jl")
 nlp = MathProgNLPModel(woods(), name="woods")
 
-nbsolver = 0
+global nbsolver = 0
 for solver in ALL_solvers
     nbsolver += 1
     println(nbsolver,"  ",solver)

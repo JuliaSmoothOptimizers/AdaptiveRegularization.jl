@@ -2,7 +2,10 @@ module ARCTR
 using NLPModels
 
 using LinearOperators
+using LinearAlgebra
 using Krylov
+using Printf
+using SparseArrays
 #using Stopping
 
 
