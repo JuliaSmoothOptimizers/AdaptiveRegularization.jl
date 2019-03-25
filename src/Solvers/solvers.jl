@@ -7,8 +7,8 @@ export ALL_solvers
 ALL_solvers = Function[]
 
 
-include("ARCSpectral.jl")
-push!(ALL_solvers,eval(fname))
+# include("ARCSpectral.jl")      #works in 0.7/1.1
+# push!(ALL_solvers,eval(fname))
 
 include("ARCSpectral_abs.jl")
 push!(ALL_solvers,eval(fname))

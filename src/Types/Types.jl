@@ -62,5 +62,5 @@ mutable struct PDataSpectral <: PDataFact
     OK::Bool             # preprocess success
 
     PDataSpectral() = new()
-    PDataSpectral(V,Λ,g,l,success,OK) = new(V,Λ,g,l,success,OK)
+    PDataSpectral(V, Λ, g, l, success, OK) = new(V, Λ, g, l, success, OK)
 end

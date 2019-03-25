@@ -1,6 +1,7 @@
 function TRARC(nlp :: AbstractNLPModel,
                x₀ :: Array{Float64,1},
-               TR :: TrustRegion, c :: Combi;
+               TR :: TrustRegion,
+			   c :: Combi;
                atol :: Float64 = 1e-8,
                rtol :: Float64 = 1.0e-6,
                max_eval :: Int = 5000,
@@ -10,10 +11,14 @@ function TRARC(nlp :: AbstractNLPModel,
                robust :: Bool = true,
                verbose :: Bool = true
                )
-
+	@show x₀
     hessian_rep,PData,solve_model,pre_process,decrease,params = extract(c)
-
-    #StopNorm(x) = norm(x,Inf)
+	@show hessian_rep
+	@show PData
+	@show solve_model
+	@show pre_process
+	@show decrease
+	@show params
 
     α = TR.α₀
     x, xnext, d, Df = copy(x₀), copy(x₀), copy(x₀), 0.0
@@ -21,9 +26,7 @@ function TRARC(nlp :: AbstractNLPModel,
     λ = 1.0
 
     n = length(x)
-    # g = Array(Float64,n)
 	g = Vector{Float64}(undef, n)
-    # gnext = Array(Float64,n)
 	gnext = Vector{Float64}(undef, n)
 
     f = obj(nlp,x)
@@ -79,9 +82,9 @@ function TRARC(nlp :: AbstractNLPModel,
                 return x,fopt,norm_g,norm(gopt),iter,calls,false,:AscentDir
             end
 
-            Δq = -(g + 0.5*H*d)⋅d
+            Δq = -(g + 0.5 * H * d)⋅d
 
-            if Δq<0.0 println("*******   Ascent direction in SolveModel: Δq = $Δq")
+            if Δq < 0.0 println("*******   Ascent direction in SolveModel: Δq = $Δq")
                 println("  g⋅d = $(g⋅d), 0.5 d'Hd = $(0.5*(H*d)⋅d)  α = $α  λ = $λ")
                 println("  calls  $calls   iters $verysucc; $succ; $unsucc")
 
