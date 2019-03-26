@@ -1,4 +1,4 @@
-type PDataMA97 <: PDataFact
+mutable struct PDataMA97 <: PDataFact
     PLD :: Ma97          # H = (PL)D(PL)'  or  LDL' = P'HP
     Δ::Array{Float64,1}  # diagonal, eigenvalues of D
     D
@@ -7,8 +7,8 @@ type PDataMA97 <: PDataFact
     #Q::Array{Float64,2}  # orthogonal matrix, eigenvectors of D:  should be sparse
                          # QΔQ'  =  D
     Q::SparseMatrixCSC{Float64,Int64}
-    g̃::Array{Float64,1}  # transformed gradient 
-    g::Array{Float64,1}  # untransformed gradient 
+    g̃::Array{Float64,1}  # transformed gradient
+    g::Array{Float64,1}  # untransformed gradient
     λ::Float64
     success::Bool        # previous iteration was successfull
     OK::Bool             # preprocess success
@@ -62,7 +62,7 @@ function preprocessMA97(H ,g, params::Tparams,n1,n2)
     vQ2m = zeros(vD2)     #
     veig = copy(vD1)      # vector of eigenvalues of D, initialized to diagonal of D
                           # if D diagonal, nothing more will be computed
-    
+
     i=1;
     while i<length(vD1)
         if vD2[i] == 0.0
@@ -77,7 +77,7 @@ function preprocessMA97(H ,g, params::Tparams,n1,n2)
             vQ1[i+1] = Qma[2,2]
             veig[i+1] = DiagmA[2]
             i += 2
-        end  
+        end
     end
 
     Q = spdiagm((vQ1,vQ2m,vQ2),[0,-1,1])           # sparse representation of Q

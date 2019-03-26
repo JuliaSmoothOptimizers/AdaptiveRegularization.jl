@@ -1,4 +1,4 @@
-type PDataMA57 <: PDataFact
+mutable struct PDataMA57 <: PDataFact
     L::SparseMatrixCSC{Float64,Int32} # sparse L
     D::SparseMatrixCSC{Float64,Int32} # block diagonal 1X1 and 2X2
     #P::Array{Float64,2}  # permutation matrix: should be vector
@@ -10,7 +10,7 @@ type PDataMA57 <: PDataFact
     Δ::Array{Float64,1}  # diagonal, eigenvalues of D
     Q::SparseMatrixCSC{Float64,Int64}  # orthogonal matrix, eigenvectors of D:  should be sparse
                          # QΔQ'  =  D
-    g̃::Array{Float64,1}  # transformed gradient 
+    g̃::Array{Float64,1}  # transformed gradient
     λ::Float64
     success::Bool        # previous iteration was successfull
     OK::Bool             # preprocess success
@@ -19,7 +19,7 @@ type PDataMA57 <: PDataFact
     PDataMA57(L,D,pp,s,Δ,Q,g,l,success,OK) = new(L,D,pp,s,Δ,Q,g,l,success,OK)
 end
 
-function preprocessMA57(H ,g, params::Tparams,n1,n2) 
+function preprocessMA57(H ,g, params::Tparams,n1,n2)
     M = Ma57
     L = SparseMatrixCSC{Float64,Int32}
     D57 = SparseMatrixCSC{Float64,Int32}
@@ -27,7 +27,7 @@ function preprocessMA57(H ,g, params::Tparams,n1,n2)
     s = Array{Float64}
     ρ = Float64
     ncomp = Int64
-    
+
     H57 = convert(SparseMatrixCSC{Float64,Int}, H)  #  Hard coded Int
     try
         M = Ma57(H57,print_level=-1)
@@ -35,7 +35,7 @@ function preprocessMA57(H ,g, params::Tparams,n1,n2)
     catch
  	println("*******   Problem in MA57_0")
         M = Ma57(H57,print_level=-1)
-        ma57_factorize(M)        
+        ma57_factorize(M)
         res = PDataMA57()
         res.OK = false
         return res
@@ -61,7 +61,7 @@ function preprocessMA57(H ,g, params::Tparams,n1,n2)
     vQ2m = zeros(vD2)     #
     veig = copy(vD1)      # vector of eigenvalues of D, initialized to diagonal of D
                           # if D diagonal, nothing more will be computed
-    
+
     i=1;
     while i<length(vD1)
         if vD2[i] == 0.0
@@ -76,21 +76,21 @@ function preprocessMA57(H ,g, params::Tparams,n1,n2)
             vQ1[i+1] = Qma[2,2]
             veig[i+1] = DiagmA[2]
             i += 2
-        end  
+        end
     end
 
     Q = spdiagm((vQ1,vQ2m,vQ2),[0,-1,1])           # sparse representation of Q
-    
+
     Δ = veig
 
     l_m, = findmin(Δ)
     sg = s .* g
-    ĝ = L\(sg[pp]) 
+    ĝ = L\(sg[pp])
     g̃ = Q'*ĝ
 
 
     n_g = norm(g)
-    λ =  max(-l_m,0.0) 
+    λ =  max(-l_m,0.0)
     return  PDataMA57(L,D57,pp,s,Δ,Q,g̃,λ,true,true)
 end
 

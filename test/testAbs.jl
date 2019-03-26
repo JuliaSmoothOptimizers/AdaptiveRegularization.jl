@@ -1,5 +1,5 @@
 using ARCTR
-using Base.Test
+using Test
 using NLPModels
 using JuMP
 
@@ -10,7 +10,7 @@ include("../src/Utilities/testLDLt.jl")
 include("woods.jl")
 nlp = MathProgNLPModel(woods(), name="woods")
 
-nbsolver = 2
+global nbsolver = 2
 for solver in ALL_solvers
     nbsolver += 1
     println(nbsolver,"  ",solver)

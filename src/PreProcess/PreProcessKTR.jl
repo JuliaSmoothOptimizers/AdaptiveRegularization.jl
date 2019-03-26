@@ -6,9 +6,9 @@ function preprocessKTR(Hop, g, params::Tparams, calls, max_calls)
     n = length(g)
     gNorm2 = BLAS.nrm2(n, g, 1)
     precision =  max(1e-12,min(0.5,(gNorm2^τ)))
-    (xShift, stats) = cg_lanczos_shift_seq(Hop, 
-                                           -g, 
-                                           shifts, 
+    (xShift, stats) = cg_lanczos_shift_seq(Hop,
+                                           -g,
+                                           shifts,
                                            itmax=min(max_calls-sum(calls),2*n),
                                            #τ = τ,
                                            atol = 1.0e-8,
@@ -16,15 +16,15 @@ function preprocessKTR(Hop, g, params::Tparams, calls, max_calls)
                                            verbose=false,
                                            check_curvature=true)
 
-    positives = collect(findfirst(stats.flagged,false):length(stats.flagged))
-    
+    positives = collect(findfirst(!, stats.flagged):length(stats.flagged))
+
     success = false
     good_grad = false
     dirs = [ (xShift[:,i]) for i = 1 : nshifts ];
     Ndirs = map(norm, dirs);
 
     d = g # bidon
-    
+
     return  PDataK(d,-1.0,τ,0,positives,xShift,shifts,nshifts,Ndirs,true)
 end
 
@@ -45,6 +45,6 @@ function decreaseKTR(X :: PDataK, α:: Float64, TR:: TrustRegion)
 
     X.d = X.xShift[:,p_imin]
     X.λ = X.shifts[p_imin]
-    
+
     return α2
 end

@@ -1,6 +1,6 @@
 """
 Higams' ldlt_symm translated from matlab. Performs  a so called
- BKK  Bounded Bunch Kaufman factorization of A0, that means 
+ BKK  Bounded Bunch Kaufman factorization of A0, that means
  ||L|| is bounded and bounded away from zero.
 """
 function  ldlt_symm(A0 :: Array{Float64,2}, piv :: Char='r')
@@ -16,7 +16,7 @@ function  ldlt_symm(A0 :: Array{Float64,2}, piv :: Char='r')
     #     The default is partial pivoting.
     #     RHO is the growth factor.
     #     For PIV = 'r' only, NCOMP is the total number of comparisons.
-    
+
     #     References:
     #     J. R. Bunch and L. Kaufman, Some stable methods for calculating
     #        inertia and solving symmetric linear systems, Math. Comp.,
@@ -27,7 +27,7 @@ function  ldlt_symm(A0 :: Array{Float64,2}, piv :: Char='r')
     #     N. J. Higham, Accuracy and Stability of Numerical Algorithms,
     #        Second edition, Society for Industrial and Applied Mathematics,
     #        Philadelphia, PA, 2002; chap. 11.
-    
+
     #    This routine does not exploit symmetry and is not designed to be
     #     efficient.
     #
@@ -43,38 +43,40 @@ function  ldlt_symm(A0 :: Array{Float64,2}, piv :: Char='r')
 
     # minimal checks for conforming inputs
     isequal(triu(A)',tril(A)) || error("Must supply Hermitian matrix.")
-    piv in ['p','r'] || error("Pivoting must be "'p'" or "'r'".")
+    piv in ['p','r'] || error("Pivoting must be \"'p'\" or \" 'r' \".")
 
     n, = size(A)
 
     k = 1
-    D = eye(n,n); 
-    L = eye(n,n);  
+    # D = eye(n,n);
+    # L = eye(n,n);
+    global D = Matrix(1.0I, n, n);
+    global L = Matrix(1.0I, n, n);
     if n == 1   D = A; end
-    
-    pp = collect(1:n)
-    
+
+    global pp = collect(1:n)
+
     maxA = norm(A, Inf)
-    ρ = maxA;
-    
-    ncomp = 0;
+    global ρ = maxA;
+
+    global ncomp = 0;
     s=1
-    
+
     α = (1 + sqrt(17))/8
     while k < n
-        (λ, vr) = findmax( abs(A[k+1:n,k]) );
+        (λ, vr) = findmax( abs.(A[k+1:n,k]) );
         r = vr[1] + k;
         if λ > 0
             swap = false;
-            if abs(A[k,k]) >= α*λ
+            if abs.(A[k,k]) >= α*λ
                 s = 1;
-            else 
+            else
                 if piv == 'p'
                     temp = A[k:n,r]; temp[r-k+1] = 0
                     σ = norm(temp, Inf)
-                    if α*λ^2 <= abs(A[k,k])*σ
+                    if α*λ^2 <= abs.(A[k,k])*σ
                         s = 1;
-                    elseif abs(A[r,r]) >= α*σ
+                    elseif abs.(A[r,r]) >= α*σ
                         swap = true;
                         m1 = k; m2 = r;
                         s = 1;
@@ -88,7 +90,7 @@ function  ldlt_symm(A0 :: Array{Float64,2}, piv :: Char='r')
                         L[[m1,m2],:] = L[[m2,m1],:]
                         A[:,[m1,m2]] = A[:,[m2,m1]]
                         L[:,[m1,m2]] = L[:,[m2,m1]]
-                        
+
                         pp[[m1,m2]] = pp[[m2,m1]]
                     end
                 elseif piv == 'r'
@@ -96,13 +98,13 @@ function  ldlt_symm(A0 :: Array{Float64,2}, piv :: Char='r')
                     pivot = false;
                     λ_j = λ;
                     while ~pivot
-                        (temp1,vr) = findmax( abs(A[k:n,j]) );
-                        ncomp = ncomp + n-k;
+                        (temp1,vr) = findmax( abs.(A[k:n,j]) );
+                        global ncomp = ncomp + n-k;
                         r = vr[1] + k - 1;
                         temp = A[k:n,r]; temp[r-k+1] = 0.0;
                         λᵣ = max(maximum(temp), -minimum(temp))
-                        ncomp = ncomp + n-k;
-                        if α*λᵣ <= abs(A[r,r])
+                        global ncomp = ncomp + n-k;
+                        if α*λᵣ <= abs.(A[r,r])
                             pivot = true;
                             s = 1;
                             A[k,:], A[r,:] = A[r,:], A[k,:]
@@ -132,18 +134,18 @@ function  ldlt_symm(A0 :: Array{Float64,2}, piv :: Char='r')
                     end
                 end
             end
-            
+
             if s == 1
-                
+
                 D[k,k] = A[k,k];
                 A[k+1:n,k] = A[k+1:n,k]/A[k,k];
                 L[k+1:n,k] = A[k+1:n,k];
                 i = k+1:n;
                 A[i,i] = A[i,i] - A[i,k:k] * A[k:k,i];
                 A[i,i] = 0.5 * (A[i,i] + A[i,i]');
-                
+
             elseif s == 2
-                
+
                 E = A[k:k+1,k:k+1];
                 D[k:k+1,k:k+1] = E;
                 i= k+2:n;
@@ -151,31 +153,31 @@ function  ldlt_symm(A0 :: Array{Float64,2}, piv :: Char='r')
                 temp = C/E;
                 L[i,k:k+1] = temp;
                 A[i,k+2:n] = A[i,k+2:n] - temp*C';
-                A[i,i] = 0.5 * (A[i,i] + A[i,i]');                         
+                A[i,i] = 0.5 * (A[i,i] + A[i,i]');
             end
-            
+
             # Ensure diagonal real (see LINPACK User's Guide, p. 5.17).
             for i=k+s:n
                 A[i,i] = real(A[i,i]);
             end
-            
+
             if  k+s <= n
-                val, = findmax(abs(A[k+s:n,k+s:n]))
-                ρ = max(ρ, val );
+                val, = findmax(abs.(A[k+s:n,k+s:n]))
+                global ρ = max(ρ, val );
             end
-            
-        else  # Nothing to do.           
+
+        else  # Nothing to do.
             s = 1;
-            D[k,k] = A[k,k];            
+            D[k,k] = A[k,k];
         end
-        
+
         k = k + s;
-        
+
         if k == n
             D[n,n] = A[n,n];
             break
         end
-        
+
     end
     #P=eye(n)
     #P = P[pp,:]

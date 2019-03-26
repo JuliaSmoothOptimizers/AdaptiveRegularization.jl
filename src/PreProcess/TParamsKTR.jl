@@ -1,4 +1,4 @@
-type TparamsKTR <: Tparams  # specific parameters for this Krylov variant
+mutable struct TparamsKTR <: Tparams  # specific parameters for this Krylov variant
     τ :: Float64
     shifts :: Array{Float64,1}
     nshifts :: Int

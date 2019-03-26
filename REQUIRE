@@ -1,3 +1,7 @@
+Compat
 LinearOperators
 JuMP
 NLPModels
+NLPModelsJuMP
+Krylov
+HSL

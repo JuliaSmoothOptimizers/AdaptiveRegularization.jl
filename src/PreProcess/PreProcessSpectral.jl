@@ -1,7 +1,9 @@
 function preprocessSpectral(H ,g, params::Tparams,n1,n2)
     #global V, D, rho, ncomp
-    
-    Δ, V = eig(H)
+
+    # Δ, V = eig(H)
+    X = eigen(H)
+    Δ = X.values; V = X.vectors
 
     l_m, = findmin(Δ)
     g̃ = V'*g
@@ -20,4 +22,3 @@ end
 function reconstructH(X :: PDataSpectral)
     return X.V*diagm(X.Δ)*X.V'
 end
-

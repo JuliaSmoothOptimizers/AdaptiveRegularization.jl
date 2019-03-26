@@ -1,4 +1,3 @@
-Pkg.add("Compat")
 using Compat
 import Compat.String
 
