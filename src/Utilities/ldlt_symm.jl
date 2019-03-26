@@ -57,7 +57,7 @@ function  ldlt_symm(A0 :: Array{Float64,2}, piv :: Char='r')
     global pp = collect(1:n)
 
     maxA = norm(A, Inf)
-    ρ = maxA;
+    global ρ = maxA;
 
     global ncomp = 0;
     s=1
@@ -99,11 +99,11 @@ function  ldlt_symm(A0 :: Array{Float64,2}, piv :: Char='r')
                     λ_j = λ;
                     while ~pivot
                         (temp1,vr) = findmax( abs.(A[k:n,j]) );
-                        ncomp = ncomp + n-k;
+                        global ncomp = ncomp + n-k;
                         r = vr[1] + k - 1;
                         temp = A[k:n,r]; temp[r-k+1] = 0.0;
                         λᵣ = max(maximum(temp), -minimum(temp))
-                        ncomp = ncomp + n-k;
+                        global ncomp = ncomp + n-k;
                         if α*λᵣ <= abs.(A[r,r])
                             pivot = true;
                             s = 1;
@@ -163,7 +163,7 @@ function  ldlt_symm(A0 :: Array{Float64,2}, piv :: Char='r')
 
             if  k+s <= n
                 val, = findmax(abs.(A[k+s:n,k+s:n]))
-                ρ = max(ρ, val );
+                global ρ = max(ρ, val );
             end
 
         else  # Nothing to do.

@@ -56,6 +56,12 @@ cgARC(A::SparseMatrixCSC{TA, IA}, b::Array{Tb, 1}; atol::Float64 = 1e-08, rtol::
 The method does _not_ abort if A is not definite.
 """
 function cgARC(A::LinearOperator, b::Array{T, 1}; atol::Float64 = 1e-08, rtol::Float64 = 1e-06, itmax::Int = 0, regulα::Float64 = 1, verbose::Bool = false) where T <: Real
+  # if check_positive_definite(A)
+  #   color2 = :red
+  # else
+  #   color2 = :green
+  # end
+  # printstyled("on a que A est définie positive ou non \n", color = color2)
   n = size(b, 1);
   (size(A, 1) == n & size(A, 2) == n) || error("Inconsistent problem size");
   #isequal(triu(A)',tril(A)) || error("Must supply Hermitian matrix")

@@ -35,22 +35,22 @@ mutable struct PDataST <: PDataIter
 end
 
 mutable struct PDataLDLt <: PDataFact
-    L::Array{Float64,2}  # could be sparse
-    D::Array{Float64,2}  # block diagonal 1X1 and 2X2
-    pp::Array{Int,1}     # permutation vector LDL' = H[pp,pp]
-                         # P*v = v[pp]
-                         # P'*v = v[invperm(pp)]
-    #s::Array{Float64,1} # Scaling matrix S=diagm(s)
-    Δ::Array{Float64,1}  # diagonal, eigenvalues of D
-    Q::Array{Float64,2}  # orthogonal matrix, eigenvectors of D:  should be sparse
-                         # QΔQ'  =  D
-    g̃::Array{Float64,1}  # transformed gradient
-    λ::Float64
-    success::Bool        # previous iteration was successfull
-    OK::Bool             # preprocess success
+    L        :: Array{Float64,2}   # could be sparse
+    D        :: Array{Float64,2}   # block diagonal 1X1 and 2X2
+    pp       :: Array{Int,1}       # permutation vector LDL' = H[pp,pp]
+                                   # P*v = v[pp]
+                                   # P'*v = v[invperm(pp)]
+    #s::Array{Float64,1}           # Scaling matrix S=diagm(s)
+    Δ        :: Array{Float64,1}   # diagonal, eigenvalues of D
+    Q        :: Array{Float64,2}   # orthogonal matrix, eigenvectors of D:  should be sparse
+                                   # QΔQ'  =  D
+    g̃        ::Array{Float64,1}    # transformed gradient
+    λ        ::Float64
+    success  ::Bool                # previous iteration was successfull
+    OK       ::Bool                # preprocess success
 
     PDataLDLt() = new()
-    PDataLDLt(L,D,pp,Δ,Q,g,l,success,OK) = new(L,D,pp,Δ,Q,g,l,success,OK)
+    PDataLDLt(L, D, pp, Δ, Q, g, l, success, OK) = new(L, D, pp, Δ, Q, g, l, success, OK)
 end
 
 mutable struct PDataSpectral <: PDataFact
