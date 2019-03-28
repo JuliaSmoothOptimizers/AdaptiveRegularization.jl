@@ -11,14 +11,8 @@ function TRARC(nlp :: AbstractNLPModel,
                robust :: Bool = true,
                verbose :: Bool = true
                )
-	# @show x₀
     hessian_rep,PData,solve_model,pre_process,decrease,params = extract(c)
-	# @show hessian_rep
-	# @show PData
-	# @show solve_model
-	# @show pre_process
-	# @show decrease
-	# @show params
+
 
     α = TR.α₀
     x, xnext, d, Df = copy(x₀), copy(x₀), copy(x₀), 0.0
@@ -67,7 +61,6 @@ function TRARC(nlp :: AbstractNLPModel,
     while ~finish
 
         PData = pre_process(H,g,params,calls,max_eval)
-		# printstyled("on est sorti de pre_process \n", color = :yellow)
 
         if ~PData.OK
 			return x,fopt,norm_g,Inf,Inf,[Inf,Inf,Inf,Inf],false,:PreFailed;

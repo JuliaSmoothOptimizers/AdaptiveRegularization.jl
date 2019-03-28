@@ -1,6 +1,5 @@
 function solve_modelTRDiag(PData :: PDataFact, δ:: Float64)
     # Solve the TR subproblem once diagonalized into Δ using the norm |Δ|
-    # printstyled("on dans solve_modelTRDiag \n", color = :cyan)
     # Setup the problem
     # M = ones(PData.Δ)
     M = fill(1.0, size(PData.Δ))
