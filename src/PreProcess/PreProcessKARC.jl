@@ -15,17 +15,31 @@ function preprocessKARC(Hop, g, params::Tparams, calls, max_calls)
                                            rtol = precision,
                                            verbose=false,
                                            check_curvature=true)
+    # @show findfirst(!, stats.flagged)
+    # @show length(stats.flagged)
+    # @show collect(findfirst(!, stats.flagged):length(stats.flagged))
 
     positives = collect(findfirst(!, stats.flagged):length(stats.flagged))
 
+    # @show positives
+
     success = false
+    # @show success
     good_grad = false
+    # @show good_grad
+    # @show xShift
+    # @show nshifts
+    # @show typeof(xShift)
+    if VERSION >= v"1.1.0"
+        xShift = hcat(xShift...)
+    end
     dirs = [ (xShift[:,i]) for i = 1 : nshifts ];
+    # @show dirs
     Ndirs = map(norm, dirs);
 
     d = g # bidon
-
-    return  PDataK(d,-1.0,τ,0,positives,xShift,shifts,nshifts,Ndirs,true)
+    # printstyled("on est près à sort de preprocessKARC \n", color = :yellow)
+    return  PDataK(d, -1.0, τ, 0 , positives, xShift,   shifts, nshifts, Ndirs, true)
 end
 
 
