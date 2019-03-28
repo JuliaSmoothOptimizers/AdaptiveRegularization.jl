@@ -10,8 +10,8 @@ using JuMP
 include("../src/Utilities/testLDLt.jl")
 
 # test all solvers with the well known Woods test function
-include("rosenbrock.jl")
-nlp = MathProgNLPModel(extrosnb(2), name = "extrosnb");
+include("woods.jl")
+nlp = MathProgNLPModel(woods(), name = "Woods");
 
 global nbsolver = 0
 for solver in ALL_solvers

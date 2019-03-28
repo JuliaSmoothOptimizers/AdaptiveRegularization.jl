@@ -39,36 +39,36 @@ push!(ALL_solvers,eval(fname))
 
 
 
-include("ARCqKOp.jl")			   #works in 0.7 not in 1.1
+include("ARCqKOp.jl")			   #works in 0.7/1.1
 push!(ALL_solvers,eval(fname))
 
 
-include("ARCqKsparse.jl")          #works in 0.7 not in 1.1
+include("ARCqKsparse.jl")          #works in 0.7/1.1
 push!(ALL_solvers,eval(fname))
 
-include("ARCqKdense.jl")          #works in 0.7 not in 1.1
-push!(ALL_solvers,eval(fname))
-
-
-
-include("TRKOp.jl")              #works in 0.7 not in 1.1
-push!(ALL_solvers,eval(fname))
-
-include("TRKsparse.jl")          #works in 0.7 not in 1.1
-push!(ALL_solvers,eval(fname))
-
-include("TRKdense.jl")           #works in 0.7 not in 1.1
+include("ARCqKdense.jl")          #works in 0.7/1.1
 push!(ALL_solvers,eval(fname))
 
 
 
-include("ST_TROp.jl")            #works in 0.7 not in 1.1
+include("TRKOp.jl")              #works in 0.7/1.1
 push!(ALL_solvers,eval(fname))
 
-include("ST_TRsparse.jl")        #works in 0.7 not in 1.1
+include("TRKsparse.jl")          #works in 0.7/1.1
 push!(ALL_solvers,eval(fname))
 
-include("ST_TRdense.jl")        #works in 0.7 not in 1.1
+include("TRKdense.jl")           #works in 0.7/1.1
+push!(ALL_solvers,eval(fname))
+
+
+
+include("ST_TROp.jl")            #works in 0.7/1.1
+push!(ALL_solvers,eval(fname))
+
+include("ST_TRsparse.jl")        #works in 0.7/1.1
+push!(ALL_solvers,eval(fname))
+
+include("ST_TRdense.jl")        #works in 0.7/1.1
 push!(ALL_solvers,eval(fname))
 
 

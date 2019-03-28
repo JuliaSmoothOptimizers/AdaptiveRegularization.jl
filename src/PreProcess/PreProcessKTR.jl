@@ -20,6 +20,9 @@ function preprocessKTR(Hop, g, params::Tparams, calls, max_calls)
 
     success = false
     good_grad = false
+    if VERSION >= v"1.1.0"
+        xShift = hcat(xShift...)
+    end
     dirs = [ (xShift[:,i]) for i = 1 : nshifts ];
     Ndirs = map(norm, dirs);
 
