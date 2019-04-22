@@ -8,13 +8,11 @@ function solve_modelTRDiag(PData :: PDataFact, δ:: Float64)
     #@show ϵ
 
     if PData.success # take care of eventual hard case and Newton's direction interior (λ=0)
-        #@show PData.success
         # (PData.Δ+PData.λ*M) ⪰ 0
         λ = max(ϵ, PData.λ + ϵ) # to make sure (PData.Δ+λ*M) ≻ 0
-        #@show λ
+
 
         d̃ = -(PData.Δ .+ λ * M) .\ PData.g̃
-        #println("on a d̃ = $d̃")
         normd̃ = sqrt(d̃⋅d̃)
         if normd̃ < δ
             if PData.λ == 0.0 # Newton's direction

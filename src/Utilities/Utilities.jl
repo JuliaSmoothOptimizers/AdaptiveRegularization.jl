@@ -1,3 +1,5 @@
+export TrustRegion, Combi, decreaseFact
+
 "Exception type raised in case of error."
 mutable struct TrustRegionException <: Exception
     msg  :: String

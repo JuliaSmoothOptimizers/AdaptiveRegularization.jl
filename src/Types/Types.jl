@@ -1,3 +1,6 @@
+export Tparam
+export PDataLDLt
+
 abstract type TPData end  # Ancestor of all PreProcess data
 
 abstract type PDataFact <: TPData  end # Variants using matricial factorization
