@@ -12,9 +12,10 @@ using Stopping
 
 include("Includes.jl")
 
-# include("TRARC.jl")
+include("TRARC.jl")
 include("TRARCStop2.jl")
 
 include("Solvers/solvers.jl")
+include("Solvers/SolversStopping/solvers_stopping.jl")
 
 end # module

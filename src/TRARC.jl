@@ -1,3 +1,4 @@
+export TRARC
 function TRARC(nlp :: AbstractNLPModel,
                x₀ :: Array{Float64,1},
                TR :: TrustRegion,

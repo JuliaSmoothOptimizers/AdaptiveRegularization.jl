@@ -1,3 +1,4 @@
+export solve_modelTRDiag
 function solve_modelTRDiagAbs(PData :: PDataFact, δ:: Float64)
     # Solve the TR subproblem once diagonalized into Δ using the norm |Δ|
 

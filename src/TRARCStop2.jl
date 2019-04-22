@@ -4,6 +4,7 @@ function TRARC2(nlp 		:: AbstractNLPModel,
                nlp_stop 	:: NLPStopping;
                TR 			:: TrustRegion = TrustRegion(10.0),
 			   c 			:: Combi =  Combi(hessian_dense, PDataLDLt, solve_modelTRDiag, preprocessLDLt, decreaseFact, Tparam()),
+			   robust 		:: Bool = true,
                verbose 		:: Bool = true
                )
 
@@ -22,7 +23,7 @@ function TRARC2(nlp 		:: AbstractNLPModel,
     ∇f = Array{Float64}(undef, n)
     ∇fnext = Array{Float64}(undef, n)
 
-    f = obj(nlp, xt)
+    ft = obj(nlp, xt)
 	# # obsolete with new stopping
     # if isnan(f) | (f==Inf)
     #     OK = false
@@ -35,12 +36,12 @@ function TRARC2(nlp 		:: AbstractNLPModel,
 	# return xopt,∇fopt,∇fopt,fopt,niter,calls,OK,:Bad_x0
     # end
 
-	OK = update_and_start!(nlp_stop, x = xt, fx = f, gx = ∇f, g0 = ∇f)
+	OK = update_and_start!(nlp_stop, x = xt, fx = ft, gx = ∇f, g0 = ∇f)
 
 
-    fopt = f
+    fopt = ft
     grad!(nlp, xt, ∇f)
-	OK = update_and_start!(nlp_stop, x = xt, fx = f, gx = ∇f, g0 = ∇f)
+	OK = update_and_start!(nlp_stop, x = xt, fx = ft, gx = ∇f, g0 = ∇f)
 
     # norm_∇f = stop_norm(∇f)
 	norm_∇f = norm(nlp_at_x.gx)
@@ -51,7 +52,7 @@ function TRARC2(nlp 		:: AbstractNLPModel,
 	!OK && update!(nlp_at_x, Hx = hessian_rep(nlp, xt))
 
 
-    fnext = f
+    ftnext = ft
     iter = 0
 
     # optimal, unbounded, tired, elapsed_time = stop(s,iter,x,f,∇f)
@@ -59,7 +60,7 @@ function TRARC2(nlp 		:: AbstractNLPModel,
     # finish = optimal || unbounded || tired || stalled
 
     verbose && display_header_iterations()
-    verbose && display_success(iter, ftnext, norm_g0, 0.0, α)
+    verbose && display_success(iter, ftnext, norm_∇f0, 0.0, α)
 
     succ, unsucc, verysucc, unsuccinarow = 0, 0, 0, 0
 
@@ -69,7 +70,7 @@ function TRARC2(nlp 		:: AbstractNLPModel,
 
     while !OK # ~finish
 
-        PData = pre_process(H, ∇f, params, calls, nlp_stop.meta.max_eval)
+        PData = pre_process(nlp_at_x.Hx, ∇f, params, calls, nlp_stop.meta.max_eval)
 #                println("===>>> cond(H) = $(cond(H))  cond(L) = $(cond(PData.L))")
 #                println(" ||H - P'LDL'P|| = $(norm(H - PData.P'*PData.L*PData.D*PData.L'*PData.P))")
         #if cond(PData.L) > 10000.0*cond(H) println("===>>> cond(H) = $(cond(H))  cond(L) = $(cond(PData.L))")
@@ -92,10 +93,10 @@ function TRARC2(nlp 		:: AbstractNLPModel,
             end
             #println("******* TRARC:  g⋅d = $(g⋅d), 0.5 d'*H*d = $(0.5*(H * d)⋅d)")
 
-            Δq = -(∇f + 0.5 * H * d)⋅d
+            Δq = -(∇f + 0.5 * nlp_at_x.Hx * d)⋅d
 
             if Δq < 0.0 println("*******   Ascent direction in SolveModel: Δq = $Δq")
-                println("  g⋅d = $(∇f⋅d), 0.5 d'Hd = $(0.5*(H*d)⋅d)  α = $α  λ = $λ")
+                println("  g⋅d = $(∇f⋅d), 0.5 d'Hd = $(0.5*(nlp_at_x.Hx*d)⋅d)  α = $α  λ = $λ")
 				#@bp
                 #try println(" cond(H) = $(cond(full(H)))") catch println("sparse hessian, no cond") end
                 #D,Q=eig(full(H))
@@ -118,24 +119,24 @@ function TRARC2(nlp 		:: AbstractNLPModel,
 
             # Trap illegal values for f, descent will backtrack until a legal value is reached
             try
-                fnext = obj(nlp, xtnext)
+                ftnext = obj(nlp, xtnext)
             catch
-                fnext = Inf;
+                ftnext = Inf;
             end
-            if isnan(fnext)
-                fnext = Inf
+            if isnan(ftnext)
+                ftnext = Inf
             end
 
-            Δf = f - fnext
+            Δf = ft - ftnext
 
-            r, good_grad, ∇fnext = compute_r(nlp, f, Δf, Δq, slope, d, xnext, ∇fnext)
+            r, good_grad, ∇fnext = compute_r(nlp, ft, Δf, Δq, slope, d, xtnext, ∇fnext, robust)
 
             if r<TR.acceptance_threshold
-                verbose && display_failure(iter,fnext,λ,α)
+                verbose && display_failure(iter, ftnext, λ, α)
 	        	unsucc=unsucc+1
 	        	unsuccinarow = unsuccinarow +1
 	        	α = decrease(PData, α, TR)
-                fbidon = obj(nlp,x)
+                fbidon = obj(nlp, xt)
 	    	else
 	        	success = true
 
@@ -153,13 +154,13 @@ function TRARC2(nlp 		:: AbstractNLPModel,
                 H = hessian_rep(nlp, xt)
 		        if r > TR.increase_threshold
 		            α = increase(PData, α, TR)
-		            verbose && display_v_success(iter,f,norm_∇f,λ,α)
+		            verbose && display_v_success(iter, ft, norm_∇f, λ, α)
 	                    verysucc += 1
 		        else
 	                    if r < TR.reduce_threshold
 	                        α = decrease(PData, α, TR)
 	                    end
-		            verbose && display_success(iter,f,norm_∇f,λ,α)
+		            verbose && display_success(iter, ft, norm_∇f, λ, α)
 		            succ += 1
 		        end
 	    	end
@@ -174,7 +175,7 @@ function TRARC2(nlp 		:: AbstractNLPModel,
 	    #     calls = [Inf, Inf, Inf, Inf]
 		#     return xopt,∇fopt,∇fopt,fopt,niter,calls,OK
         # end
-		OK = update_and_stop!(nlp_stop, x = xt, fx = ft, gx = ∇ft, Hx = hessian_rep(nlp, xt))
+		OK = update_and_stop!(nlp_stop, x = xt, fx = ft, gx = ∇f, Hx = hessian_rep(nlp, xt))
         calls = [nlp.counters.neval_obj,  nlp.counters.neval_grad, nlp.counters.neval_hess, nlp.counters.neval_hprod]
 
         # optimal, unbounded, tired, elapsed_time = stop(s,iter,x,f,∇f)
@@ -186,8 +187,8 @@ function TRARC2(nlp 		:: AbstractNLPModel,
         # finish = optimal || unbounded || tired || stalled
     end
 
-    xopt = x
-    fopt = f
+    xopt = xt
+    fopt = ft
     ∇fopt = ∇f
     norm_∇fopt = norm_∇f
 
