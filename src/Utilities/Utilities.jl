@@ -132,13 +132,13 @@ stop_norm(x) = norm(x,Inf)
 #
 mutable struct Combi
     hessian_rep :: Function
-    PData :: DataType
+    PData       :: DataType
     solve_model :: Function
     pre_process :: Function
-    decrease :: Function
-    params :: Tparams
+    decrease    :: Function
+    params      :: Tparams
 end
 
-function extract(c::Combi)
-    return c.hessian_rep,c.PData,c.solve_model,c.pre_process,c.decrease,c.params
+function extract(c :: Combi)
+    return c.hessian_rep, c.PData, c.solve_model, c.pre_process, c.decrease, c.params
 end
