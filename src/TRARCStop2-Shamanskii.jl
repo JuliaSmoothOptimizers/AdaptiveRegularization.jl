@@ -70,17 +70,17 @@ function TRARC2_Shamanskii(nlp 		:: AbstractNLPModel,
                 return nlp_at_x, nlp_stop.meta.optimal
             end
 
-			# printstyled("avant la modification \n", color = :cyan)
-			# @show d
+			printstyled("avant la modification \n", color = :cyan)
+			@show d
 			xtemp = xt + d
 			gtemp = grad(nlp, xtemp)
 			d = nlp_at_x.Hx \ gtemp
-			# printstyled("après la modification \n", color = :cyan)
-			# @show d
+			printstyled("après la modification \n", color = :cyan)
+			@show d
 
-            # Δq = -(∇f + 0.5 * nlp_at_x.Hx * d)⋅d
+            Δq = -(∇f + 0.5 * nlp_at_x.Hx * d)⋅d
 			# printstyled("le Δq original est $(-(∇f + 0.5 * nlp_at_x.Hx * d)⋅d) \n", color = :cyan)
-			Δq  = nlp_at_x.gx' * d # just a test
+			# Δq  = nlp_at_x.gx' * d # just a test
 
 			# printstyled("autre test de vérification pour direction de monté \n", color = :cyan)
 			# @show nlp_at_x.gx' * d

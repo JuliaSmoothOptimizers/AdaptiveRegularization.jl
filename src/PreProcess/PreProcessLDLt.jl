@@ -1,4 +1,4 @@
-export preprocessLDLt, preprocessLDLt_Shamanskii
+export preprocessLDLt
 function preprocessLDLt(H ,g, params :: Tparams, n1, n2)
     n, = size(g)
     global L = Matrix{Float64}(undef, n, n)

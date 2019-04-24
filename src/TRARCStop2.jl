@@ -8,6 +8,8 @@ function TRARC2(nlp 		:: AbstractNLPModel,
                 verbose 	:: Bool = true
                 )
 
+	T = eltype(nlp.meta.x0)
+
 	nlp_at_x = nlp_stop.current_state
 
     hessian_rep, PData, solve_model, pre_process, decrease, params = extract(c)
@@ -19,8 +21,8 @@ function TRARC2(nlp 		:: AbstractNLPModel,
     λ = 1.0
 
     n = length(xt)
-    ∇f = Array{Float64}(undef, n)
-    ∇fnext = Array{Float64}(undef, n)
+    ∇f = Array{T}(undef, n)
+    ∇fnext = Array{T}(undef, n)
 
     ft = obj(nlp, xt)
 
