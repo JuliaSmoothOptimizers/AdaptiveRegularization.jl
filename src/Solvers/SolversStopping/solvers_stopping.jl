@@ -10,54 +10,54 @@ ALL_solvers_stopping = Function[]
 include("ARCSpectral.jl")
 push!(ALL_solvers_stopping, ARCSpectral)
 
-# include("ARCSpectral_abs.jl")
-# push!(ALL_solvers_stopping, ARCSpectral_abs)
-#
-#
-#
-# include("TRSpectral.jl")
-# push!(ALL_solvers_stopping, TRSpectral)
-#
-# include("TRSpectral_abs.jl")
-# push!(ALL_solvers_stopping, TRSpectral_abs)
-#
-#
-#
-# include("ARCLDLt.jl")
-# push!(ALL_solvers_stopping, ARCLDLt)
-#
-# include("ARCLDLt_abs.jl")
-# push!(ALL_solvers_stopping, ARCLDLt_abs)
-#
-#
-#
-# include("TRLDLt.jl")
-# push!(ALL_solvers_stopping, TRLDLt)
-#
-# include("TRLDLt_abs.jl")
-# push!(ALL_solvers_stopping, TRLDLt_abs)
-#
-#
-#
-# include("ARCqKOp.jl")
-# push!(ALL_solvers_stopping, ARCqKOp)
-#
-# include("ARCqKSparse.jl")
-# push!(ALL_solvers_stopping, ARCqKsparse)
-#
-# include("ARCqKdense.jl")
-# push!(ALL_solvers_stopping, ARCqKdense)
-#
-#
-#
-# include("TRKOp.jl")
-# push!(ALL_solvers_stopping, TRKOp)
-#
-# include("TRKsparse.jl")
-# push!(ALL_solvers_stopping, TRKsparse)
-#
-# include("TRKdense.jl")
-# push!(ALL_solvers_stopping, TRKdense)
+include("ARCSpectral_abs.jl")
+push!(ALL_solvers_stopping, ARCSpectral_abs)
+
+
+
+include("TRSpectral.jl")
+push!(ALL_solvers_stopping, TRSpectral)
+
+include("TRSpectral_abs.jl")
+push!(ALL_solvers_stopping, TRSpectral_abs)
+
+
+
+include("ARCLDLt.jl")
+push!(ALL_solvers_stopping, ARCLDLt)
+
+include("ARCLDLt_abs.jl")
+push!(ALL_solvers_stopping, ARCLDLt_abs)
+
+
+
+include("TRLDLt.jl")
+push!(ALL_solvers_stopping, TRLDLt)
+
+include("TRLDLt_abs.jl")
+push!(ALL_solvers_stopping, TRLDLt_abs)
+
+
+
+include("ARCqKOp.jl")
+push!(ALL_solvers_stopping, ARCqKOp)
+
+include("ARCqKSparse.jl")
+push!(ALL_solvers_stopping, ARCqKsparse)
+
+include("ARCqKdense.jl")
+push!(ALL_solvers_stopping, ARCqKdense)
+
+
+
+include("TRKOp.jl")
+push!(ALL_solvers_stopping, TRKOp)
+
+include("TRKsparse.jl")
+push!(ALL_solvers_stopping, TRKsparse)
+
+include("TRKdense.jl")
+push!(ALL_solvers_stopping, TRKdense)
 #
 #
 #

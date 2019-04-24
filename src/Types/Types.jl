@@ -53,7 +53,7 @@ mutable struct PDataLDLt{T} <: PDataFact{T}
     OK       ::Bool                 # preprocess success
 
     PDataLDLt() = new{T}()
-    PDataLDLt(L, D, pp, Δ, Q, g, l, success, OK) = new{T}(L, D, pp, Δ, Q, g, l, success, OK)
+    PDataLDLt(L, D, pp, Δ, Q, g, l, success, OK) = new{eltype(L)}(L, D, pp, Δ, Q, g, l, success, OK)
 end
 
 mutable struct PDataSpectral{T} <: PDataFact{T}
