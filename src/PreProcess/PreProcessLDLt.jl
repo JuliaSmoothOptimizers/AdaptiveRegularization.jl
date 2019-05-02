@@ -1,8 +1,9 @@
 export preprocessLDLt
 function preprocessLDLt(H ,g, params :: Tparams, n1, n2)
+    T = eltype(H)
     n, = size(g)
-    global L = Matrix{Float64}(undef, n, n)
-    global D = Matrix{Float64}(undef, n, n)
+    global L = Matrix{T}(undef, n, n)
+    global D = Matrix{T}(undef, n, n)
     global pp = Vector{Int}(undef, n)
     global ρ = nothing
     global ncomp = nothing
@@ -15,6 +16,8 @@ function preprocessLDLt(H ,g, params :: Tparams, n1, n2)
         res.OK = false
         return res
     end
+
+    # printstyled("dans preprocessLDLt apres ldlt_symm eltype(L) = $(eltype(L)) \n", color = :cyan)
 
     if true in isnan.(D)
  	println("*******   Problem in D from LDLt: NaN")
@@ -32,11 +35,12 @@ function preprocessLDLt(H ,g, params :: Tparams, n1, n2)
     g̃ = Q' * ĝ
     n_g = norm(g)
     λ =  max(-l_m, 0.0)
+    # printstyled("on sort de preprocessLDLt \n", color = :bold)
     return  PDataLDLt(L, D, pp, Δ, Q, g̃, λ, true, true)
 end
 
 
-function AInv(X :: PDataLDLt, d̃ ::  Array{Float64,1})
+function AInv(X :: PDataLDLt, d̃ ::  Array{T,1}) where T
     d̂ = X.Q * d̃
     u = X.L' \ d̂
     return u[invperm(X.pp)]

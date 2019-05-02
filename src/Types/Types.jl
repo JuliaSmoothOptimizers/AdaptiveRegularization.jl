@@ -52,7 +52,7 @@ mutable struct PDataLDLt{T} <: PDataFact{T}
     success  ::Bool                 # previous iteration was successfull
     OK       ::Bool                 # preprocess success
 
-    PDataLDLt() = new{T}()
+    PDataLDLt() = new{Nothing}()
     PDataLDLt(L, D, pp, Δ, Q, g, l, success, OK) = new{eltype(L)}(L, D, pp, Δ, Q, g, l, success, OK)
 end
 

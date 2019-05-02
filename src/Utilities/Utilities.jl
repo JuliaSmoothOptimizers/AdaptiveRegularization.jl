@@ -20,11 +20,11 @@ mutable struct TrustRegion{T}
 
     function TrustRegion(α₀ :: T;
                          max_α :: T = 1.0/ sqrt(eps(T)),
-                         acceptance_threshold :: T = 0.1,
-                         increase_threshold :: T = 0.75,
-                         reduce_threshold :: T = 0.1,
-                         increase_factor :: T = 5.0,
-                         decrease_factor :: T = 0.1,
+                         acceptance_threshold :: T = T(0.1),
+                         increase_threshold :: T = T(0.75),
+                         reduce_threshold :: T = T(0.1),
+                         increase_factor :: T = T(5.0),
+                         decrease_factor :: T = T(0.1),
                          max_unsuccinarow :: Int = 30) where T
                          #params :: Tparams = Void)
 
@@ -47,8 +47,11 @@ We assume that q is being minimized, and therefore that Δq > 0.
 """
 function compute_r(nlp, f, Δf, Δq, slope, d, xnext, gnext, robust)
     # If ever the next gradient is computed for round off errors reason, signal it.
+    # # printstyled("dans compute r eltype(f) = $(eltype(f)) \n", color = :yellow)
+    # # @show eltype(f)
+    T = eltype(f)
     good_grad = false
-    if robust & ((Δq < 10000 * eps()) | (abs(Δf) < 10000 * eps() * abs(f)) )
+    if robust & ((Δq < 10000 * eps(T)) | (abs(Δf) < 10000 * eps(T) * abs(f)) )
         # trap potential cancellation errors
         grad!(nlp, xnext, gnext);
         good_grad = true
