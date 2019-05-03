@@ -6,26 +6,26 @@ mutable struct TrustRegionException <: Exception
 end
 
 
-mutable struct TrustRegion
-    α₀ :: Float64
-    α :: Float64
-    max_α :: Float64
-    acceptance_threshold :: Float64
-    increase_threshold :: Float64
-    reduce_threshold :: Float64
-    increase_factor :: Float64
-    decrease_factor :: Float64
+mutable struct TrustRegion{T}
+    α₀ :: T
+    α :: T
+    max_α :: T
+    acceptance_threshold :: T
+    increase_threshold :: T
+    reduce_threshold :: T
+    increase_factor :: T
+    decrease_factor :: T
     max_unsuccinarow :: Int
     #params :: Tparams
 
-    function TrustRegion(α₀ :: Float64;
-                         max_α :: Float64=1.0/sqrt(eps(Float64)),
-                         acceptance_threshold :: Float64=0.1,
-                         increase_threshold :: Float64=0.75,
-                         reduce_threshold :: Float64=0.1,
-                         increase_factor :: Float64=5.0,
-                         decrease_factor :: Float64=0.1,
-                         max_unsuccinarow :: Int = 30)
+    function TrustRegion(α₀ :: T;
+                         max_α :: T = 1.0/ sqrt(eps(T)),
+                         acceptance_threshold :: T = T(0.1),
+                         increase_threshold :: T = T(0.75),
+                         reduce_threshold :: T = T(0.1),
+                         increase_factor :: T = T(5.0),
+                         decrease_factor :: T = T(0.1),
+                         max_unsuccinarow :: Int = 30) where T
                          #params :: Tparams = Void)
 
         α₀ > 0 || (α₀ = 1.0)
@@ -33,7 +33,7 @@ mutable struct TrustRegion
         (0.0 < acceptance_threshold < increase_threshold < 1.0) || throw(TrustRegionException("Invalid thresholds"))
         (0.0 < decrease_factor < 1.0 < increase_factor) || throw(TrustRegionException("Invalid decrease/increase factors"))
 
-        return new(α₀, α₀, max_α,
+        return new{T}(α₀, α₀, max_α,
                    acceptance_threshold, increase_threshold, reduce_threshold,
                    increase_factor, decrease_factor, max_unsuccinarow)#, params)
     end
@@ -45,21 +45,26 @@ end
 Δq = q - q_trial is the reduction predicted by the model q of f.
 We assume that q is being minimized, and therefore that Δq > 0.
 """
-function compute_r(nlp,f,Δf,Δq,slope,d,xnext,gnext,robust)
+function compute_r(nlp, f, Δf, Δq, slope, d, xnext, gnext, robust)
     # If ever the next gradient is computed for round off errors reason, signal it.
+    # # printstyled("dans compute r eltype(f) = $(eltype(f)) \n", color = :yellow)
+    # # @show eltype(f)
+    T = eltype(f)
     good_grad = false
-    if robust & ((Δq < 10000*eps()) | (abs(Δf)<10000*eps()*abs(f)) )
+    if robust & ((Δq < 10000 * eps(T)) | (abs(Δf) < 10000 * eps(T) * abs(f)) )
         # trap potential cancellation errors
-        grad!(nlp,xnext,gnext);
+        grad!(nlp, xnext, gnext);
         good_grad = true
-        slope_next = dot(gnext,d)
+        slope_next = dot(gnext, d)
 
-        Δf = -(slope_next+slope)/2.0
+        Δf = -(slope_next+slope) / 2.0
     end
-    r = Δf/Δq
-    if isnan(r) r=0.0;end;
+    r = Δf / Δq
+    if isnan(r)
+        r = 0.0;
+    end;
 
-    return r,good_grad,gnext
+    return r, good_grad, gnext
 end
 
 
@@ -82,15 +87,15 @@ function display_header_iterations()
 end
 
 # A few displays for verbose iterations
-function display_failure(iter,fnext,λ,α)
+function display_failure(iter, fnext, λ, α)
     @printf("%4d  %10.3e             %7.1e %7.1e    unsuccessful  \n",iter,fnext,λ,α)
 end
 
-function display_v_success(iter,f,norm_g,λ,α)
+function display_v_success(iter, f, norm_g, λ, α)
     @printf("%4d  %10.3e %9.2e   %7.1e %7.1e Very successful\n",iter,f,norm_g,λ,α)
 end
 
-function display_success(iter,f,norm_g,λ,α)
+function display_success(iter, f, norm_g, λ, α)
     @printf("%4d  %10.3e %9.2e   %7.1e %7.1e      successful\n",iter,f,norm_g,λ,α)
 end
 
@@ -102,26 +107,26 @@ end
 
 
 # default increase and decrease functions.
-function decreaseBase(α:: Float64, TR:: TrustRegion)
+function decreaseBase(α:: T, TR:: TrustRegion) where T
     return α * TR.decrease_factor
 end
 
-function increase(α:: Float64, TR:: TrustRegion)
+function increase(α:: T, TR:: TrustRegion) where T
     return min(α * TR.increase_factor, TR.max_α)
 end
 
 
-function decreaseGen(X :: TPData, α:: Float64, TR:: TrustRegion)
+function decreaseGen(X :: TPData, α:: T, TR:: TrustRegion) where T
     return decreaseBase(α, TR)
 end
 
-function decreaseFact(X :: PDataFact, α:: Float64, TR:: TrustRegion)
+function decreaseFact(X :: PDataFact, α:: T, TR:: TrustRegion) where T
     X.success = false
     return decreaseBase(α, TR)
 end
 
 
-function increase(X :: TPData, α:: Float64, TR:: TrustRegion)
+function increase(X :: TPData, α:: T, TR:: TrustRegion) where T
     return increase(α, TR)
 end
 
@@ -130,15 +135,15 @@ stop_norm(x) = norm(x,Inf)
 
 # Valid combinations
 #
-mutable struct Combi
+mutable struct Combi{T}
     hessian_rep :: Function
-    PData :: DataType
+    PData       :: DataType
     solve_model :: Function
     pre_process :: Function
-    decrease :: Function
-    params :: Tparams
+    decrease    :: Function
+    params      :: Tparams{T}
 end
 
-function extract(c::Combi)
-    return c.hessian_rep,c.PData,c.solve_model,c.pre_process,c.decrease,c.params
+function extract(c :: Combi)
+    return c.hessian_rep, c.PData, c.solve_model, c.pre_process, c.decrease, c.params
 end

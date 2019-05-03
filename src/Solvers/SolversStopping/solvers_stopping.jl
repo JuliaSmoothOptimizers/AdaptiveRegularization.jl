@@ -58,29 +58,29 @@ push!(ALL_solvers_stopping, TRKsparse)
 
 include("TRKdense.jl")
 push!(ALL_solvers_stopping, TRKdense)
-
-
-
-include("ST_TROp.jl")
-push!(ALL_solvers_stopping, ST_TROp)
-
-include("ST_TRsparse.jl")
-push!(ALL_solvers_stopping, ST_TRsparse)
-
-include("ST_TRdense.jl")
-push!(ALL_solvers_stopping, ST_TRdense)
-
-
-
-include("ST_ARCOp.jl")
-push!(ALL_solvers_stopping, ST_ARCOp)
-
-include("ST_ARCsparse.jl")
-push!(ALL_solvers_stopping, ST_ARCsparse)
-
-include("ST_ARCdense.jl")
-push!(ALL_solvers_stopping, ST_ARCdense)
-
+#
+#
+#
+# include("ST_TROp.jl")
+# push!(ALL_solvers_stopping, ST_TROp)
+#
+# include("ST_TRsparse.jl")
+# push!(ALL_solvers_stopping, ST_TRsparse)
+#
+# include("ST_TRdense.jl")
+# push!(ALL_solvers_stopping, ST_TRdense)
+#
+#
+#
+# include("ST_ARCOp.jl")
+# push!(ALL_solvers_stopping, ST_ARCOp)
+#
+# include("ST_ARCsparse.jl")
+# push!(ALL_solvers_stopping, ST_ARCsparse)
+#
+# include("ST_ARCdense.jl")
+# push!(ALL_solvers_stopping, ST_ARCdense)
+#
 
 ## Will update them in the future
 # include("ARCMA97.jl")

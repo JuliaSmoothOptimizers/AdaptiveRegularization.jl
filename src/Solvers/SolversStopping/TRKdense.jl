@@ -8,7 +8,7 @@ function TRKdense(nlp 		:: AbstractNLPModel,
 	return TRARC2(nlp,
 				  nlpstop;
 				  TR = TrustRegion(10.0),
-				  c = Combi(hessian_dense,PDataK,solve_modelKTR,preprocessKTR,decreaseKTR,TparamsKTR()),
+				  c = Combi(hessian_dense, PDataK{eltype(nlp.meta.x0)}, solve_modelKTR, preprocessKTR, decreaseKTR, TparamsKTR{eltype(nlp.meta.x0)}()),
 				  kwargs...
 				  )
 end
