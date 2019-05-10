@@ -1,23 +1,38 @@
-function solve_modelTRDiag(PData :: PDataFact, δ:: T) where T
+export solve_modelTRDiag_HO_4
+
+"""
+If the Newton direction is accepted and the high order correction lies within
+a bigger trust region then we use the high order correction.
+"""
+function solve_modelTRDiag_HO_4(nlp_stop, PData :: PDataFact, δ:: T; ho_correction :: Function = Shamanskii, fact = 2.0) where T
     # Solve the TR subproblem once diagonalized into Δ using the norm |Δ|
     # Setup the problem
-    # printstyled("dans solve_modelTRDiag eltype(PData.λ) = $(eltype(PData.λ)) \n", color = :yellow)
+    nlp_at_x = nlp_stop.current_state
     M = T.(fill(1.0, size(PData.Δ)))
     ϵ = sqrt(eps(T)) / 100.0
     ϵ2 = T.(ϵ * (1.0 + PData.λ))
 
-
     if PData.success # take care of eventual hard case and Newton's direction interior (λ = 0)
         # (PData.Δ + PData.λ * M) ⪰ 0
-        # println("on est dans le cas PData.success")
         λ = max(ϵ2, PData.λ + ϵ2) # to make sure (PData.Δ + λ * M) ≻ 0
 
         d̃ = -(PData.Δ .+ λ * M) .\ PData.g̃ # Ajouter Shamanskii ici!
-        # @show d̃
         normd̃ = sqrt(d̃⋅d̃)
+        normg̃ = sqrt(PData.g̃⋅PData.g̃)
         if normd̃ < δ
             if PData.λ == 0.0 # Newton's direction
                 λ = PData.λ
+                dN = AInv(PData, d̃)
+                dtemp, xdemi = ho_correction(nlp_stop, PData, dN, PData.g̃)
+                dHO = dtemp
+                if (norm(dHO) < fact * δ) && ((-(nlp_at_x.gx + 0.5 * nlp_at_x.Hx * dHO)⋅dHO) > 0.0)
+                    # printstyled("on  prend la direction d'ordre supérieur \n", color = :blue)
+                    return dHO, xdemi, λ
+                else
+                    # printstyled("on prend la direction de Newton \n", color = :blue)
+                    return dN, xdemi, λ
+                end
+                # return dN, dHO, xdemi, λ
                 # println(" Newton's direction inside the region")
                 #  d̃ is the Newton's direction, nothing more to do
             else              # hard case
@@ -38,7 +53,7 @@ function solve_modelTRDiag(PData :: PDataFact, δ:: T) where T
 
     # Transform back d̃ into d
     d = AInv(PData, d̃)
-
+    # printstyled("on prend la direction restreinte \n", color = :blue)
     #try assert((PData.g̃ + 0.5*PData.Δ .* d̃)⋅d̃ <= 0.0)  catch  @bp  end
-    return d, λ
+    return d, NaN * rand(length(d)), λ
 end

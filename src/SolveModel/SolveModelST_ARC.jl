@@ -1,6 +1,7 @@
-function solve_modelST_ARC(X :: PDataST, δ:: Float64)
+function solve_modelST_ARC(X :: PDataST, δ:: T) where T
 # Steihaug-Toint adapted to ARC
-    e = 1e-6
+    # e = 1e-6
+    ϵ = sqrt(eps(T)) * 100.0
     n = length(X.g)
     cgtol = max(e, min(0.7, 0.01 * norm(X.g)^(1.0 + X.τ)))
 

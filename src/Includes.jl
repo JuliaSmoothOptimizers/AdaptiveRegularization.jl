@@ -32,3 +32,14 @@ include("./PreProcess/PreProcessSpectral.jl")
 include("./PreProcess/PreProcessKARC.jl")
 include("./PreProcess/PreProcessKTR.jl")
 include("./PreProcess/PreProcessST_TR.jl")
+
+
+################################################################################
+# Functions needed for high order
+################################################################################
+include("./SolveModel/SolveModelTRDiag-HO-3.jl")
+include("./SolveModel/SolveModelTRDiag-HO-4.jl")
+include("./SolveModel/high-order-correction/shamanskii.jl")
+include("./SolveModel/high-order-correction/chebyshev.jl")
+include("./SolveModel/high-order-correction/halley.jl")
+include("./SolveModel/high-order-correction/super-halley.jl")

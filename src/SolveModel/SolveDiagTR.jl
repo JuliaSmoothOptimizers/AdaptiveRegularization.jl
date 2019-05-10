@@ -2,6 +2,8 @@ function solve_diagTR(λ, Δ, g̃, δ, ϵ; M = [0.0])
     # λ underestimates the required value λstar such that ||d̃(λstar)|| = δ
     # where d̃(λ) =  -(Δ + λ * M) .\ g̃
 
+    T = eltype(g̃)
+
     if M == [0.0]
         # M = ones(Δ) ;
         M = fill(1.0, size(Δ)[1]);
@@ -12,7 +14,8 @@ function solve_diagTR(λ, Δ, g̃, δ, ϵ; M = [0.0])
     d̃d̃ = d̃⋅d̃
     normd̃ = sqrt(d̃d̃)
 
-    tolerance = 1e-06
+    # tolerance = 1e-06
+    tolerance = sqrt(eps(T)) * 100.0
     # Newton iterations
     iter_nwt = 0
     #println(" Nwt $iter_nwt : λ = $λ  normd̃ = $normd̃  δ = $δ)")

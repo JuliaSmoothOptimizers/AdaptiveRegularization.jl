@@ -88,15 +88,15 @@ end
 
 # A few displays for verbose iterations
 function display_failure(iter, fnext, λ, α)
-    @printf("%4d  %10.3e             %7.1e %7.1e    unsuccessful  \n",iter,fnext,λ,α)
+    @printf("%4d  %10.3e             %7.1e %7.1e    unsuccessful\n", iter, fnext, λ, α)
 end
 
 function display_v_success(iter, f, norm_g, λ, α)
-    @printf("%4d  %10.3e %9.2e   %7.1e %7.1e Very successful\n",iter,f,norm_g,λ,α)
+    @printf("%4d  %10.3e %9.2e   %7.1e %7.1e Very successful\n", iter, f, norm_g, λ, α)
 end
 
 function display_success(iter, f, norm_g, λ, α)
-    @printf("%4d  %10.3e %9.2e   %7.1e %7.1e      successful\n",iter,f,norm_g,λ,α)
+    @printf("%4d  %10.3e %9.2e   %7.1e %7.1e      successful\n", iter, f, norm_g, λ, α)
 end
 
 function print_stats(prob, dim, f, gNorm, gnorm2, calls, status, timt)
@@ -131,7 +131,7 @@ function increase(X :: TPData, α:: T, TR:: TrustRegion) where T
 end
 
 
-stop_norm(x) = norm(x,Inf)
+stop_norm(x) = norm(x, Inf)
 
 # Valid combinations
 #

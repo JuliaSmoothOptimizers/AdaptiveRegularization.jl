@@ -1,11 +1,11 @@
-export TRARC2
+export TRARC2_HO
 
-function TRARC2(nlp 		:: AbstractNLPModel,
-                nlp_stop 	:: NLPStopping;
-                TR 			:: TrustRegion = TrustRegion(eltype(nlp.meta.x0)(10.0)),
-			    c 			:: Combi =  Combi{eltype(nlp.meta.x0)}(hessian_dense, PDataLDLt{eltype(nlp.meta.x0)}, solve_modelTRDiag, preprocessLDLt, decreaseFact, Tparam{eltype(nlp.meta.x0)}()),
-			    robust 		:: Bool = true,
-                verbose 	:: Bool = false
+function TRARC2_HO(nlp 		  :: AbstractNLPModel,
+                nlp_stop 	  :: NLPStopping;
+                TR 			  :: TrustRegion = TrustRegion(eltype(nlp.meta.x0)(10.0)),
+			    c 			  :: Combi =  Combi{eltype(nlp.meta.x0)}(hessian_dense, PDataLDLt{eltype(nlp.meta.x0)}, solve_modelTRDiag_HO_3, preprocessLDLt, decreaseFact, Tparam{eltype(nlp.meta.x0)}()),
+			    robust 		  :: Bool = true,
+                verbose 	  :: Bool = false
                 )
 
 	T = eltype(nlp.meta.x0)
@@ -53,14 +53,10 @@ function TRARC2(nlp 		:: AbstractNLPModel,
 
     calls = [0, 0, 0, 0]
 
+	xdemi = NaN * rand(n)
+
     while !OK
-		# printstyled("avant calcul direction \n", color = :green)
-		# @show xt[1]
-		# @show xt[2]
-		# println(" ")
         PData = pre_process(nlp_at_x.Hx, ∇f, params, calls, nlp_stop.meta.max_eval)
-
-
 
 		# printstyled("une fois sortie de pre_process \n", color = :yellow)
 		# @show PData.Δ[1]
@@ -77,20 +73,13 @@ function TRARC2(nlp 		:: AbstractNLPModel,
 
         while !success & !OK & (unsuccinarow < TR.max_unsuccinarow)
             try
-                d, λ = solve_model(PData, α)
-				# @show eltype(d)
-				# @show eltype(λ)
+                d, xdemi, λ = solve_model(nlp_stop, PData, α)
             catch
                 println(" Problem in solve_model")
                 return nlp_at_x, nlp_stop.meta.optimal
             end
 
-			# println("après calcul de d")
-			# @show d[1]
-			# @show d[2]
-
             Δq = -(∇f + 0.5 * nlp_at_x.Hx * d)⋅d
-			# @show eltype(Δq)
 
             if Δq < 0.0 println("*******   Ascent direction in SolveModel: Δq = $Δq")
                 println("  g⋅d = $(∇f⋅d), 0.5 d'Hd = $(0.5*(nlp_at_x.Hx*d)⋅d)  α = $α  λ = $λ")
@@ -109,11 +98,11 @@ function TRARC2(nlp 		:: AbstractNLPModel,
 				return nlp_at_x, nlp_stop.meta.optimal
             end
             slope = ∇f ⋅ d
-            xtnext = xt + d
-			# @show eltype(∇f)
-			# @show eltype(ft)
-			# @show eltype(slope)
-			# @show eltype(xtnext)
+			if !(true in isnan.(xdemi))
+				xtnext = xdemi + d
+			else
+				xtnext = xt + d
+			end
 
             iter += 1
 
@@ -128,19 +117,14 @@ function TRARC2(nlp 		:: AbstractNLPModel,
             end
 
             Δf = ft - ftnext
-			# @show eltype(Δf)
 
             r, good_grad, ∇fnext = compute_r(nlp, ft, Δf, Δq, slope, d, xtnext, ∇fnext, robust)
-			# printstyled("apres compute_r r = $r \n", color = :red)
-			# @show eltype(r)
-			# @show eltype(∇fnext)
 
             if r < TR.acceptance_threshold
                 verbose && display_failure(iter, ftnext, λ, α)
 	        	unsucc = unsucc + 1
 	        	unsuccinarow = unsuccinarow + 1
 	        	α = decrease(PData, α, TR)
-                # fbidon = obj(nlp, xt)
 	    	else
 	        	success = true
 
@@ -170,17 +154,9 @@ function TRARC2(nlp 		:: AbstractNLPModel,
 	    	end
         end # while !succes
 
-		# if iter == 32
-		# 	@show xt[1]
-		# 	@show xt[2]
-		# end
-
 		OK = update_and_stop!(nlp_stop, x = xt, fx = ft, gx = ∇f, Hx = Ht)
         calls = [nlp.counters.neval_obj,  nlp.counters.neval_grad, nlp.counters.neval_hess, nlp.counters.neval_hprod]
     end # while !OK
-
-	# @show xt[1]
-	# @show xt[2]
 
     xopt = xt
     fopt = ft

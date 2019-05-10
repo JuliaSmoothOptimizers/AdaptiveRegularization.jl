@@ -1,4 +1,4 @@
-function solve_modelARCDiagAbs(PData :: PDataFact, α:: Float64)
+function solve_modelARCDiagAbs(PData :: PDataFact, α:: T) where T
     #printsyled("on est dans solve_modelARCDiagAbs \n", color = :cyan)
     # Solve the ARC subproblem once diagonalized into Δ using the norm |Δ|
 
@@ -12,7 +12,8 @@ function solve_modelARCDiagAbs(PData :: PDataFact, α:: Float64)
     #printsyled("on a ḡ = $ḡ\n", color = :yellow)
     n_g = norm(ḡ)
     #printsyled("on a n_g = $n_g\n", color = :yellow)
-    ϵ =  1.0e-10
+    # ϵ =  1.0e-10
+    ϵ = sqrt(eps(T)) * 100.0
     #printsyled("on a ϵ = $ϵ  et PData.Δ = $(PData.Δ)\n", color = :yellow)
     Γ2 = max(maximum(abs.(PData.Δ)), ϵ)
     #printsyled("on a Γ2 = $Γ2 \n", color = :yellow)

@@ -6,11 +6,11 @@
 
 in the Euclidean norm.
 """
-function to_minimum(A :: LinearOperator, b :: Array{Float64,1},
-                               x :: Vector{Float64},
-                               p :: Vector{Float64}, Ap :: Vector{Float64}, pAp :: Float64,
-                               α :: Float64,
-                               regulα :: Float64)
+function to_minimum(A :: LinearOperator, b :: Array{T,1},
+                               x :: Vector{T},
+                               p :: Vector{T}, Ap :: Vector{T}, pAp :: T,
+                               α :: T,
+                               regulα :: T) where T
     regulα > 0 || error("regulα must be positive")
     #println("regulα = ",regulα)
 
@@ -37,12 +37,12 @@ function to_minimum(A :: LinearOperator, b :: Array{Float64,1},
     end
 #println("h(α) = ",h(α),"  dh(α) = ",dh(α), "  α = ",α)
 
-    a=0.0
-    σ = α/2
-    @assert ((dh(a)<0) & (dh(α)>0))
-    while (((α-a)/max(α,a))>1e-8) & (abs(dh(σ))>1e-8)
+    a = T(0.0)
+    σ = T(α/2)
+    @assert ((dh(a) < 0) & (dh(α) > 0))
+    while (((α - a) / max(α, a)) > 1e-8) & (abs(dh(σ)) > 1e-8)
         if dh(σ) < 0
-            a=σ
+            a = σ
         else
             α = σ
         end
