@@ -4,7 +4,7 @@ function SuperHalley(nlp_stop,
 				     PData :: PDataFact,
 				     dₙ :: Vector,
 				     gt :: Vector)
-
+					 
 	nlp_at_x = nlp_stop.current_state
 	x = nlp_at_x.x
 

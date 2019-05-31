@@ -1,4 +1,6 @@
-function solve_modelTRDiag(PData :: PDataFact, δ:: T) where T
+export solve_modelTRDiag
+
+function solve_modelTRDiag(nlp_stop, PData :: PDataFact, δ:: T) where T
     # Solve the TR subproblem once diagonalized into Δ using the norm |Δ|
     # Setup the problem
     # printstyled("dans solve_modelTRDiag eltype(PData.λ) = $(eltype(PData.λ)) \n", color = :yellow)
@@ -40,5 +42,5 @@ function solve_modelTRDiag(PData :: PDataFact, δ:: T) where T
     d = AInv(PData, d̃)
 
     #try assert((PData.g̃ + 0.5*PData.Δ .* d̃)⋅d̃ <= 0.0)  catch  @bp  end
-    return d, λ
+    return d, NaN * ones(size(d)), λ
 end

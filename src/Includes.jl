@@ -35,7 +35,7 @@ include("./PreProcess/PreProcessST_TR.jl")
 
 
 ################################################################################
-# Functions needed for high order
+# Functions needed for high order corrections
 ################################################################################
 include("./SolveModel/SolveModelTRDiag-HO-3.jl")
 include("./SolveModel/SolveModelTRDiag-HO-4.jl")

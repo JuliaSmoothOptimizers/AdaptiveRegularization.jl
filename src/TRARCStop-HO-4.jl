@@ -1,11 +1,12 @@
 export TRARC2_HO_4
 
-function TRARC2_HO_4(nlp 	  :: AbstractNLPModel,
-                     nlp_stop :: NLPStopping;
-                	 TR 	  :: TrustRegion = TrustRegion(eltype(nlp.meta.x0)(10.0)),
-			    	 c 		  :: Combi =  Combi{eltype(nlp.meta.x0)}(hessian_dense, PDataLDLt{eltype(nlp.meta.x0)}, solve_modelTRDiag_HO_3, preprocessLDLt, decreaseFact, Tparam{eltype(nlp.meta.x0)}()),
-			    	 robust   :: Bool = true,
-                	 verbose  :: Bool = false
+function TRARC2_HO_4(nlp 	    :: AbstractNLPModel,
+                     nlp_stop   :: NLPStopping;
+                	 TR 	    :: TrustRegion = TrustRegion(eltype(nlp.meta.x0)(10.0)),
+			    	 c 		    :: Combi =  Combi{eltype(nlp.meta.x0)}(hessian_dense, PDataLDLt{eltype(nlp.meta.x0)}, solve_modelTRDiag_HO_3, preprocessLDLt, decreaseFact, Tparam{eltype(nlp.meta.x0)}()),
+					 correction :: Symbol = :Chebyshev,
+			    	 robust     :: Bool = true,
+                	 verbose    :: Bool = false
                 	 )
 
 	T = eltype(nlp.meta.x0)
@@ -46,9 +47,7 @@ function TRARC2_HO_4(nlp 	  :: AbstractNLPModel,
 
     calls = [0, 0, 0, 0]
 
-	global xdemi = NaN * rand(n)
-	global dN = NaN * rand(n)
-	global dHO = NaN * rand(n)
+	global xdemi = NaN * rand(n)  ## How to add in a globalized version?
 
     while !OK
         PData = pre_process(nlp_at_x.Hx, ∇f, params, calls, nlp_stop.meta.max_eval)
@@ -63,29 +62,16 @@ function TRARC2_HO_4(nlp 	  :: AbstractNLPModel,
 
         while !success & !OK & (unsuccinarow < TR.max_unsuccinarow)
             try
-                d, xdemi, λ = solve_model(nlp_stop, PData, α)
+                d, xdemi, λ = solve_model(nlp_stop, PData, α) ## xdemi...
             catch
                 println(" Problem in solve_model")
                 return nlp_at_x, nlp_stop.meta.optimal
             end
-			# @show λ
 
+			# Doesn't this go against the stopping philosophy?
+			# Shouldn't we have a stopping call here and not an if?
             Δq = -(∇f + 0.5 * nlp_at_x.Hx * d)⋅d
-			# ΔqHO = -(∇f + 0.5 * nlp_at_x.Hx * dHO)⋅dHO
-			# @show Δq
-			# @show ΔqHO
-			# @show ∇f[1]
-			# @show ∇f[2]
-			# @show d[1]
-			# @show d[2]
-			# @show dHO[1]
-			# @show dHO[2]
-			# @show dHO
-			# println("  g⋅d = $(∇f⋅d) et ∇f' * d = $(∇f' * d)")
-			# @show (∇f' * d)
-			# println("  g⋅dHO = $(∇f⋅dHO) et ∇f' * dHO = $(∇f' * dHO)")
 
-            # if (∇f' * d) > 0.0
 			if Δq < 0.0
 				println("*******   Ascent direction in SolveModel: Δq = $Δq")
                 println("  g⋅d = $(∇f⋅d), 0.5 d'Hd = $(0.5*(nlp_at_x.Hx*d)⋅d)  α = $α  λ = $λ")
@@ -104,6 +90,7 @@ function TRARC2_HO_4(nlp 	  :: AbstractNLPModel,
 				return nlp_at_x, nlp_stop.meta.optimal
             end
             slope = ∇f ⋅ d
+			# again: how to put in a general idea?
 			if !(true in isnan.(xdemi))
 				xtnext = xdemi + d
 			else

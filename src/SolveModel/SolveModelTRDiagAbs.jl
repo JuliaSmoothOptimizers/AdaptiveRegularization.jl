@@ -1,5 +1,5 @@
 export solve_modelTRDiag
-function solve_modelTRDiagAbs(PData :: PDataFact, δ:: T) where T
+function solve_modelTRDiagAbs(nlp_stop, PData :: PDataFact, δ:: T) where T
     # Solve the TR subproblem once diagonalized into Δ using the norm |Δ|
 
 
@@ -9,7 +9,6 @@ function solve_modelTRDiagAbs(PData :: PDataFact, δ:: T) where T
     ḡ = PData.g̃
     n_g = norm(ḡ)
     ϵ = sqrt(eps(T)) / 100.0 # *n_g
-    # Γ2 = max(abs(PData.Δ),ϵ)
     Γ2 = max(maximum(abs.(PData.Δ)), ϵ)
     Γ = sqrt(Γ2)
 
@@ -45,5 +44,5 @@ function solve_modelTRDiagAbs(PData :: PDataFact, δ:: T) where T
     d = AInv(PData, d̃)
     #try assert((PData.g̃ + 0.5*PData.Δ .* d̃)⋅d̃ <= 0.0)  catch  @bp  end
 #println("*******SolveModelDiagAbs:  PData.g̃⋅d̃ = $(PData.g̃⋅d̃), 0.5 d̃'PData.Δd̃ = $(0.5*(PData.Δ .* d̃)⋅d̃)")
-    return d, λ
+    return d, NaN * ones(length((d))), λ
 end

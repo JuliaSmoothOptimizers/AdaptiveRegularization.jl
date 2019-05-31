@@ -1,10 +1,10 @@
-export solve_modelTRDiag_HO_4
+export solve_modelTRDiag_HO
 
 """
 If the Newton direction is accepted and the high order correction lies within
 a bigger trust region then we use the high order correction.
 """
-function solve_modelTRDiag_HO_4(nlp_stop, PData :: PDataFact, δ:: T; ho_correction :: Function = Shamanskii, fact = 2.0) where T
+function solve_modelTRDiag_HO(nlp_stop, PData :: PDataFact, δ:: T; ho_correction :: Symbol = :Shamanskii, fact = 2.0) where T
     # Solve the TR subproblem once diagonalized into Δ using the norm |Δ|
     # Setup the problem
     nlp_at_x = nlp_stop.current_state
@@ -23,7 +23,7 @@ function solve_modelTRDiag_HO_4(nlp_stop, PData :: PDataFact, δ:: T; ho_correct
             if PData.λ == 0.0 # Newton's direction
                 λ = PData.λ
                 dN = AInv(PData, d̃)
-                dtemp, xdemi = ho_correction(nlp_stop, PData, dN, PData.g̃)
+                dtemp, xdemi = eval(ho_correction)(nlp_stop, PData, dN, PData.g̃)
                 dHO = dtemp
                 if (norm(dHO) < fact * δ) && ((-(nlp_at_x.gx + 0.5 * nlp_at_x.Hx * dHO)⋅dHO) > 0.0)
                     # printstyled("on  prend la direction d'ordre supérieur \n", color = :blue)

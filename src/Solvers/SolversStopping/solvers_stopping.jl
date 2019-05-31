@@ -34,6 +34,9 @@ push!(ALL_solvers_stopping, ARCLDLt_abs)
 include("TRLDLt.jl")
 push!(ALL_solvers_stopping, TRLDLt)
 
+include("TRLDLt_HO.jl")
+push!(ALL_solvers_stopping, TRLDLt_HO)
+
 include("TRLDLt_abs.jl")
 push!(ALL_solvers_stopping, TRLDLt_abs)
 
@@ -58,6 +61,7 @@ push!(ALL_solvers_stopping, TRKsparse)
 
 include("TRKdense.jl")
 push!(ALL_solvers_stopping, TRKdense)
+#
 #
 #
 #

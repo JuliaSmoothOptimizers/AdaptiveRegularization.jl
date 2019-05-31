@@ -1,4 +1,4 @@
-function solve_modelST_ARC(X :: PDataST, δ:: T) where T
+function solve_modelST_ARC(nlp_stop, X :: PDataST, δ:: T) where T
 # Steihaug-Toint adapted to ARC
     # e = 1e-6
     ϵ = sqrt(eps(T)) * 100.0
@@ -11,5 +11,5 @@ function solve_modelST_ARC(X :: PDataST, δ:: T) where T
                      itmax = max(2 * n, 50),
                      verbose=false)
     λ = 0.0  #  dummy for this variant
-    return d,λ
+    return d, NaN * rand(length((d))), λ
 end

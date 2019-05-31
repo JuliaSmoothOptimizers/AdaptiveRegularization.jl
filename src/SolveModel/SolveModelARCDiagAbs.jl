@@ -1,4 +1,4 @@
-function solve_modelARCDiagAbs(PData :: PDataFact, α:: T) where T
+function solve_modelARCDiagAbs(nlp_stop, PData :: PDataFact, α:: T) where T
     #printsyled("on est dans solve_modelARCDiagAbs \n", color = :cyan)
     # Solve the ARC subproblem once diagonalized into Δ using the norm |Δ|
 
@@ -54,5 +54,5 @@ function solve_modelARCDiagAbs(PData :: PDataFact, α:: T) where T
 
     PData.λ = λ
 
-    return d, λ
+    return d, NaN * ones(length((d))), λ
 end

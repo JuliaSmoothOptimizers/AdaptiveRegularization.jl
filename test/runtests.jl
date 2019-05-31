@@ -27,7 +27,6 @@ for solver in ALL_solvers_stopping
             nlp.meta.name, nlp.meta.nvar, final_nlp_at_x.fx, norm(final_nlp_at_x.gx),
             nlp.counters.neval_obj, nlp.counters.neval_grad,
             nlp.counters.neval_hprod, optimal)    #stats = run_solver(solver, model, verbose=false)
-    #@test (all([stats...] .>= 0))
     @test optimal
     reset!(nlp)
 end

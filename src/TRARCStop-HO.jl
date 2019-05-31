@@ -14,11 +14,7 @@ function TRARC2_HO(nlp 		  :: AbstractNLPModel,
 	nlp_at_x = nlp_stop.current_state
     hessian_rep, PData, solve_model, pre_process, decrease, params = extract(c)
 
-
-
     α = TR.α₀  # initial Trust Region size
-	# @show α
-	# @show typeof(α)
     xt, xtnext, d, Df = copy(nlp.meta.x0), copy(nlp.meta.x0), copy(nlp.meta.x0), 0.0
     xopt = xt
     λ = 1.0
@@ -32,14 +28,11 @@ function TRARC2_HO(nlp 		  :: AbstractNLPModel,
     grad!(nlp, xt, ∇f)
 	OK = update_and_start!(nlp_stop, x = xt, fx = ft, gx = ∇f, g0 = ∇f)
 
-
-
 	norm_∇f = norm(nlp_at_x.gx)
     norm_∇f0 = norm_∇f
     ∇fopt = ∇f
     norm_∇fopt = norm_∇f
 	!OK && update!(nlp_at_x, Hx = hessian_rep(nlp, xt))
-
 
     ftnext = ft
     iter = 0
@@ -57,11 +50,6 @@ function TRARC2_HO(nlp 		  :: AbstractNLPModel,
 
     while !OK
         PData = pre_process(nlp_at_x.Hx, ∇f, params, calls, nlp_stop.meta.max_eval)
-
-		# printstyled("une fois sortie de pre_process \n", color = :yellow)
-		# @show PData.Δ[1]
-	    # @show PData.Δ[2]
-		# printstyled("ok! \n", color = :bold)
 
         if ~PData.OK
 			@warn("Something wrong with PData")

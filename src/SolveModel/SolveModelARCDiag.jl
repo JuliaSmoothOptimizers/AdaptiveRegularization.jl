@@ -1,4 +1,4 @@
-function solve_modelARCDiag(PData :: PDataFact, α:: T) where T
+function solve_modelARCDiag(nlp_stop, PData :: PDataFact, α:: T) where T
     # Solve the ARC subproblem once diagonalized into Δ
 
     # Setup the problem
@@ -23,5 +23,5 @@ function solve_modelARCDiag(PData :: PDataFact, α:: T) where T
 
     d = AInv(PData,d̃)
 
-    return d, λ
+    return d, NaN * ones(length((d))), λ
 end
