@@ -19,7 +19,7 @@ mutable struct TrustRegion{T}
     #params :: Tparams
 
     function TrustRegion(α₀ :: T;
-                         max_α :: T = 1.0/ sqrt(eps(T)),
+                         max_α :: T = T(1.0)/ sqrt(eps(T)),
                          acceptance_threshold :: T = T(0.1),
                          increase_threshold :: T = T(0.75),
                          reduce_threshold :: T = T(0.1),
@@ -27,11 +27,11 @@ mutable struct TrustRegion{T}
                          decrease_factor :: T = T(0.1),
                          max_unsuccinarow :: Int = 30) where T
                          #params :: Tparams = Void)
-
-        α₀ > 0 || (α₀ = 1.0)
+        println("on est ici")
+        α₀ > T(0.0) || (α₀ = T(1.0))
         max_α > α₀ || throw(TrustRegionException("Invalid α₀"))
-        (0.0 < acceptance_threshold < increase_threshold < 1.0) || throw(TrustRegionException("Invalid thresholds"))
-        (0.0 < decrease_factor < 1.0 < increase_factor) || throw(TrustRegionException("Invalid decrease/increase factors"))
+        (T(0.0) < acceptance_threshold < increase_threshold < T(1.0)) || throw(TrustRegionException("Invalid thresholds"))
+        (T(0.0) < decrease_factor < T(1.0) < increase_factor) || throw(TrustRegionException("Invalid decrease/increase factors"))
 
         return new{T}(α₀, α₀, max_α,
                    acceptance_threshold, increase_threshold, reduce_threshold,

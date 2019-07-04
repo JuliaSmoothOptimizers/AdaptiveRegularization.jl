@@ -27,15 +27,8 @@ function preprocessLDLt(H ,g, params :: Tparams, n1, n2)
         return res
     end
 
-    # printstyled("dans preprocessLDLt \n", color = :yellow)
-    # @show D[1]
-    # @show D[2]
-    # @show D[3]
-    # @show D
-    # println(" ")
     D = Hermitian(D)
     X = eigen(D)
-    # printstyled("on a X \n", color = :yellow)
     Δ = X.values
     Q =  X.vectors
     l_m, = findmin(Δ)
@@ -44,7 +37,6 @@ function preprocessLDLt(H ,g, params :: Tparams, n1, n2)
 
     n_g = norm(g)
     λ =  max(-l_m, 0.0)
-    # printstyled("on sort de preprocessLDLt \n", color = :bold)
     return  PDataLDLt(L, D, pp, Δ, Q, g̃, λ, true, true)
 end
 

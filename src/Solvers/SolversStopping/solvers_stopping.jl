@@ -36,6 +36,8 @@ push!(ALL_solvers_stopping, TRLDLt)
 
 include("TRLDLt_HO.jl")
 push!(ALL_solvers_stopping, TRLDLt_HO)
+include("TRLDLt_HO_MP.jl")
+push!(ALL_solvers_stopping, TRLDLt_HO_MP)
 
 include("TRLDLt_abs.jl")
 push!(ALL_solvers_stopping, TRLDLt_abs)

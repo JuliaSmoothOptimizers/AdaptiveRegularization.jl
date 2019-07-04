@@ -7,6 +7,7 @@ a bigger trust region then we use the high order correction.
 function solve_modelTRDiag_HO(nlp_stop, PData :: PDataFact, δ:: T; ho_correction :: Symbol = :Shamanskii, fact = 2.0) where T
     # Solve the TR subproblem once diagonalized into Δ using the norm |Δ|
     # Setup the problem
+    printstyled("dans solve_modelTRDiag_HO T = $T \n", color = :yellow)
     nlp_at_x = nlp_stop.current_state
     M = T.(fill(1.0, size(PData.Δ)))
     ϵ = sqrt(eps(T)) / 100.0
