@@ -1,4 +1,4 @@
-export TrustRegion, Combi, decreaseFact
+export TrustRegion, Combi, decreaseFact, convert_TR, convert_TR!
 
 "Exception type raised in case of error."
 mutable struct TrustRegionException <: Exception
@@ -27,7 +27,7 @@ mutable struct TrustRegion{T}
                          decrease_factor :: T = T(0.1),
                          max_unsuccinarow :: Int = 30) where T
                          #params :: Tparams = Void)
-        println("on est ici")
+
         α₀ > T(0.0) || (α₀ = T(1.0))
         max_α > α₀ || throw(TrustRegionException("Invalid α₀"))
         (T(0.0) < acceptance_threshold < increase_threshold < T(1.0)) || throw(TrustRegionException("Invalid thresholds"))
@@ -146,4 +146,17 @@ end
 
 function extract(c :: Combi)
     return c.hessian_rep, c.PData, c.solve_model, c.pre_process, c.decrease, c.params
+end
+
+function convert_TR(T, TR_init :: TrustRegion)
+	max_α_T                = T(TR_init.max_α)
+	acceptance_threshold_T = T(TR_init.acceptance_threshold)
+	increase_threshold_T   = T(TR_init.increase_threshold)
+	reduce_threshold_T     = T(TR_init.reduce_threshold)
+	increase_threshold_T   = T(TR_init.increase_threshold)
+	decrease_factor_T      = T(TR_init.decrease_factor)
+
+	TRT = TrustRegion(T(TR_init.α), max_α = max_α_T, acceptance_threshold = acceptance_threshold_T, increase_threshold = increase_threshold_T, decrease_factor = decrease_factor_T)
+
+	return TRT
 end

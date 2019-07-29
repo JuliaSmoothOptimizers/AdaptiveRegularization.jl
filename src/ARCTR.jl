@@ -8,7 +8,7 @@ using Printf
 using SparseArrays
 using State
 using Stopping
-
+using Quadmath
 
 include("Includes.jl")
 

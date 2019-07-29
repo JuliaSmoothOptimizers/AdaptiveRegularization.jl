@@ -7,15 +7,17 @@ a bigger trust region then we use the high order correction.
 function solve_modelTRDiag_HO(nlp_stop, PData :: PDataFact, δ:: T; ho_correction :: Symbol = :Shamanskii, fact = 2.0) where T
     # Solve the TR subproblem once diagonalized into Δ using the norm |Δ|
     # Setup the problem
-    printstyled("dans solve_modelTRDiag_HO T = $T \n", color = :yellow)
+    # printstyled("dans solve_modelTRDiag_HO T = $T \n", color = :yellow)
     nlp_at_x = nlp_stop.current_state
-    M = T.(fill(1.0, size(PData.Δ)))
-    ϵ = sqrt(eps(T)) / 100.0
-    ϵ2 = T.(ϵ * (1.0 + PData.λ))
+    M = fill(T.(1.0), size(PData.Δ))
+    ϵ = sqrt(eps(T)) / T(100.0)
+    ϵ2 = T.(ϵ * (T(1.0) + PData.λ))
+    # printstyled("dans solve_modelTRDiag_HO T(ϵ2) = $(typeof(ϵ2)) \n", color = :yellow)
 
     if PData.success # take care of eventual hard case and Newton's direction interior (λ = 0)
         # (PData.Δ + PData.λ * M) ⪰ 0
         λ = max(ϵ2, PData.λ + ϵ2) # to make sure (PData.Δ + λ * M) ≻ 0
+        # printstyled("dans solve_modelTRDiag_HO T(λ) = $(typeof(λ)) \n", color = :yellow)
 
         d̃ = -(PData.Δ .+ λ * M) .\ PData.g̃ # Ajouter Shamanskii ici!
         normd̃ = sqrt(d̃⋅d̃)
@@ -26,28 +28,33 @@ function solve_modelTRDiag_HO(nlp_stop, PData :: PDataFact, δ:: T; ho_correctio
                 dN = AInv(PData, d̃)
                 dtemp, xdemi = eval(ho_correction)(nlp_stop, PData, dN, PData.g̃)
                 dHO = dtemp
-                if (norm(dHO) < fact * δ) && ((-(nlp_at_x.gx + 0.5 * nlp_at_x.Hx * dHO)⋅dHO) > 0.0)
-                    # printstyled("on  prend la direction d'ordre supérieur \n", color = :blue)
+                # if (norm(dHO) < fact * δ) && ((-(nlp_at_x.gx + 0.5 * nlp_at_x.Hx * dHO)⋅dHO) > 0.0)
+                if ((-(nlp_at_x.gx + 0.5 * nlp_at_x.Hx * dHO)⋅dHO) > 0.0)
+                    printstyled("on  prend la direction d'ordre supérieur avec 1 crit d'arrêt \n", color = :blue)
+                    # printstyled("T(dHO) = $(typeof(dHO)) \n", color = :bold)
                     return dHO, xdemi, λ
                 else
-                    # printstyled("on prend la direction de Newton \n", color = :blue)
+                    printstyled("on prend la direction de Newton sans correction d'ordre sup\n", color = :red)
+                    # printstyled("T(dHO) = $(typeof(dHO)) \n", color = :bold)
                     return dN, xdemi, λ
                 end
-                # return dN, dHO, xdemi, λ
+                return dN, dHO, xdemi, λ
                 # println(" Newton's direction inside the region")
                 #  d̃ is the Newton's direction, nothing more to do
             else              # hard case
-                ##println(" hard case")
+                # println(" hard case")
                 bidon, i = findmin(PData.Δ)
-                d̃[i] = 0.0; d̃[i] = - sign(PData.g̃[i]) * sqrt(δ^2 - d̃⋅d̃)
+                d̃[i] = T(0.0); d̃[i] = - sign(PData.g̃[i]) * sqrt(δ^2 - d̃⋅d̃)
             end
         else
+            # println("success pas hard case")
             d̃,λ = solve_diagTR(λ, PData.Δ, PData.g̃, δ, ϵ)
         end
     else # hard case impossible, λ already > λ_min
         # println("on est dans le cas !(PData.success)")
         # Solve the subproblem (Δ + λ I) d̃ = -g̃ such that ||d̃|| = δ
         d̃, λ = solve_diagTR(PData.λ, PData.Δ, PData.g̃, δ, ϵ)
+        # printstyled("dans solve_modelTRDiag_HO T(d̃) = $(eltype(d̃)) \n", color = :yellow)
     end
 
     PData.λ = λ

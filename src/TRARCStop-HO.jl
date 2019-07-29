@@ -9,12 +9,12 @@ function TRARC2_HO(nlp 		  :: AbstractNLPModel,
                 )
 
 	T = eltype(nlp.meta.x0)
-
+    printstyled("dans TRARC2_HO on commence avec T = $T \n", color = :bold)
 
 	nlp_at_x = nlp_stop.current_state
     hessian_rep, PData, solve_model, pre_process, decrease, params = extract(c)
 
-    α = TR.α₀  # initial Trust Region size
+    α = T.(TR.α₀)  # initial Trust Region size
     xt, xtnext, d, Df = copy(nlp.meta.x0), copy(nlp.meta.x0), copy(nlp.meta.x0), 0.0
     xopt = xt
     λ = 1.0

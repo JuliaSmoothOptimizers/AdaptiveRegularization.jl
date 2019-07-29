@@ -10,13 +10,16 @@ function TRARC2(nlp 		:: AbstractNLPModel,
                 )
 
 	T = eltype(nlp.meta.x0)
+    # printstyled("On entre dans TRARC2 T = $T \n", color = :bold)
 
 	nlp_at_x = nlp_stop.current_state
     hessian_rep, PData, solve_model, pre_process, decrease, params = extract(c)
 
     α = TR.α₀  # initial Trust Region size
+	# @show typeof(α)
     xt, xtnext, d, Df = copy(nlp.meta.x0), copy(nlp.meta.x0), copy(nlp.meta.x0), 0.0
-    xopt = xt
+	# @show eltype(xt)
+	xopt = xt
     λ = 1.0
 
     n = length(xt)
@@ -24,6 +27,7 @@ function TRARC2(nlp 		:: AbstractNLPModel,
     ∇fnext = Array{T}(undef, n)
 
     ft = obj(nlp, xt)
+	# @show typeof(ft)
     fopt = ft
     grad!(nlp, xt, ∇f)
 	OK = update_and_start!(nlp_stop, x = xt, fx = ft, gx = ∇f, g0 = ∇f)
@@ -52,6 +56,11 @@ function TRARC2(nlp 		:: AbstractNLPModel,
     while !OK
         PData = pre_process(nlp_at_x.Hx, ∇f, params, calls, nlp_stop.meta.max_eval)
 
+		# printstyled("On a PData \n", color = :bold)
+
+		# @show eltype(PData.L)
+		# @show eltype(PData.D)
+
         if ~PData.OK
 			@warn("Something wrong with PData")
 			return nlp_at_x, nlp_stop.meta.optimal
@@ -59,6 +68,8 @@ function TRARC2(nlp 		:: AbstractNLPModel,
 
         success = false
 		Ht = nothing
+		# printstyled("On a succes = $success \n", color = :bold)
+		# @show Ht
 
         while !success & !OK & (unsuccinarow < TR.max_unsuccinarow)
             try
@@ -69,6 +80,7 @@ function TRARC2(nlp 		:: AbstractNLPModel,
             end
 
             Δq = -(∇f + 0.5 * nlp_at_x.Hx * d)⋅d
+			# @show eltype(Δq)
 
             if Δq < 0.0 println("*******   Ascent direction in SolveModel: Δq = $Δq")
                 println("  g⋅d = $(∇f⋅d), 0.5 d'Hd = $(0.5*(nlp_at_x.Hx*d)⋅d)  α = $α  λ = $λ")
@@ -87,6 +99,7 @@ function TRARC2(nlp 		:: AbstractNLPModel,
 				return nlp_at_x, nlp_stop.meta.optimal
             end
             slope = ∇f ⋅ d
+			# printstyled("On a slope = $slope \n", color = :bold)
             # xtnext = xt + d
 			if !(true in isnan.(xdemi))
 				xtnext = xdemi + d
@@ -109,6 +122,10 @@ function TRARC2(nlp 		:: AbstractNLPModel,
             Δf = ft - ftnext
 
             r, good_grad, ∇fnext = compute_r(nlp, ft, Δf, Δq, slope, d, xtnext, ∇fnext, robust)
+			# printstyled("On a r = $r \n", color = :bold)
+			# printstyled("On a good_grad = $good_grad \n", color = :bold)
+			# printstyled("On a ∇fnext = $∇fnext \n", color = :bold)
+
 
             if r < TR.acceptance_threshold
                 verbose && display_failure(iter, ftnext, λ, α)
@@ -146,7 +163,9 @@ function TRARC2(nlp 		:: AbstractNLPModel,
         end # while !succes
 
 		OK = update_and_stop!(nlp_stop, x = xt, fx = ft, gx = ∇f, Hx = Ht)
-        calls = [nlp.counters.neval_obj,  nlp.counters.neval_grad, nlp.counters.neval_hess, nlp.counters.neval_hprod]
+		nlp_stop.meta.nb_of_stop = iter
+		# @show eltype(nlp_at_x.x)
+		calls = [nlp.counters.neval_obj,  nlp.counters.neval_grad, nlp.counters.neval_hess, nlp.counters.neval_hprod]
     end # while !OK
 
     xopt = xt
