@@ -36,6 +36,13 @@ push!(ALL_solvers_stopping, TRLDLt)
 
 include("TRLDLt_HO.jl")
 push!(ALL_solvers_stopping, TRLDLt_HO)
+
+include("TRLDLt_HO_Sham.jl")
+push!(ALL_solvers_stopping, TRLDLt_HO_Sham)
+
+include("TRLDLt_HO_Sham_BFGS.jl")
+push!(ALL_solvers_stopping, TRLDLt_HO_Sham_BFGS)
+
 include("TRLDLt_HO_MP.jl")
 push!(ALL_solvers_stopping, TRLDLt_HO_MP)
 
@@ -63,29 +70,35 @@ push!(ALL_solvers_stopping, TRKsparse)
 
 include("TRKdense.jl")
 push!(ALL_solvers_stopping, TRKdense)
-#
-#
-#
-#
-# include("ST_TROp.jl")
-# push!(ALL_solvers_stopping, ST_TROp)
-#
-# include("ST_TRsparse.jl")
-# push!(ALL_solvers_stopping, ST_TRsparse)
-#
-# include("ST_TRdense.jl")
-# push!(ALL_solvers_stopping, ST_TRdense)
-#
-#
-#
-# include("ST_ARCOp.jl")
-# push!(ALL_solvers_stopping, ST_ARCOp)
-#
-# include("ST_ARCsparse.jl")
-# push!(ALL_solvers_stopping, ST_ARCsparse)
-#
-# include("ST_ARCdense.jl")
-# push!(ALL_solvers_stopping, ST_ARCdense)
+
+
+
+
+include("ST_TROp.jl")
+push!(ALL_solvers_stopping, ST_TROp)
+
+include("ST_TROp_Sham.jl")
+push!(ALL_solvers_stopping, ST_TROp_Sham)
+
+include("ST_TROp_Sham_BFGS.jl")
+push!(ALL_solvers_stopping, ST_TROp_Sham_BFGS)
+
+include("ST_TRsparse.jl")
+push!(ALL_solvers_stopping, ST_TRsparse)
+
+include("ST_TRdense.jl")
+push!(ALL_solvers_stopping, ST_TRdense)
+
+
+
+include("ST_ARCOp.jl")
+push!(ALL_solvers_stopping, ST_ARCOp)
+
+include("ST_ARCsparse.jl")
+push!(ALL_solvers_stopping, ST_ARCsparse)
+
+include("ST_ARCdense.jl")
+push!(ALL_solvers_stopping, ST_ARCdense)
 #
 
 ## Will update them in the future

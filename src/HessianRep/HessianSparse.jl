@@ -1,3 +1,4 @@
+export hessian_sparse
 function hessian_sparse(nlp,x)
     n = length(x)
     H=hess(nlp,x)
@@ -5,4 +6,3 @@ function hessian_sparse(nlp,x)
     H = tempH
     return H
 end
-

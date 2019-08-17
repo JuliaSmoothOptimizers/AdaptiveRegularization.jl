@@ -1,3 +1,5 @@
+export TparamsKTR
+
 mutable struct TparamsKTR{T} <: Tparams{T}  # specific parameters for this Krylov variant
     τ :: T
     shifts :: Array{T, 1}

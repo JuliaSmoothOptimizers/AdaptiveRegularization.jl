@@ -7,19 +7,18 @@ a bigger trust region then we use the high order correction.
 function solve_modelTRDiag_HO(nlp_stop, PData :: PDataFact, δ:: T; ho_correction :: Symbol = :Shamanskii, fact = 2.0) where T
     # Solve the TR subproblem once diagonalized into Δ using the norm |Δ|
     # Setup the problem
-    # printstyled("dans solve_modelTRDiag_HO T = $T \n", color = :yellow)
     nlp_at_x = nlp_stop.current_state
     M = fill(T.(1.0), size(PData.Δ))
     ϵ = sqrt(eps(T)) / T(100.0)
     ϵ2 = T.(ϵ * (T(1.0) + PData.λ))
-    # printstyled("dans solve_modelTRDiag_HO T(ϵ2) = $(typeof(ϵ2)) \n", color = :yellow)
+
+    # @show PData.g̃e
 
     if PData.success # take care of eventual hard case and Newton's direction interior (λ = 0)
         # (PData.Δ + PData.λ * M) ⪰ 0
         λ = max(ϵ2, PData.λ + ϵ2) # to make sure (PData.Δ + λ * M) ≻ 0
-        # printstyled("dans solve_modelTRDiag_HO T(λ) = $(typeof(λ)) \n", color = :yellow)
 
-        d̃ = -(PData.Δ .+ λ * M) .\ PData.g̃ # Ajouter Shamanskii ici!
+        d̃ = -(PData.Δ .+ λ * M) .\ PData.g̃
         normd̃ = sqrt(d̃⋅d̃)
         normg̃ = sqrt(PData.g̃⋅PData.g̃)
         if normd̃ < δ
@@ -30,12 +29,8 @@ function solve_modelTRDiag_HO(nlp_stop, PData :: PDataFact, δ:: T; ho_correctio
                 dHO = dtemp
                 # if (norm(dHO) < fact * δ) && ((-(nlp_at_x.gx + 0.5 * nlp_at_x.Hx * dHO)⋅dHO) > 0.0)
                 if ((-(nlp_at_x.gx + 0.5 * nlp_at_x.Hx * dHO)⋅dHO) > 0.0)
-                    printstyled("on  prend la direction d'ordre supérieur avec 1 crit d'arrêt \n", color = :blue)
-                    # printstyled("T(dHO) = $(typeof(dHO)) \n", color = :bold)
                     return dHO, xdemi, λ
                 else
-                    printstyled("on prend la direction de Newton sans correction d'ordre sup\n", color = :red)
-                    # printstyled("T(dHO) = $(typeof(dHO)) \n", color = :bold)
                     return dN, xdemi, λ
                 end
                 return dN, dHO, xdemi, λ
@@ -54,14 +49,12 @@ function solve_modelTRDiag_HO(nlp_stop, PData :: PDataFact, δ:: T; ho_correctio
         # println("on est dans le cas !(PData.success)")
         # Solve the subproblem (Δ + λ I) d̃ = -g̃ such that ||d̃|| = δ
         d̃, λ = solve_diagTR(PData.λ, PData.Δ, PData.g̃, δ, ϵ)
-        # printstyled("dans solve_modelTRDiag_HO T(d̃) = $(eltype(d̃)) \n", color = :yellow)
     end
 
     PData.λ = λ
 
     # Transform back d̃ into d
     d = AInv(PData, d̃)
-    # printstyled("on prend la direction restreinte \n", color = :blue)
     #try assert((PData.g̃ + 0.5*PData.Δ .* d̃)⋅d̃ <= 0.0)  catch  @bp  end
     return d, NaN * rand(length(d)), λ
 end

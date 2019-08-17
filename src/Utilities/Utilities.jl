@@ -141,7 +141,7 @@ mutable struct Combi{T}
     solve_model :: Function
     pre_process :: Function
     decrease    :: Function
-    params      :: Tparams{T}
+    params      :: Union{Tparams{T}, Tparams}
 end
 
 function extract(c :: Combi)

@@ -3,7 +3,7 @@ export solve_modelTRDiag
 function solve_modelTRDiag(nlp_stop, PData :: PDataFact, δ:: T) where T
     # Solve the TR subproblem once diagonalized into Δ using the norm |Δ|
     # Setup the problem
-    # printstyled("dans solve_modelTRDiag eltype(PData.λ) = $(eltype(PData.λ)) \n", color = :yellow)
+    # println("On est ici!")
     M = T.(fill(1.0, size(PData.Δ)))
     ϵ = sqrt(eps(T)) / 100.0
     ϵ2 = T.(ϵ * (1.0 + PData.λ))
@@ -11,11 +11,9 @@ function solve_modelTRDiag(nlp_stop, PData :: PDataFact, δ:: T) where T
 
     if PData.success # take care of eventual hard case and Newton's direction interior (λ = 0)
         # (PData.Δ + PData.λ * M) ⪰ 0
-        # println("on est dans le cas PData.success")
         λ = max(ϵ2, PData.λ + ϵ2) # to make sure (PData.Δ + λ * M) ≻ 0
 
         d̃ = -(PData.Δ .+ λ * M) .\ PData.g̃ # Ajouter Shamanskii ici!
-        # @show d̃
         normd̃ = sqrt(d̃⋅d̃)
         if normd̃ < δ
             if PData.λ == 0.0 # Newton's direction

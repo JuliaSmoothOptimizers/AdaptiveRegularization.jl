@@ -1,3 +1,4 @@
+export solve_modelKTR
 function solve_modelKTR(nlp_stop, X :: PDataK, α:: T) where T
     # target value should be close to satisfy α=||d||
     target = [ ( abs( α - X.norm_dirs[i]) )   for i = 1 : X.nshifts ];
