@@ -1,4 +1,4 @@
-export solve_modelTRDiag
+export solve_modelTRDiagAbs
 function solve_modelTRDiagAbs(nlp_stop, PData :: PDataFact, δ:: T) where T
     # Solve the TR subproblem once diagonalized into Δ using the norm |Δ|
 

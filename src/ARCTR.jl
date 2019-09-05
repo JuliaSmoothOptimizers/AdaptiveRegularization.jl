@@ -10,6 +10,7 @@ using State
 using Stopping
 using Quadmath
 using LDLFactorizations
+using HSL
 
 include("Includes.jl")
 
