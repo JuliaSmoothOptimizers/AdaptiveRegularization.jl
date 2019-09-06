@@ -111,5 +111,8 @@ push!(ALL_solvers_stopping, ARCMA57_abs)
 include("TRMA57.jl")
 push!(ALL_solvers_stopping, TRMA57)
 
+include("TRMA57_Sham.jl")
+push!(ALL_solvers_stopping, TRMA57_Sham)
+
 include("TRMA57_abs.jl")
 push!(ALL_solvers_stopping, TRMA57_abs)

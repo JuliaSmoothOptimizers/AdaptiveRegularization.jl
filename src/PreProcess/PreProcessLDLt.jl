@@ -1,6 +1,8 @@
 export preprocessLDLt
 function preprocessLDLt(H ,g, params :: Tparams, n1, n2)
     T = eltype(H)
+    # @show H
+    # @show g
     n, = size(g)
     global L = Matrix{T}(undef, n, n)
     global D = Matrix{T}(undef, n, n)
@@ -27,16 +29,27 @@ function preprocessLDLt(H ,g, params :: Tparams, n1, n2)
         return res
     end
 
+    # @show L
+    # @show D
+    # @show pp
+
     D = Hermitian(D)
     X = eigen(D)
     Δ = X.values
+    # @show Δ
     Q =  X.vectors
     l_m, = findmin(Δ)
+    # @show l_m
     ĝ = L \ (g[pp])
+    # @show ĝ
     g̃ = Q' * ĝ
+    # @show g̃
 
     n_g = norm(g)
+    # @show n_g
     λ =  max(-l_m, 0.0)
+    # @show λ
+    # printstyled("avant de sortir de PreProcessLDLt ↑ \n", color = :bold)
     return  PDataLDLt(L, D, pp, Δ, Q, g̃, λ, true, true)
 end
 

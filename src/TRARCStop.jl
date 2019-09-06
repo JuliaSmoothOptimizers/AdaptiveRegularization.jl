@@ -9,6 +9,7 @@ function TRARC2(nlp 		:: AbstractNLPModel,
                 )
 
 	T = eltype(nlp.meta.x0)
+	# @show nlp.meta.x0
 
 	nlp_at_x = nlp_stop.current_state
     hessian_rep, PData, solve_model, pre_process, decrease, params = extract(c)
@@ -66,6 +67,7 @@ function TRARC2(nlp 		:: AbstractNLPModel,
 			# printstyled("avant de calculer d \n", color = :bold)
 			# @show solve_model
 			# @show nlp_at_x.x
+			# printstyled("avant le solve_model ↑ \n", color = :green)
 			try
             	d, xdemi, λ = solve_model(nlp_stop, PData, α)
             catch

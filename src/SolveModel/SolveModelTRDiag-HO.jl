@@ -7,6 +7,7 @@ a bigger trust region then we use the high order correction.
 function solve_modelTRDiag_HO(nlp_stop, PData :: PDataFact, δ:: T; ho_correction :: Symbol = :Shamanskii, fact = 2.0) where T
     # Solve the TR subproblem once diagonalized into Δ using the norm |Δ|
     # Setup the problem
+    # printstyled("On est dans solve_modelTRDiag_HO \n")
     nlp_at_x = nlp_stop.current_state
     M = fill(T.(1.0), size(PData.Δ))
     ϵ = sqrt(eps(T)) / T(100.0)
@@ -17,14 +18,24 @@ function solve_modelTRDiag_HO(nlp_stop, PData :: PDataFact, δ:: T; ho_correctio
     if PData.success # take care of eventual hard case and Newton's direction interior (λ = 0)
         # (PData.Δ + PData.λ * M) ⪰ 0
         λ = max(ϵ2, PData.λ + ϵ2) # to make sure (PData.Δ + λ * M) ≻ 0
+        # @show λ
+        # @show PData.Δ
+        # @show M
 
         d̃ = -(PData.Δ .+ λ * M) .\ PData.g̃
+        # @show d̃
         normd̃ = sqrt(d̃⋅d̃)
+        # @show normd̃
         normg̃ = sqrt(PData.g̃⋅PData.g̃)
+        # @show normg̃
         if normd̃ < δ
             if PData.λ == 0.0 # Newton's direction
                 λ = PData.λ
+                # @show λ
                 dN = AInv(PData, d̃)
+                # @show ho_correction
+                # @show dN
+                # @show PData.g̃
                 dtemp, xdemi = eval(ho_correction)(nlp_stop, PData, dN, PData.g̃)
                 dHO = dtemp
                 # if (norm(dHO) < fact * δ) && ((-(nlp_at_x.gx + 0.5 * nlp_at_x.Hx * dHO)⋅dHO) > 0.0)

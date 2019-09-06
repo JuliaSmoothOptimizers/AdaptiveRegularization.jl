@@ -23,6 +23,8 @@ mutable struct PDataMA57{T} <: PDataFact{T}
 end
 
 function preprocessMA57(H, g, params::Tparams, n1, n2)
+    # @show H
+    # @show g
     M     = Ma57
     L     = SparseMatrixCSC{Float64, Int64}
     D57   = SparseMatrixCSC{Float64, Int64}
@@ -52,6 +54,9 @@ function preprocessMA57(H, g, params::Tparams, n1, n2)
         res.OK = false
         return res
     end
+    # @show L
+    # @show D57
+    # @show pp
 
     #################  Future object BlockDiag operator?
     vD1 = diag(D57)       # create internal representation for block diagonal D
@@ -68,7 +73,10 @@ function preprocessMA57(H, g, params::Tparams, n1, n2)
             i += 1
         else
             mA = [vD1[i] vD2[i]; vD2[i] vD1[i + 1]] #  2X2 submatrix
-            DiagmA, Qma = eig(mA)                   #  spectral decomposition of mA
+            # DiagmA, Qma = eig(mA)                   #  spectral decomposition of mA
+            X = eigen(mA)
+            DiagmA = X.values
+            Qma = X.vectors 
             veig[i] = DiagmA[1]
             vQ1[i] = Qma[1, 1]
             vQ2[i] = Qma[1, 2]
@@ -82,15 +90,24 @@ function preprocessMA57(H, g, params::Tparams, n1, n2)
     Q = sparse(SparseArrays.spdiagm(0 => vQ1, -1 => vQ2m, 1 => vQ2))
 
     Δ = veig
+    # @show Δ
 
     l_m, = findmin(Δ)
+    # @show l_m
     sg = s .* g
+    # @show sg
     L = SparseMatrixCSC{Float64,Int64}(L)  #### very important, the \ command doesn't work with Int32
+    # @show L
     ĝ = L \ (sg[pp])
+    # @show ĝ
     g̃ = Q' * ĝ
+    # @show g̃
 
     n_g = norm(g)
+    # @show n_g
     λ =  max(-l_m, 0.0)
+    # @show λ
+    # printstyled("avant de sortir preprocessMA57 ↑ \n", color = :bold)
     return  PDataMA57(L, D57, pp, s, Δ, Q, g̃, λ, true, true)
 end
 
