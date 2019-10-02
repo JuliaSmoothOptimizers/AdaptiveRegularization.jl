@@ -9,26 +9,25 @@ function Shamanskii_BFGS(nlp_stop,
 	x = nlp_at_x.x
 	Bₖ = Symmetric(hess(nlp_stop.pb, x), :L)
 
-	αₖ = 1.0
-	sₖ = αₖ * dₙ
-	xtemp = x + sₖ
+	sₖ = dₙ
+	xtemp = x .+ sₖ
 	∇fₖ₊₁ = grad(nlp_stop.pb, xtemp)
-	yₖ = ∇fₖ₊₁ - ∇fₖ
+	yₖ = ∇fₖ₊₁ .- ∇fₖ
 	Yₖ = yₖ * yₖ'
 	yts = yₖ' * sₖ
 	Yₖ = Yₖ ./ yts
 
-	sst = sₖ * sₖ'
-	BssBₖ = Bₖ * sst * Bₖ'
-	sBs = sₖ' * Bₖ * sₖ
-	BssBₖ = (1.0 / sBs) * BssBₖ
+	Bs = Bₖ * sₖ
+	BssBₖ = Bs * Bs'
+	sBs = Bs' * sₖ
+	BssBₖ = (1.0 ./ sBs) .* BssBₖ
 
-	Bₖ₊₁ = Bₖ + Yₖ - BssBₖ
+	Bₖ₊₁ = Bₖ .+ Yₖ .- BssBₖ
 	LDLTB = ldl(Bₖ₊₁)
-
-	dₛ = -(Bₖ₊₁ \ grad(nlp_stop.pb, xtemp))
-
+	dₛ = -(LDLTB \ grad(nlp_stop.pb, xtemp))
 	xt = xtemp + dₛ
 
-	return dₛ, xtemp
+	dₕₒ = dₙ .+ dₛ
+
+	return dₕₒ
 end

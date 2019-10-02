@@ -1,4 +1,4 @@
-export TrustRegion, Combi, decreaseFact, convert_TR, convert_TR!
+export TrustRegion, Combi, decreaseFact, convert_TR, convert_TR!, extract
 
 "Exception type raised in case of error."
 mutable struct TrustRegionException <: Exception

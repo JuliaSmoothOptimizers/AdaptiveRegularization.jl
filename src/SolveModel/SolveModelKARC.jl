@@ -12,5 +12,5 @@ function solve_modelKARC(nlp_stop, X :: PDataK, α:: T) where T
     X.λ = X.shifts[p_imin]
 
 
-    return X.d, NaN * ones(length((X.d))), X.λ
+    return X.d, X.λ
 end

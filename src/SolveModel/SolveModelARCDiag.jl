@@ -23,5 +23,5 @@ function solve_modelARCDiag(nlp_stop, PData :: PDataFact, α:: T) where T
 
     d = AInv(PData,d̃)
 
-    return d, NaN * ones(length((d))), λ
+    return d, λ
 end

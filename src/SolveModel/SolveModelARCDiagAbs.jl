@@ -54,5 +54,5 @@ function solve_modelARCDiagAbs(nlp_stop, PData :: PDataFact, α:: T) where T
 
     PData.λ = λ
 
-    return d, NaN * ones(length((d))), λ
+    return d, λ
 end

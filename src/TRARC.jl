@@ -1,57 +1,50 @@
 export TRARC
-function TRARC(nlp :: AbstractNLPModel,
-               x₀ :: Array{Float64,1},
-               TR :: TrustRegion,
-			   c :: Combi;
-               atol :: Float64 = 1e-8,
-               rtol :: Float64 = 1.0e-6,
-               max_eval :: Int = 50_000,
-               max_iter :: Int = 10_000,
-               #max_f :: Int=5000,
-               #max_eval :: Int = 5000,
-               robust :: Bool = true,
-               verbose :: Bool = true
-               )
-    hessian_rep,PData,solve_model,pre_process,decrease,params = extract(c)
 
+function TRARC(nlp 		:: AbstractNLPModel,
+                nlp_stop 	:: NLPStopping;
+                TR 			:: TrustRegion = TrustRegion(eltype(nlp.meta.x0)(10.0)),
+			    c 			:: Combi = Combi{eltype(nlp.meta.x0)}(hessian_dense, PDataLDLt{eltype(nlp.meta.x0)}, solve_modelTRDiag, preprocessLDLt, decreaseFact, Tparam{eltype(nlp.meta.x0)}()),
+			    robust 		:: Bool = true,
+                verbose 	:: Bool = false
+                )
 
-    α = TR.α₀
-    x, xnext, d, Df = copy(x₀), copy(x₀), copy(x₀), 0.0
-    xopt = x
+	T = eltype(nlp.meta.x0)
+	# @show nlp.meta.x0
+	dTR = nothing
+	dN = nothing
+
+	nlp_at_x = nlp_stop.current_state
+    hessian_rep, PData, solve_model, pre_process, decrease, params = extract(c)
+
+    α = TR.α₀  # initial Trust Region size
+    xt, xtnext, d, Df = copy(nlp.meta.x0), copy(nlp.meta.x0), copy(nlp.meta.x0), 0.0
+	xopt = xt
     λ = 1.0
 
-    n = length(x)
-	g = Vector{Float64}(undef, n)
-	gnext = Vector{Float64}(undef, n)
+    n = length(xt)
+    ∇f = Array{T}(undef, n)
+    ∇fnext = Array{T}(undef, n)
+	∇fnext
 
-    f = obj(nlp,x)
-    if isnan(f) | (f==Inf)
-        OK = false
-	println("f nan or ∞");
-	xopt=f
-	gopt=f
-	fopt=f
-        niter = Inf
-        calls = [Inf, Inf, Inf, Inf]
-	return xopt,gopt,gopt,fopt,niter,calls,OK,:Bad_x0
-    end
+    ft = obj(nlp, xt)
+    fopt = ft
+    grad!(nlp, xt, ∇f)
+	OK = update_and_start!(nlp_stop, x = xt, fx = ft, gx = ∇f, g0 = copy(∇f))
 
-    fopt = f
-    grad!(nlp,x,g)
-    norm_g = stop_norm(g)
-    norm_g0 = norm(g)
-    gopt = g
-    H = hessian_rep(nlp,x)
+	norm_∇f = norm(nlp_at_x.gx)
+    norm_∇f0 = norm_∇f
+    ∇fopt = ∇f
+    norm_∇fopt = norm_∇f
+	!OK && State.update!(nlp_at_x, Hx = hessian_rep(nlp, xt))
 
-    optimal = (norm_g < atol) || (isinf(f) & (f<0.0))
-    tired = false
-    stalled = false
-    finish = optimal || tired || stalled
 
-    fnext = f
+	global cgtol = 1.0
+
+    ftnext = ft
     iter = 0
+
     verbose && display_header_iterations()
-    verbose && display_success(iter,fnext,norm_g0,0.0,α)
+    verbose && display_success(iter, ftnext, norm_∇f0, 0.0, α)
 
     succ, unsucc, verysucc, unsuccinarow = 0, 0, 0, 0
 
@@ -59,139 +52,148 @@ function TRARC(nlp :: AbstractNLPModel,
 
     calls = [0, 0, 0, 0]
 
-    while ~finish
+	global xdemi = NaN * rand(n)
 
-        PData = pre_process(H,g,params,calls,max_eval)
+	# @info log_header([:iter, :f, :norm_g, :λ, :α, :status, :norm_dtr, :ΔqN], [Int64, T, T, T, T, String, T, T])
+
+    while !OK
+        PData = pre_process(nlp_at_x.Hx, ∇f, params, calls, nlp_stop.meta.max_eval)
 
         if ~PData.OK
-			return x,fopt,norm_g,Inf,Inf,[Inf,Inf,Inf,Inf],false,:PreFailed;
+			@warn("Something wrong with PData")
+			return nlp_at_x, nlp_stop.meta.optimal
 		end
 
         success = false
+		Ht = nothing
 
-#        while ~success & (iter < max_iter) & (unsuccinarow < TR.max_unsuccinarow)
-        while ~success & (iter < max_iter) & (~stalled)
-            try
-                d,λ = solve_model(PData,α)
+        while !success & !OK & (unsuccinarow < TR.max_unsuccinarow)
+			# printstyled("avant de calculer d \n", color = :bold)
+			# @show solve_model
+			# @show nlp_at_x.x
+			# printstyled("avant le solve_model ↑ \n", color = :green)
+			try
+            	d, λ = solve_model(nlp_stop, PData, α)
             catch
-                println(" Problem in solve_model")
-
-                return x,fopt,norm_g,norm(gopt),iter,calls,false,:AscentDir
+            	println(" Problem in solve_model")
+            	return nlp_at_x, nlp_stop.meta.optimal
             end
 
-            Δq = -(g + 0.5 * H * d)⋅d
+            Δq = -(∇f + 0.5 * nlp_at_x.Hx * d)⋅d
 
             if Δq < 0.0 println("*******   Ascent direction in SolveModel: Δq = $Δq")
-                println("  g⋅d = $(g⋅d), 0.5 d'Hd = $(0.5*(H*d)⋅d)  α = $α  λ = $λ")
+                println("  g⋅d = $(∇f⋅d), 0.5 d'Hd = $(0.5*(nlp_at_x.Hx*d)⋅d)  α = $α  λ = $λ")
+				#@bp
+                #try println(" cond(H) = $(cond(full(H)))") catch println("sparse hessian, no cond") end
+                #D, Q = eig(full(H))
+                #lm = findmin(D); lM = findmax(D)
+                #println("λ min (H) = $lm  λ max (H) = $lM")
+                #try printtln(" cond(L) = $(cond(PData.L))") catch println("Spectral") end
+                #try println(" ||H - reconstructH|| = $(norm(H-reconstructH(PData)))")
+                #catch
+                #    println(" reconstruct H no available ")
+                #end
                 println("  calls  $calls   iters $verysucc; $succ; $unsucc")
 
-                return x,fopt,norm_g,norm(gopt),iter,calls,false,:AscentDir
+				return nlp_at_x, nlp_stop.meta.optimal
             end
-            slope = g ⋅ d
-            xnext = x + d
+            slope = ∇f ⋅ d
+            # xtnext = xt + d
+			# if !(true in isnan.(xdemi))
+				xtnext = xdemi + d
+			# else
+				xtnext = xt + d
+			# end
 
             iter += 1
 
-            # Trap illegal values for f, descent will backtrack until a legal value is reached
             try
-                fnext = obj(nlp,xnext)
+                ftnext = obj(nlp, xtnext)
             catch
-                fnext = Inf;
-            end
-            if isnan(fnext)
-                fnext=Inf
+                ftnext = Inf;
             end
 
-            Δf = f - fnext
+            if isnan(ftnext)
+                ftnext = Inf
+            end
 
-            r, good_grad, gnext = compute_r(nlp,f,Δf,Δq,slope,d,xnext,gnext,robust)
+            Δf = ft - ftnext
 
-            if r<TR.acceptance_threshold
-                verbose && display_failure(iter,fnext,λ,α)
-	        unsucc=unsucc+1
-	        unsuccinarow = unsuccinarow +1
-                stalled = unsuccinarow >= max_unsuccinarow
-	        try
-                    α = decrease(PData, α, TR)
-                catch
-                    stalled = true
+            r, good_grad, ∇fnext = compute_r(nlp, ft, Δf, Δq, slope, d, xtnext, ∇fnext, robust)
+
+            if r < TR.acceptance_threshold
+				# @info log_row(Any[iter, nlp_at_x.fx, norm_∇f, λ, α, "Unsuccessful", norm(d), Δq])
+                verbose && display_failure(iter, ftnext, λ, α)
+	        	unsucc = unsucc + 1
+	        	unsuccinarow = unsuccinarow + 1
+	        	α = decrease(PData, α, TR)
+                # fbidon = obj(nlp, xt)
+	    	else
+	        	success = true
+
+	        	unsuccinarow = 0
+	        	xt = copy(xtnext)
+	        	ft = ftnext
+
+	        	if good_grad
+					∇f = copy(∇fnext)
+            	else
+					grad!(nlp, xt, ∇f);
                 end
-                #fbidon = obj(nlp,x)
-	    else
-	        success = true
 
-	        unsuccinarow = 0
-	        x = copy(xnext)
-	        f = fnext
+                norm_∇f = stop_norm(∇f)
+				verysucc += 1
+                Ht = hessian_rep(nlp, xt)
+		        if r > TR.increase_threshold
+		            α = increase(PData, α, TR)
+					# @show iter
+					# @show ft
+					# @show norm_∇f
+					# @show λ
+					# @show α
+					# @info log_row(Any[iter, nlp_at_x.fx, norm_∇f, λ, α, "Very Successful", norm(d), Δq])
+		            verbose && display_v_success(iter, ft, norm_∇f, λ, α)
+		        else
+	                if r < TR.reduce_threshold
+	                    α = decrease(PData, α, TR)
+	                end
+					# @info log_row(Any[iter, nlp_at_x.fx, norm_∇f, λ, α, "Successful", norm(d), Δq])
+		            verbose && display_success(iter, ft, norm_∇f, λ, α)
+		            succ += 1
+		        end
+	    	end
+        end # while !succes
 
-	        if good_grad  g = copy(gnext)
-                else grad!(nlp,x,g);
-                end
+		# @info log_row([iter, nlp_at_x.fx, norm_∇f, λ, α])
 
-                norm_g=stop_norm(g)
-                H = hessian_rep(nlp,x)
-	        if r > TR.increase_threshold
-	            α = increase(PData, α, TR)
-	            verbose && display_v_success(iter,f,norm_g,λ,α)
-                    verysucc += 1
-	        else
-                    if r < TR.reduce_threshold
-                        α = decrease(PData, α, TR)
-                    end
-	            verbose && display_success(iter,f,norm_g,λ,α)
-	            succ += 1
-	        end
-	    end
-        end
-        if isnan(f)  OK=false
-	    println("f nan");
-	    xopt=f
-	    gopt=f
-	    fopt=f
-            niter = Inf
-            calls = [Inf, Inf, Inf, Inf]
-	    return xopt,gopt,fopt,niter,calls,OK
-        end
-        calls = [nlp.counters.neval_obj,  nlp.counters.neval_grad, nlp.counters.neval_hess, nlp.counters.neval_hprod]
+		OK = update_and_stop!(nlp_stop, x = xt, fx = ft, gx = ∇f, Hx = Ht)
+		nlp_stop.meta.nb_of_stop = iter
+		calls = [nlp.counters.neval_obj,  nlp.counters.neval_grad, nlp.counters.neval_hess, nlp.counters.neval_hprod]
+    end # while !OK
 
-        optimal = (norm_g < atol)| (norm_g <( rtol * norm_g0)) | (isinf(f) & (f<0.0))
-        tired = (iter >= max_iter) | (sum(calls) > max_eval)
+    xopt = xt
+    fopt = ft
+    ∇fopt = ∇f
+    norm_∇fopt = norm_∇f
 
-
-
-        finish = (optimal || tired || stalled)
-    end
-
-    xopt = x
-    fopt = f
-    gopt = g
-
-    niter = verysucc+succ+unsucc;
-    verbose && @printf(" %10i unsuccessful iterations \n",unsucc)
-    verbose && @printf(" %10i successful iterations \n",succ)
-    verbose && @printf(" %10i very successful iterations \n",verysucc)
-    verbose && @printf(" %10i total successful iterations \n",verysucc+succ)
-    verbose && @printf(" %10i total iterations \n",niter)
-
-    OK = optimal
+    niter = verysucc + succ + unsucc;
+    verbose && @printf(" %10i unsuccessful iterations \n", unsucc)
+    verbose && @printf(" %10i successful iterations \n", succ)
+    verbose && @printf(" %10i very successful iterations \n", verysucc)
+    verbose && @printf(" %10i total successful iterations \n", verysucc + succ)
+    verbose && @printf(" %10i total iterations \n", niter)
 
     calls = [nlp.counters.neval_obj, nlp.counters.neval_grad, nlp.counters.neval_hess, nlp.counters.neval_hprod]
 
-    total_calls = nlp.counters.neval_obj + nlp.counters.neval_grad + n*nlp.counters.neval_hess+ nlp.counters.neval_hprod
-     verbose && @printf(" %10i total f %10i g %10i H calls  %10i Hv calls  \n",nlp.counters.neval_obj, nlp.counters.neval_grad, nlp.counters.neval_hess, nlp.counters.neval_hprod)
+    total_calls = nlp.counters.neval_obj + nlp.counters.neval_grad + n * nlp.counters.neval_hess + nlp.counters.neval_hprod
+     verbose && @printf(" %10i total f %10i g %10i H calls  %10i Hv calls  \n", nlp.counters.neval_obj, nlp.counters.neval_grad, nlp.counters.neval_hess, nlp.counters.neval_hprod)
 
 
-    if OK && verbose
-		@printf("\n     Final cost(x) = %f  ||g|| = %9.2e  number of f and g and H evals = %i  converged\n",fopt, norm(gopt),total_calls)
+    if OK && verbose  @printf("\n     Final cost(x) = %f  ||g|| = %9.2e  nb of f/g/H evals = %i  converged\n", fopt, norm_∇fopt, total_calls)
     elseif verbose
-        @printf("\n     Final cost(x) = %f  ||g|| = %9.2e  number of f and g and H evals  = %i  NOT converged\n\n",fopt, norm(gopt),total_calls)
+        @printf("\n     Final cost(x) = %f  ||g|| = %9.2e  nb of f/g/H evals  = %i  NOT converged\n\n", fopt, norm_∇fopt, total_calls)
     end;
 
-    if OK status = :Optimal
-    elseif stalled status = :stalled
-    else status = :UserLimit
-    end
-
-    return xopt,fopt,norm_g,norm(gopt),niter,calls,OK,status
+    return nlp_at_x, nlp_stop.meta.optimal
 
 end

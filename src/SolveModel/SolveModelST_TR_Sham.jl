@@ -1,6 +1,5 @@
 function solve_modelST_TR_Sham(nlp_stop, X :: PDataST, δ:: T) where T
-# cas particulier Steihaug-Toint
-    # @show nlp_stop.current_state.x
+    # cas particulier Steihaug-Toint
     ϵ = sqrt(eps(T)) # * 100.0
     n = length(X.g)
     cgtol = max(ϵ, min(0.7, 0.01 * norm(X.g)^(1.0 + X.τ)))
@@ -12,7 +11,6 @@ function solve_modelST_TR_Sham(nlp_stop, X :: PDataST, δ:: T) where T
 
 
     λ = 0.0  #  dummy for this variant
-
     if cg_stats_newt.status == "solution good enough given atol and rtol"
         nlp_at_x = nlp_stop.current_state
         xdemi = nlp_stop.current_state.x + dₙ
@@ -23,10 +21,12 @@ function solve_modelST_TR_Sham(nlp_stop, X :: PDataST, δ:: T) where T
                             verbose = false)
 
         Hxdₛ = X.H * dₛ
+
         if (norm(dₛ) < 2.0 * δ) && ((-(nlp_at_x.gx + 0.5 * Hxdₛ)⋅dₛ) > 0.0)
-            return dₛ, xdemi, λ
+            dₕₒ = dₙ .+ dₛ
+            return dₕₒ, λ
         end
     end
 
-    return dₙ, NaN * rand(length((dₙ))), λ
+    return dₙ, λ
 end

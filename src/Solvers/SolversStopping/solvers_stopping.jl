@@ -31,8 +31,14 @@ push!(ALL_solvers_stopping, TRLDLt)
 include("TRLDLt_HO.jl")
 push!(ALL_solvers_stopping, TRLDLt_HO)
 
+include("TRLDLt_BBK.jl")
+push!(ALL_solvers_stopping, TRLDLt_BK)
+
 include("TRLDLt_HO_Sham.jl")
 push!(ALL_solvers_stopping, TRLDLt_HO_Sham)
+
+include("TRLDLt_HO_Sham_lambda.jl")
+push!(ALL_solvers_stopping, TRLDLt_HO_Sham_λ)
 
 include("TRLDLt_HO_Sham_BFGS.jl")
 push!(ALL_solvers_stopping, TRLDLt_HO_Sham_BFGS)
@@ -113,6 +119,15 @@ push!(ALL_solvers_stopping, TRMA57)
 
 include("TRMA57_Sham.jl")
 push!(ALL_solvers_stopping, TRMA57_Sham)
+
+include("TRMA57-2.jl")
+push!(ALL_solvers_stopping, TRMA57_2)
+
+include("TRMA57_Sham_2.jl")
+push!(ALL_solvers_stopping, TRMA57_Sham_2)
+
+include("TRMA57_Sham_BFGS.jl")
+push!(ALL_solvers_stopping, TRMA57_Sham_BFGS)
 
 include("TRMA57_abs.jl")
 push!(ALL_solvers_stopping, TRMA57_abs)

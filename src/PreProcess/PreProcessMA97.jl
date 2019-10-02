@@ -70,7 +70,10 @@ function preprocessMA97(H ,g, params::Tparams, n1, n2)
             i += 1
         else
             mA = [vD1[i] vD2[i];vD2[i] vD1[i + 1]]  #  2X2 submatrix
-            DiagmA, Qma = eig(mA)                 #  spectral decomposition of mA
+            # DiagmA, Qma = eig(mA)                 #  spectral decomposition of mA
+            X = eigen(mA)
+            DiagmA = X.values
+            Qma = X.vectors
             veig[i] = DiagmA[1]
             vQ1[i] = Qma[1, 1]
             vQ2[i] = Qma[1, 2]

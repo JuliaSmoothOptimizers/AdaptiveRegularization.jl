@@ -4,7 +4,7 @@ function SuperHalley(nlp_stop,
 				     PData :: PDataFact,
 				     dₙ :: Vector,
 				     gt :: Vector)
-					 
+
 	nlp_at_x = nlp_stop.current_state
 	x = nlp_at_x.x
 
@@ -65,5 +65,5 @@ function SuperHalley(nlp_stop,
     d̂ = PData.L' \ (PData.Q * (PData.Q' * d̃ ./ Γ2))
     dSH = -d̂[invperm(PData.pp)]
 
-	return dSH,  NaN * rand(length(dₙ))
+	return dSH
 end

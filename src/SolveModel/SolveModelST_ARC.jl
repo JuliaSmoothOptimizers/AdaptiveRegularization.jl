@@ -11,5 +11,5 @@ function solve_modelST_ARC(nlp_stop, X :: PDataST, δ:: T) where T
                      verbose=false)
 
     λ = 0.0  #  dummy for this variant
-    return d, NaN * rand(length((d))), λ
+    return d, λ
 end

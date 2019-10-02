@@ -10,3 +10,5 @@ State
 GenericLinearAlgebra
 Quadmath
 LDLFactorizations
+Logging
+SolverTools

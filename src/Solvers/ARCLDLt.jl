@@ -1,3 +1,14 @@
-fname = :ARCLDLt
-c = Combi(hessian_dense,PDataLDLt,solve_modelARCDiag,preprocessLDLt,decreaseFact,Tparam())
-include("Template.jl")
+export ARCLDLt
+
+function ARCLDLt(nlp 		:: AbstractNLPModel,
+              	nlpstop 	:: NLPStopping;
+				kwargs...
+               		)
+
+	return TRARC(nlp,
+				  nlpstop;
+				  TR = TrustRegion(10.0),
+				  c = Combi(hessian_dense, PDataLDLt{eltype(nlp.meta.x0)}, solve_modelARCDiag, preprocessLDLt, decreaseFact, Tparam{eltype(nlp.meta.x0)}()),
+				  kwargs...
+				  )
+end

@@ -17,7 +17,7 @@ using Stopping
 include("rosenbrock.jl")
 
 global nbsolver = 0
-for solver in ALL_solvers_stopping
+for solver in ALL_solvers
     global nbsolver += 1
     # nlp = MathProgNLPModel(woods(4), name = "Woods");
     nlp = MathProgNLPModel(extrosnb(2), name = "rosenbrock");

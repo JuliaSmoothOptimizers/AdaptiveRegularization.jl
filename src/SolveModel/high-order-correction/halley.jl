@@ -54,5 +54,5 @@ function Halley(nlp_stop,
     d̂ = L' \ (Q * (Q' * d̃ ./ Γ))
     dH = -d̂[invperm(pp)]
 
-	return dH,  NaN * rand(length(dₙ))
+	return dH
 end
