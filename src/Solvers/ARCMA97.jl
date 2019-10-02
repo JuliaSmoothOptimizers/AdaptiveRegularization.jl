@@ -1,3 +1,12 @@
-fname = :ARCMA97
-c = Combi(hessian_dense,PDataMA97,solve_modelARCDiag,preprocessMA97,decreaseFact,Tparam())
-include("Template.jl")
+export ARCMA97
+
+function ARCMA97(nlp 		:: AbstractNLPModel,
+              	 nlpstop 	:: NLPStopping;
+				 kwargs...
+               	 )
+
+	return TRARC(nlp, nlpstop; TR = TrustRegion(10.0),
+				  c = Combi(hessian_dense, PDataMA97{eltype(nlp.meta.x0)}, solve_modelARCDiag, preprocessMA97, decreaseFact, Tparam{eltype(nlp.meta.x0)}()),
+				  kwargs...
+				  )
+end

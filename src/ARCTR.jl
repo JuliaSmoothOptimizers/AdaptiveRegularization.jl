@@ -2,21 +2,21 @@ module ARCTR
 using NLPModels
 
 using LinearOperators
-using LinearAlgebra
+using LinearAlgebra, GenericLinearAlgebra
 using Krylov
 using Printf
 using SparseArrays
 using State
 using Stopping
-
+using Quadmath
+using LDLFactorizations
+using HSL
+using Logging, SolverTools
 
 include("Includes.jl")
 
-# include("TRARC.jl")
-include("TRARCStop2.jl")
-# include("TRARCStop2-Shamanskii.jl")
+include("TRARC.jl")
 
-# include("Solvers/solvers.jl")
-include("Solvers/SolversStopping/solvers_stopping.jl")
+include("Solvers/solvers.jl")
 
 end # module

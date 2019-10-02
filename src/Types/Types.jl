@@ -1,5 +1,6 @@
 export Tparam
-export PDataLDLt
+export PDataIter
+export PDataLDLt, PDataK, PDataST
 
 abstract type TPData{T} end  # Ancestor of all PreProcess data
 

@@ -1,5 +1,5 @@
-export solve_modelTRDiag
-function solve_modelTRDiagAbs(PData :: PDataFact, δ:: Float64)
+export solve_modelTRDiagAbs
+function solve_modelTRDiagAbs(nlp_stop, PData :: PDataFact, δ:: T) where T
     # Solve the TR subproblem once diagonalized into Δ using the norm |Δ|
 
 
@@ -8,8 +8,7 @@ function solve_modelTRDiagAbs(PData :: PDataFact, δ:: Float64)
     #
     ḡ = PData.g̃
     n_g = norm(ḡ)
-    ϵ =  1.0e-10 # *n_g
-    # Γ2 = max(abs(PData.Δ),ϵ)
+    ϵ = sqrt(eps(T)) / 100.0 # *n_g
     Γ2 = max(maximum(abs.(PData.Δ)), ϵ)
     Γ = sqrt(Γ2)
 
@@ -17,7 +16,7 @@ function solve_modelTRDiagAbs(PData :: PDataFact, δ:: Float64)
     Δ = PData.Δ
     if PData.success    # initialize λmin, take care of hard case and Newton's direction interior
         l_m,i = findmin(Δ̄)
-        λ = max(-l_m,0.0)
+        λ = max(-l_m, 0.0)
         λmin = max(ϵ,  λ + ϵ * (1.0 + λ)) #λ + ϵ #max(λ*(1+ϵ), ϵ)
 
         d̄ = -(Δ .+ λmin * Γ2) .\ ḡ
@@ -44,6 +43,6 @@ function solve_modelTRDiagAbs(PData :: PDataFact, δ:: Float64)
     d̃ = d̄ #Γ .\ d̄
     d = AInv(PData, d̃)
     #try assert((PData.g̃ + 0.5*PData.Δ .* d̃)⋅d̃ <= 0.0)  catch  @bp  end
-#println("*******SolveModelDiagAbs:  PData.g̃⋅d̃ = $(PData.g̃⋅d̃), 0.5 d̃'PData.Δd̃ = $(0.5*(PData.Δ .* d̃)⋅d̃)")
+    #println("*******SolveModelDiagAbs:  PData.g̃⋅d̃ = $(PData.g̃⋅d̃), 0.5 d̃'PData.Δd̃ = $(0.5*(PData.Δ .* d̃)⋅d̃)")
     return d, λ
 end

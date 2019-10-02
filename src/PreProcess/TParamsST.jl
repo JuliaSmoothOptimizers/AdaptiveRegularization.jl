@@ -1,3 +1,5 @@
+export TparamsST
+
 mutable struct TparamsST{T} <: Tparams{T}  # specific parameters for this Krylov variant
     τ :: T
 

@@ -1,17 +1,18 @@
-export TRARC2_Shamanskii
+export TRARC2_HO_4
 
-function TRARC2_Shamanskii(nlp 		:: AbstractNLPModel,
-                		   nlp_stop :: NLPStopping;
-                		   TR 		:: TrustRegion = TrustRegion(10.0),
-			    		   c 		:: Combi =  Combi(hessian_dense, PDataLDLt, solve_modelTRDiag, preprocessLDLt, decreaseFact, Tparam()),
-			    		   robust 	:: Bool = true,
-                		   verbose 	:: Bool = true
-                		   )
+function TRARC2_HO_4(nlp 	    :: AbstractNLPModel,
+                     nlp_stop   :: NLPStopping;
+                	 TR 	    :: TrustRegion = TrustRegion(eltype(nlp.meta.x0)(10.0)),
+			    	 c 		    :: Combi =  Combi{eltype(nlp.meta.x0)}(hessian_dense, PDataLDLt{eltype(nlp.meta.x0)}, solve_modelTRDiag_HO_3, preprocessLDLt, decreaseFact, Tparam{eltype(nlp.meta.x0)}()),
+					 correction :: Symbol = :Chebyshev,
+			    	 robust     :: Bool = true,
+                	 verbose    :: Bool = false
+                	 )
+
+	T = eltype(nlp.meta.x0)
 
 	nlp_at_x = nlp_stop.current_state
-
     hessian_rep, PData, solve_model, pre_process, decrease, params = extract(c)
-
 
     α = TR.α₀  # initial Trust Region size
     xt, xtnext, d, Df = copy(nlp.meta.x0), copy(nlp.meta.x0), copy(nlp.meta.x0), 0.0
@@ -19,14 +20,10 @@ function TRARC2_Shamanskii(nlp 		:: AbstractNLPModel,
     λ = 1.0
 
     n = length(xt)
-    ∇f = Array{Float64}(undef, n)
-    ∇fnext = Array{Float64}(undef, n)
+    ∇f = Array{T}(undef, n)
+    ∇fnext = Array{T}(undef, n)
 
     ft = obj(nlp, xt)
-
-	OK = update_and_start!(nlp_stop, x = xt, fx = ft, gx = ∇f, g0 = ∇f)
-
-
     fopt = ft
     grad!(nlp, xt, ∇f)
 	OK = update_and_start!(nlp_stop, x = xt, fx = ft, gx = ∇f, g0 = ∇f)
@@ -50,8 +47,9 @@ function TRARC2_Shamanskii(nlp 		:: AbstractNLPModel,
 
     calls = [0, 0, 0, 0]
 
-    while !OK # ~finish
+	global xdemi = NaN * rand(n)  ## How to add in a globalized version?
 
+    while !OK
         PData = pre_process(nlp_at_x.Hx, ∇f, params, calls, nlp_stop.meta.max_eval)
 
         if ~PData.OK
@@ -60,37 +58,27 @@ function TRARC2_Shamanskii(nlp 		:: AbstractNLPModel,
 		end
 
         success = false
+		Ht = nothing
 
-        while ~success & !OK & (unsuccinarow < TR.max_unsuccinarow)
+        while !success & !OK & (unsuccinarow < TR.max_unsuccinarow)
             try
-                d, λ = solve_model(PData, α)
+                d, xdemi, λ = solve_model(nlp_stop, PData, α) ## xdemi...
             catch
                 println(" Problem in solve_model")
-
                 return nlp_at_x, nlp_stop.meta.optimal
             end
 
-			printstyled("avant la modification \n", color = :cyan)
-			@show d
-			xtemp = xt + d
-			gtemp = grad(nlp, xtemp)
-			d = nlp_at_x.Hx \ gtemp
-			printstyled("après la modification \n", color = :cyan)
-			@show d
-
+			# Doesn't this go against the stopping philosophy?
+			# Shouldn't we have a stopping call here and not an if?
             Δq = -(∇f + 0.5 * nlp_at_x.Hx * d)⋅d
-			# printstyled("le Δq original est $(-(∇f + 0.5 * nlp_at_x.Hx * d)⋅d) \n", color = :cyan)
-			# Δq  = nlp_at_x.gx' * d # just a test
 
-			# printstyled("autre test de vérification pour direction de monté \n", color = :cyan)
-			# @show nlp_at_x.gx' * d
-
-            if Δq < 0.0 println("*******   Ascent direction in SolveModel: Δq = $Δq")
+			if Δq < 0.0
+				println("*******   Ascent direction in SolveModel: Δq = $Δq")
                 println("  g⋅d = $(∇f⋅d), 0.5 d'Hd = $(0.5*(nlp_at_x.Hx*d)⋅d)  α = $α  λ = $λ")
 				#@bp
                 #try println(" cond(H) = $(cond(full(H)))") catch println("sparse hessian, no cond") end
-                #D,Q=eig(full(H))
-                #lm=findmin(D);lM=findmax(D)
+                #D, Q = eig(full(H))
+                #lm = findmin(D); lM = findmax(D)
                 #println("λ min (H) = $lm  λ max (H) = $lM")
                 #try printtln(" cond(L) = $(cond(PData.L))") catch println("Spectral") end
                 #try println(" ||H - reconstructH|| = $(norm(H-reconstructH(PData)))")
@@ -102,7 +90,12 @@ function TRARC2_Shamanskii(nlp 		:: AbstractNLPModel,
 				return nlp_at_x, nlp_stop.meta.optimal
             end
             slope = ∇f ⋅ d
-            xtnext = xt + d
+			# again: how to put in a general idea?
+			if !(true in isnan.(xdemi))
+				xtnext = xdemi + d
+			else
+				xtnext = xt + d
+			end
 
             iter += 1
 
@@ -111,6 +104,7 @@ function TRARC2_Shamanskii(nlp 		:: AbstractNLPModel,
             catch
                 ftnext = Inf;
             end
+
             if isnan(ftnext)
                 ftnext = Inf
             end
@@ -124,7 +118,6 @@ function TRARC2_Shamanskii(nlp 		:: AbstractNLPModel,
 	        	unsucc = unsucc + 1
 	        	unsuccinarow = unsuccinarow + 1
 	        	α = decrease(PData, α, TR)
-                fbidon = obj(nlp, xt)
 	    	else
 	        	success = true
 
@@ -139,24 +132,24 @@ function TRARC2_Shamanskii(nlp 		:: AbstractNLPModel,
                 end
 
                 norm_∇f = stop_norm(∇f)
-                H = hessian_rep(nlp, xt)
+				verysucc += 1
+                Ht = hessian_rep(nlp, xt)
 		        if r > TR.increase_threshold
 		            α = increase(PData, α, TR)
 		            verbose && display_v_success(iter, ft, norm_∇f, λ, α)
-	                    verysucc += 1
 		        else
-	                    if r < TR.reduce_threshold
-	                        α = decrease(PData, α, TR)
-	                    end
+	                if r < TR.reduce_threshold
+	                    α = decrease(PData, α, TR)
+	                end
 		            verbose && display_success(iter, ft, norm_∇f, λ, α)
 		            succ += 1
 		        end
 	    	end
-        end
+        end # while !succes
 
-		OK = update_and_stop!(nlp_stop, x = xt, fx = ft, gx = ∇f, Hx = hessian_rep(nlp, xt))
+		OK = update_and_stop!(nlp_stop, x = xt, fx = ft, gx = ∇f, Hx = Ht)
         calls = [nlp.counters.neval_obj,  nlp.counters.neval_grad, nlp.counters.neval_hess, nlp.counters.neval_hprod]
-    end
+    end # while !OK
 
     xopt = xt
     fopt = ft

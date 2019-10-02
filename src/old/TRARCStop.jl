@@ -1,26 +1,26 @@
-#@debug 
+#@debug
 function TRARC(nlp :: AbstractNLPModel,
                x₀ :: Array{Float64,1},
                TR :: TrustRegion, c :: Combi;
                s :: TStopping = TStopping(nlp),
                verbose :: Bool = true
-               )                
+               )
 
     hessian_rep,PData,solve_model,pre_process,decrease,params = extract(c)
 
     StopNorm = s.optimality_residual
-     
+
     s = start!(s,x₀)
 
     α = TR.α₀
     x, xnext, d, Df = copy(x₀), copy(x₀), copy(x₀), 0.0
     xopt = x
     λ = 1.0
-    
+
     n = length(x)
     ∇f = Array(Float64,n)
-    ∇fnext = Array(Float64,n)    
-    
+    ∇fnext = Array(Float64,n)
+
     f = obj(nlp,x)
     if isnan(f) | (f==Inf)
         OK = false
@@ -40,10 +40,10 @@ function TRARC(nlp :: AbstractNLPModel,
     ∇fopt = ∇f
     norm_∇fopt = norm_∇f
     H = hessian_rep(nlp,x)
-    
+
     #optimal = (norm_g < atol) || (isinf(f) & (f<0.0))
     #tired = false
-    
+
     fnext = f
     iter = 0
 
@@ -52,14 +52,14 @@ function TRARC(nlp :: AbstractNLPModel,
     finish = optimal || unbounded || tired || stalled
 
     verbose && display_header_iterations()
-    verbose && display_success(iter,fnext,norm_g0,0.0,α)
-    
+    verbose && display_success(iter, fnext, norm_g0, 0.0, α)
+
     succ, unsucc, verysucc, unsuccinarow = 0, 0, 0, 0
-    
+
     max_unsuccinarow = TR.max_unsuccinarow
-    
+
     calls = [0, 0, 0, 0]
-    
+
     while ~finish
 
         PData = pre_process(H,∇f,params,calls,s.max_eval)
@@ -67,11 +67,11 @@ function TRARC(nlp :: AbstractNLPModel,
 #                println(" ||H - P'LDL'P|| = $(norm(H - PData.P'*PData.L*PData.D*PData.L'*PData.P))")
         #if cond(PData.L) > 10000.0*cond(H) println("===>>> cond(H) = $(cond(H))  cond(L) = $(cond(PData.L))")
         #end
-        
+
         if ~PData.OK return x,fopt,norm_∇f,Inf,Inf,[Inf,Inf,Inf,Inf],false,:PreFailed;  end
-        
+
         success = false
-        
+
         while ~success & (iter < s.max_iter) & (unsuccinarow < TR.max_unsuccinarow)
             try
                 d,λ = solve_model(PData,α)
@@ -92,14 +92,14 @@ function TRARC(nlp :: AbstractNLPModel,
                 #lm=findmin(D);lM=findmax(D)
                 #println("λ min (H) = $lm  λ max (H) = $lM")
                 #try printtln(" cond(L) = $(cond(PData.L))") catch println("Spectral") end
-                #try println(" ||H - reconstructH|| = $(norm(H-reconstructH(PData)))") 
+                #try println(" ||H - reconstructH|| = $(norm(H-reconstructH(PData)))")
                 #catch
                 #    println(" reconstruct H no available ")
                 #end
                 println("  calls  $calls   iters $verysucc; $succ; $unsucc")
 
                 return x,fopt,norm_∇f,norm_∇fopt,iter,calls,false,:AscentDir
-            end    
+            end
             slope = ∇f ⋅ d
             xnext = x + d
 
@@ -111,14 +111,14 @@ function TRARC(nlp :: AbstractNLPModel,
             catch
                 fnext = Inf;
             end
-            if isnan(fnext) 
+            if isnan(fnext)
                 fnext=Inf
             end
 
             Δf = f - fnext
-                        
+
             r, good_grad, ∇fnext = compute_r(nlp,f,Δf,Δq,slope,d,xnext,∇fnext)
-            
+
             if r<TR.acceptance_threshold
                 verbose && display_failure(iter,fnext,λ,α)
 	        unsucc=unsucc+1
@@ -127,15 +127,15 @@ function TRARC(nlp :: AbstractNLPModel,
                 fbidon = obj(nlp,x)
 	    else
 	        success = true
-                
+
 	        unsuccinarow = 0
 	        x = copy(xnext)
 	        f = fnext
-                
+
 	        if good_grad  ∇f = copy(∇fnext)
                 else grad!(nlp,x,∇f);
                 end
-                
+
                 norm_∇f=stop_norm(∇f)
                 H = hessian_rep(nlp,x)
 	        if r > TR.increase_threshold
@@ -151,7 +151,7 @@ function TRARC(nlp :: AbstractNLPModel,
 	        end
 	    end
         end
-        if isnan(f)  OK=false 
+        if isnan(f)  OK=false
 	    println("f nan");
 	    xopt=f
 	    ∇fopt=f
@@ -170,7 +170,7 @@ function TRARC(nlp :: AbstractNLPModel,
 
         finish = optimal || unbounded || tired || stalled
     end
-    
+
     xopt = x
     fopt = f
     ∇fopt = ∇f
@@ -182,28 +182,26 @@ function TRARC(nlp :: AbstractNLPModel,
     verbose && @printf(" %10i very successful iterations \n",verysucc)
     verbose && @printf(" %10i total successful iterations \n",verysucc+succ)
     verbose && @printf(" %10i total iterations \n",niter)
-    
+
     OK = optimal
 
     calls = [nlp.counters.neval_obj, nlp.counters.neval_grad, nlp.counters.neval_hess, nlp.counters.neval_hprod]
 
     total_calls = nlp.counters.neval_obj + nlp.counters.neval_grad + n*nlp.counters.neval_hess+ nlp.counters.neval_hprod
      verbose && @printf(" %10i total f %10i g %10i H calls  %10i Hv calls  \n",nlp.counters.neval_obj, nlp.counters.neval_grad, nlp.counters.neval_hess, nlp.counters.neval_hprod)
-    
-    
+
+
     if OK && verbose  @printf("\n     Final cost(x) = %f  ||g|| = %9.2e  \#f/g/H evals = %i  converged\n",fopt, norm_∇fopt,total_calls)
     elseif verbose
         @printf("\n     Final cost(x) = %f  ||g|| = %9.2e  \#f/g/H evals  = %i  NOT converged\n\n",fopt, norm_∇fopt,total_calls)
-    end;  
-    
+    end;
+
     if     optimal   status = :Optimal
     elseif stalled   status = :Stalled
     elseif unbounded status = :Unbounded
     else             status = :UserLimit
     end
-    
-    return xopt,fopt,norm_∇fopt,norm(∇fopt),niter,calls,OK,status
-    
-end
 
-       
+    return xopt,fopt,norm_∇fopt,norm(∇fopt),niter,calls,OK,status
+
+end

@@ -1,3 +1,4 @@
+export preprocessKTR, decreaseKTR
 function preprocessKTR(Hop, g, params::Tparams, calls, max_calls)
     τ = params.τ
     nshifts = params.nshifts

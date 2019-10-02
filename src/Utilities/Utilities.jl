@@ -1,4 +1,4 @@
-export TrustRegion, Combi, decreaseFact
+export TrustRegion, Combi, decreaseFact, convert_TR, convert_TR!, extract
 
 "Exception type raised in case of error."
 mutable struct TrustRegionException <: Exception
@@ -19,7 +19,7 @@ mutable struct TrustRegion{T}
     #params :: Tparams
 
     function TrustRegion(α₀ :: T;
-                         max_α :: T = 1.0/ sqrt(eps(T)),
+                         max_α :: T = T(1.0)/ sqrt(eps(T)),
                          acceptance_threshold :: T = T(0.1),
                          increase_threshold :: T = T(0.75),
                          reduce_threshold :: T = T(0.1),
@@ -28,10 +28,10 @@ mutable struct TrustRegion{T}
                          max_unsuccinarow :: Int = 30) where T
                          #params :: Tparams = Void)
 
-        α₀ > 0 || (α₀ = 1.0)
+        α₀ > T(0.0) || (α₀ = T(1.0))
         max_α > α₀ || throw(TrustRegionException("Invalid α₀"))
-        (0.0 < acceptance_threshold < increase_threshold < 1.0) || throw(TrustRegionException("Invalid thresholds"))
-        (0.0 < decrease_factor < 1.0 < increase_factor) || throw(TrustRegionException("Invalid decrease/increase factors"))
+        (T(0.0) < acceptance_threshold < increase_threshold < T(1.0)) || throw(TrustRegionException("Invalid thresholds"))
+        (T(0.0) < decrease_factor < T(1.0) < increase_factor) || throw(TrustRegionException("Invalid decrease/increase factors"))
 
         return new{T}(α₀, α₀, max_α,
                    acceptance_threshold, increase_threshold, reduce_threshold,
@@ -88,15 +88,15 @@ end
 
 # A few displays for verbose iterations
 function display_failure(iter, fnext, λ, α)
-    @printf("%4d  %10.3e             %7.1e %7.1e    unsuccessful  \n",iter,fnext,λ,α)
+    @printf("%4d  %10.3e             %7.1e %7.1e    unsuccessful\n", iter, fnext, λ, α)
 end
 
 function display_v_success(iter, f, norm_g, λ, α)
-    @printf("%4d  %10.3e %9.2e   %7.1e %7.1e Very successful\n",iter,f,norm_g,λ,α)
+    @printf("%4d  %10.3e %9.2e   %7.1e %7.1e Very successful\n", iter, f, norm_g, λ, α)
 end
 
 function display_success(iter, f, norm_g, λ, α)
-    @printf("%4d  %10.3e %9.2e   %7.1e %7.1e      successful\n",iter,f,norm_g,λ,α)
+    @printf("%4d  %10.3e %9.2e   %7.1e %7.1e      successful\n", iter, f, norm_g, λ, α)
 end
 
 function print_stats(prob, dim, f, gNorm, gnorm2, calls, status, timt)
@@ -131,7 +131,7 @@ function increase(X :: TPData, α:: T, TR:: TrustRegion) where T
 end
 
 
-stop_norm(x) = norm(x,Inf)
+stop_norm(x) = norm(x, Inf)
 
 # Valid combinations
 #
@@ -141,9 +141,22 @@ mutable struct Combi{T}
     solve_model :: Function
     pre_process :: Function
     decrease    :: Function
-    params      :: Tparams{T}
+    params      :: Union{Tparams{T}, Tparams}
 end
 
 function extract(c :: Combi)
     return c.hessian_rep, c.PData, c.solve_model, c.pre_process, c.decrease, c.params
+end
+
+function convert_TR(T, TR_init :: TrustRegion)
+	max_α_T                = T(TR_init.max_α)
+	acceptance_threshold_T = T(TR_init.acceptance_threshold)
+	increase_threshold_T   = T(TR_init.increase_threshold)
+	reduce_threshold_T     = T(TR_init.reduce_threshold)
+	increase_threshold_T   = T(TR_init.increase_threshold)
+	decrease_factor_T      = T(TR_init.decrease_factor)
+
+	TRT = TrustRegion(T(TR_init.α), max_α = max_α_T, acceptance_threshold = acceptance_threshold_T, increase_threshold = increase_threshold_T, decrease_factor = decrease_factor_T)
+
+	return TRT
 end

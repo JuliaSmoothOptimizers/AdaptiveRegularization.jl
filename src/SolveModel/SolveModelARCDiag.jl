@@ -1,11 +1,13 @@
-function solve_modelARCDiag(PData :: PDataFact, α:: Float64)
+function solve_modelARCDiag(nlp_stop, PData :: PDataFact, α:: T) where T
     # Solve the ARC subproblem once diagonalized into Δ
 
     # Setup the problem
     # M = ones(PData.Δ)
     M = fill(1, size(PData.Δ))
 
-    ϵ = 1.0e-10 * (1.0 + PData.λ)
+    # ϵ = 1.0e-10 * (1.0 + PData.λ)
+    ϵ1 = sqrt(eps(T)) / 100.0
+    ϵ = T.(ϵ1 * (1.0 + PData.λ))
     λ = max(ϵ,PData.λ+ϵ)
 
     d̃ = -(PData.Δ+λ*M) .\ PData.g̃

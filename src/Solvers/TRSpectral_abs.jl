@@ -1,3 +1,14 @@
-fname = :TRSpectral_abs
-c = Combi(hessian_dense,PDataSpectral,solve_modelTRDiagAbs,preprocessSpectral,decreaseFact,Tparam())
-include("Template.jl")
+export TRSpectral_abs
+
+function TRSpectral_abs(nlp 		:: AbstractNLPModel,
+               			nlpstop 	:: NLPStopping;
+						kwargs...
+               			)
+
+	return TRARC(nlp,
+				  nlpstop;
+				  TR = TrustRegion(10.0),
+				  c = Combi(hessian_dense, PDataSpectral{eltype(nlp.meta.x0)}, solve_modelTRDiagAbs, preprocessSpectral, decreaseFact,Tparam{eltype(nlp.meta.x0)}()),
+				  kwargs...
+				  )
+end
