@@ -1,4 +1,4 @@
-function preprocessKARC(Hop, g, params::Tparams, calls, max_calls)
+function preprocessKARC(Hop, g, params::Tparams, calls, max_calls) #where T
     τ = params.τ
     nshifts = params.nshifts
     shifts = params.shifts
@@ -6,6 +6,12 @@ function preprocessKARC(Hop, g, params::Tparams, calls, max_calls)
     n = length(g)
     gNorm2 = BLAS.nrm2(n, g, 1)
     precision =  max(1e-12,min(0.5,(gNorm2^τ)))
+
+    #ϵ = sqrt(eps(T)) # * 100.0
+    ϵ = 1e-12#sqrt(eps()) # * 100.0
+    cgtol = max(ϵ, min(0.09, 0.01 * norm(g)^(1.0 + τ)))
+
+
     (xShift, stats) = cg_lanczos_shift_seq(Hop,
                                            -g,
                                            shifts,
@@ -15,6 +21,17 @@ function preprocessKARC(Hop, g, params::Tparams, calls, max_calls)
                                            rtol = precision,
                                            verbose=false,
                                            check_curvature=true)
+
+#    (xShift, stats) = cg_lanczos_shift_seq(Hop,
+#                                           -g,
+#                                           shifts,
+#                                           itmax=min(max_calls-sum(calls),2*n),
+#                                           #τ = τ,
+#                                           atol = cgtol,
+#                                           rtol = ϵ,
+#                                           verbose=false,
+#                                           check_curvature=true)
+
 
     positives = collect(findfirst(!, stats.flagged):length(stats.flagged))
 

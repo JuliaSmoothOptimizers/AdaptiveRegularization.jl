@@ -54,6 +54,15 @@ push!(ALL_solvers_stopping, TRLDLt_abs)
 include("ARCqKOp.jl")
 push!(ALL_solvers_stopping, ARCqKOp)
 
+include("ARCqKOp1.jl")
+push!(ALL_solvers_stopping, ARCqKOp1)
+
+include("ARCqKOp2.jl")
+push!(ALL_solvers_stopping, ARCqKOp2)
+
+include("ARCqKOp0_5.jl")
+push!(ALL_solvers_stopping, ARCqKOp05)
+
 include("ARCqKSparse.jl")
 push!(ALL_solvers_stopping, ARCqKsparse)
 

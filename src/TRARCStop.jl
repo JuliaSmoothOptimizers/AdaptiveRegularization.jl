@@ -2,84 +2,87 @@ export TRARC2
 
 function TRARC2(nlp 		:: AbstractNLPModel,
                 nlp_stop 	:: NLPStopping;
-                TR 			:: TrustRegion = TrustRegion(eltype(nlp.meta.x0)(10.0)),
-			    c 			:: Combi = Combi{eltype(nlp.meta.x0)}(hessian_dense, PDataLDLt{eltype(nlp.meta.x0)}, solve_modelTRDiag, preprocessLDLt, decreaseFact, Tparam{eltype(nlp.meta.x0)}()),
-			    robust 		:: Bool = true,
+                TR 		:: TrustRegion = TrustRegion(eltype(nlp.meta.x0)(10.0)),
+		c 		:: Combi = Combi{eltype(nlp.meta.x0)}(hessian_dense, PDataLDLt{eltype(nlp.meta.x0)}, solve_modelTRDiag, preprocessLDLt, decreaseFact, Tparam{eltype(nlp.meta.x0)}()),
+		robust 		:: Bool = true,
                 verbose 	:: Bool = false
                 )
-
-	T = eltype(nlp.meta.x0)
-
-	nlp_at_x = nlp_stop.current_state
+    
+    T = eltype(nlp.meta.x0)
+    
+    nlp_at_x = nlp_stop.current_state
     hessian_rep, PData, solve_model, pre_process, decrease, params = extract(c)
 
     α = TR.α₀  # initial Trust Region size
     xt, xtnext, d, Df = copy(nlp.meta.x0), copy(nlp.meta.x0), copy(nlp.meta.x0), 0.0
-	xopt = xt
+    xopt = xt
     λ = 1.0
-
+    
     n = length(xt)
     ∇f = Array{T}(undef, n)
     ∇fnext = Array{T}(undef, n)
-	∇fnext
-
+    ∇fnext
+    
     ft = obj(nlp, xt)
     fopt = ft
     grad!(nlp, xt, ∇f)
-	OK = update_and_start!(nlp_stop, x = xt, fx = ft, gx = ∇f, g0 = copy(∇f))
+    OK = update_and_start!(nlp_stop, x = xt, fx = ft, gx = ∇f, g0 = copy(∇f))
 
-	norm_∇f = norm(nlp_at_x.gx)
+    nlp_stop.meta.optimality0 = nlp_stop.optimality_check(nlp,nlp_at_x)
+
+    
+    norm_∇f = norm(nlp_at_x.gx)
     norm_∇f0 = norm_∇f
     ∇fopt = ∇f
     norm_∇fopt = norm_∇f
-	!OK && update!(nlp_at_x, Hx = hessian_rep(nlp, xt))
-
-
-	global cgtol = 1.0
-
+    !OK && update!(nlp_at_x, Hx = hessian_rep(nlp, xt))
+    
+    
+    global cgtol = 1.0
+    
     ftnext = ft
     iter = 0
-
+    
     verbose && display_header_iterations()
     verbose && display_success(iter, ftnext, norm_∇f0, 0.0, α)
-
+    
     succ, unsucc, verysucc, unsuccinarow = 0, 0, 0, 0
-
+    
     max_unsuccinarow = TR.max_unsuccinarow
-
+    
     calls = [0, 0, 0, 0]
-
-	global xdemi = NaN * rand(n)
-
+    
+    global xdemi = NaN * rand(n)
+    
     while !OK
         PData = pre_process(nlp_at_x.Hx, ∇f, params, calls, nlp_stop.meta.max_eval)
-
+        
         if ~PData.OK
-			@warn("Something wrong with PData")
-			return nlp_at_x, nlp_stop.meta.optimal
-		end
-
+	    @warn("Something wrong with PData")
+	    return nlp_at_x, nlp_stop.meta.optimal
+	end
+        
         success = false
-		Ht = nothing
-
+	Ht = nothing
+        
         while !success & !OK & (unsuccinarow < TR.max_unsuccinarow)
-			# printstyled("avant de calculer d \n", color = :bold)
-			# @show solve_model
-			# @show nlp_at_x.x
-			try
+	    # printstyled("avant de calculer d \n", color = :bold)
+	    # @show solve_model
+	    # @show nlp_at_x.x
+	    try
             	d, xdemi, λ = solve_model(nlp_stop, PData, α)
             catch
             	println(" Problem in solve_model")
             	return nlp_at_x, nlp_stop.meta.optimal
             end
-
-			# @show d
-
+            
+	    # @show d
+            
             Δq = -(∇f + 0.5 * nlp_at_x.Hx * d)⋅d
-
+            
             if Δq < 0.0 println("*******   Ascent direction in SolveModel: Δq = $Δq")
                 println("  g⋅d = $(∇f⋅d), 0.5 d'Hd = $(0.5*(nlp_at_x.Hx*d)⋅d)  α = $α  λ = $λ")
-				#@bp
+		#@bp
                 #try println(" cond(H) = $(cond(full(H)))") catch println("sparse hessian, no cond") end
                 #D, Q = eig(full(H))
                 #lm = findmin(D); lM = findmax(D)

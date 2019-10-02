@@ -42,6 +42,9 @@ push!(ALL_solvers,eval(fname))
 include("ARCqKOp.jl")			   #works in 0.7/1.1
 push!(ALL_solvers,eval(fname))
 
+include("ARCqKOp1.jl")			   #works in 0.7/1.1
+push!(ALL_solvers,eval(fname))
+
 
 include("ARCqKsparse.jl")          #works in 0.7/1.1
 push!(ALL_solvers,eval(fname))
