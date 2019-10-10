@@ -5,8 +5,9 @@ function solve_modelTRDiag(nlp_stop, PData :: PDataFact, δ:: T) where T
     # Setup the problem
     # println("On est dans solve_modelTRDiag")
     M = T.(fill(1.0, size(PData.Δ)))
-    ϵ = sqrt(eps(T)) / 100.0
+    ϵ = sqrt(eps(T)) / T(100.0)
     ϵ2 = T.(ϵ * (1.0 + PData.λ))
+    global dHO = nothing
 
 
     if PData.success # take care of eventual hard case and Newton's direction interior (λ = 0)
@@ -41,5 +42,5 @@ function solve_modelTRDiag(nlp_stop, PData :: PDataFact, δ:: T) where T
     d = AInv(PData, d̃)
 
     #try assert((PData.g̃ + 0.5*PData.Δ .* d̃)⋅d̃ <= 0.0)  catch  @bp  end
-    return d, λ
+    return d, NaN * rand(length(d)), λ
 end

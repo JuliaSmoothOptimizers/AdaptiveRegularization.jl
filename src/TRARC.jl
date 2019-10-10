@@ -8,7 +8,7 @@ function TRARC(nlp 		:: AbstractNLPModel,
                 verbose 	:: Bool = false
                 )
 
-	T = eltype(nlp.meta.x0)
+	T = eltype(nlp_stop.current_state.x)
 	# @show nlp.meta.x0
 	dTR = nothing
 	dN = nothing
@@ -17,14 +17,14 @@ function TRARC(nlp 		:: AbstractNLPModel,
     hessian_rep, PData, solve_model, pre_process, decrease, params = extract(c)
 
     α = TR.α₀  # initial Trust Region size
-    xt, xtnext, d, Df = copy(nlp.meta.x0), copy(nlp.meta.x0), copy(nlp.meta.x0), 0.0
+    xt, xtnext, d, Df = copy(nlp_at_x.x), copy(nlp_at_x.x), copy(nlp_at_x.x), 0.0
 	xopt = xt
     λ = 1.0
 
     n = length(xt)
     ∇f = Array{T}(undef, n)
     ∇fnext = Array{T}(undef, n)
-	∇fnext
+	# ∇fnext
 
     ft = obj(nlp, xt)
     fopt = ft
@@ -38,13 +38,15 @@ function TRARC(nlp 		:: AbstractNLPModel,
 	!OK && State.update!(nlp_at_x, Hx = hessian_rep(nlp, xt))
 
 
-	global cgtol = 1.0
+	# global cgtol = 1.0
 
     ftnext = ft
     iter = 0
 
-    verbose && display_header_iterations()
-    verbose && display_success(iter, ftnext, norm_∇f0, 0.0, α)
+    # verbose && display_header_iterations()
+    # verbose && display_success(iter, ftnext, norm_∇f0, 0.0, α)
+	@info log_header([:iter, :f, :nrm_g, :λ,  :status, :α, :nrm_dtr, :nrm_dHO, :f_p_dTR, :f_p_dHO, :dir, :ΔqN], [Int64, T, T, T, String, T, T, T, T, T, String, T])
+	@info log_row(Any[iter, nlp_at_x.fx, norm_∇f, 0.0, "First iteration", α])
 
     succ, unsucc, verysucc, unsuccinarow = 0, 0, 0, 0
 
@@ -52,9 +54,11 @@ function TRARC(nlp 		:: AbstractNLPModel,
 
     calls = [0, 0, 0, 0]
 
-	global xdemi = NaN * rand(n)
+	# global xdemi = NaN * rand(n)
+	global dTR = nothing
+	global dHO = nothing
+	global dir = nothing
 
-	# @info log_header([:iter, :f, :norm_g, :λ, :α, :status, :norm_dtr, :ΔqN], [Int64, T, T, T, T, String, T, T])
 
     while !OK
         PData = pre_process(nlp_at_x.Hx, ∇f, params, calls, nlp_stop.meta.max_eval)
@@ -68,16 +72,20 @@ function TRARC(nlp 		:: AbstractNLPModel,
 		Ht = nothing
 
         while !success & !OK & (unsuccinarow < TR.max_unsuccinarow)
-			# printstyled("avant de calculer d \n", color = :bold)
-			# @show solve_model
-			# @show nlp_at_x.x
-			# printstyled("avant le solve_model ↑ \n", color = :green)
 			try
-            	d, λ = solve_model(nlp_stop, PData, α)
+            	dTR, dHO, λ = solve_model(nlp_stop, PData, α)
             catch
             	println(" Problem in solve_model")
             	return nlp_at_x, nlp_stop.meta.optimal
             end
+			if dTR == dHO
+				dir = "dTR == dHO"
+			else
+				dir = "dTR != dHO"
+			end
+
+			d = copy(dTR)
+			# @show d
 
             Δq = -(∇f + 0.5 * nlp_at_x.Hx * d)⋅d
 
@@ -98,12 +106,8 @@ function TRARC(nlp 		:: AbstractNLPModel,
 				return nlp_at_x, nlp_stop.meta.optimal
             end
             slope = ∇f ⋅ d
-            # xtnext = xt + d
-			# if !(true in isnan.(xdemi))
-				xtnext = xdemi + d
-			# else
-				xtnext = xt + d
-			# end
+			xt_original = copy(xt)
+			xtnext = xt .+ d
 
             iter += 1
 
@@ -122,8 +126,8 @@ function TRARC(nlp 		:: AbstractNLPModel,
             r, good_grad, ∇fnext = compute_r(nlp, ft, Δf, Δq, slope, d, xtnext, ∇fnext, robust)
 
             if r < TR.acceptance_threshold
-				# @info log_row(Any[iter, nlp_at_x.fx, norm_∇f, λ, α, "Unsuccessful", norm(d), Δq])
-                verbose && display_failure(iter, ftnext, λ, α)
+				@info log_row(Any[iter, nlp_at_x.fx, norm_∇f, λ, "Unsuccessful", α, norm(d), norm(dHO), obj(nlp, xt_original .+ d), obj(nlp, xt_original .+ dHO), dir, Δq])
+                # verbose && display_failure(iter, ftnext, λ, α)
 	        	unsucc = unsucc + 1
 	        	unsuccinarow = unsuccinarow + 1
 	        	α = decrease(PData, α, TR)
@@ -151,14 +155,14 @@ function TRARC(nlp 		:: AbstractNLPModel,
 					# @show norm_∇f
 					# @show λ
 					# @show α
-					# @info log_row(Any[iter, nlp_at_x.fx, norm_∇f, λ, α, "Very Successful", norm(d), Δq])
-		            verbose && display_v_success(iter, ft, norm_∇f, λ, α)
+					@info log_row(Any[iter, ft, norm_∇f, λ, "Very Successful", α, norm(d), norm(dHO), obj(nlp, xt_original + dTR), obj(nlp, xt_original + dHO), dir, Δq])
+		            # verbose && display_v_success(iter, ft, norm_∇f, λ, α)
 		        else
 	                if r < TR.reduce_threshold
 	                    α = decrease(PData, α, TR)
 	                end
-					# @info log_row(Any[iter, nlp_at_x.fx, norm_∇f, λ, α, "Successful", norm(d), Δq])
-		            verbose && display_success(iter, ft, norm_∇f, λ, α)
+					@info log_row(Any[iter, ft, norm_∇f, λ, "Successful", α, norm(d), norm(dHO),  obj(nlp, xt_original + dTR), obj(nlp, xt_original + dHO), dir, Δq])
+		            # verbose && display_success(iter, ft, norm_∇f, λ, α)
 		            succ += 1
 		        end
 	    	end

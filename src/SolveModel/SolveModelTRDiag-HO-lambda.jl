@@ -4,15 +4,16 @@ export solve_modelTRDiag_HO_λ
 If the Newton direction is accepted and the high order correction lies within
 a bigger trust region then we use the high order correction.
 """
-function solve_modelTRDiag_HO_λ(nlp_stop, PData :: PDataFact, δ:: T; ho_correction :: Symbol = :Shamanskii, fact = 2.0, λfact = 1_000.0) where T
+function solve_modelTRDiag_HO_λ(nlp_stop, PData :: PDataFact, δ:: T; ho_correction :: Symbol = :Shamanskii, fact = 2.0, λfact = 1.0) where T
     # Solve the TR subproblem once diagonalized into Δ using the norm |Δ|
     # Setup the problem
-    # printstyled("On est dans solve_modelTRDiag_HO \n", color = :red)
+    # printstyled("On est dans solve_modelTRDiag_HO_λ ↓ \n", color = :red)
     nlp_at_x = nlp_stop.current_state
     M = fill(T.(1.0), size(PData.Δ))
     ϵ = sqrt(eps(T)) / T(100.0)
     ϵ2 = T.(ϵ * (T(1.0) + PData.λ))
     global dTR = nothing
+    global dHO = nothing
 
     if PData.success # take care of eventual hard case and Newton's direction interior (λ = 0)
         # printstyled("on a PData.succes = $(PData.success) \n", color = :red)
@@ -30,11 +31,11 @@ function solve_modelTRDiag_HO_λ(nlp_stop, PData :: PDataFact, δ:: T; ho_correc
                 dHO = eval(ho_correction)(nlp_stop, PData, dN, PData.g̃)
                 if (norm(dHO) < 2.0 .* δ) && ((-(nlp_at_x.gx + 0.5 * nlp_at_x.Hx * dHO)⋅dHO) > 0.0) # && (norm(grad(nlp_stop.pb, nlp_at_x.x + dHO)) < norm(nlp_at_x.gx))
                     # printstyled("on prend dHO 🐣\n", color = :green)
-                    return dHO, λ
+                    return dHO, dHO, λ
                 else
-                    return dN, λ
+                    return dN, dHO, λ
                 end
-                return dN, dHO, xdemi, λ
+                # return dN, dHO, xdemi, λ
                 # println(" Newton's direction inside the region")
                 #  d̃ is the Newton's direction, nothing more to do
             else              # hard case
@@ -57,17 +58,20 @@ function solve_modelTRDiag_HO_λ(nlp_stop, PData :: PDataFact, δ:: T; ho_correc
 
     # Transform back d̃ into d
     d = AInv(PData, d̃)
+    # printstyled("On a d après AInv \n", color = :red)
     if PData.λ < λfact
         # println("ici ! 🍆")
-        dHO = eval(ho_correction)(nlp_stop, PData, d, PData.g̃, λfact2 = true)
+        # @show λfact
+        # @show ho_correction
+        dHO = eval(ho_correction)(nlp_stop, PData, d, PData.g̃)
         if (norm(dHO) < 2.0 .* δ) && ((-(nlp_at_x.gx + 0.5 * nlp_at_x.Hx * dHO)⋅dHO) > 0.0)
             # printstyled("on prend dHO 🐣\n", color = :green)
-            return dHO, PData.λ
+            return dHO, dHO, PData.λ
         else
             # printstyled("on prend d 🐲 \n", color = :green)
-            return d, PData.λ
+            return d, dHO, PData.λ
         end
     end
-
-    return d, PData.λ
+    return d, NaN * rand(length(d)), PData.λ
+    # return d, PData.λ
 end
