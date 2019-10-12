@@ -96,17 +96,17 @@ include("ST_ARCdense.jl")
 push!(ALL_solvers, ST_ARCdense)
 
 
-include("ARCMA97.jl")
-push!(ALL_solvers, ARCMA97)
-
-include("ARCMA97_abs.jl")
-push!(ALL_solvers, ARCMA97_abs)
-
-include("TRMA97.jl")
-push!(ALL_solvers, TRMA97)
-
-include("TRMA97_abs.jl")
-push!(ALL_solvers, TRMA97_abs)
+# include("ARCMA97.jl")
+# push!(ALL_solvers, ARCMA97)
+#
+# include("ARCMA97_abs.jl")
+# push!(ALL_solvers, ARCMA97_abs)
+#
+# include("TRMA97.jl")
+# push!(ALL_solvers, TRMA97)
+#
+# include("TRMA97_abs.jl")
+# push!(ALL_solvers, TRMA97_abs)
 
 include("ARCMA57.jl")
 push!(ALL_solvers, ARCMA57)

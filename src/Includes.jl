@@ -15,6 +15,7 @@ include("./SolveModel/SolveModelARCDiag.jl")
 include("./SolveModel/SolveModelTRDiag.jl")
 include("./SolveModel/SolveModelTRDiagAbs.jl")
 include("./SolveModel/SolveModelTRDiag-HO.jl")
+include("./SolveModel/SolveModelTRDiag-HO-lambda.jl")
 include("./SolveModel/SolveDiag.jl")
 include("./SolveModel/SolveDiagTR.jl")
 include("./SolveModel/SolveModelST_TR.jl")
@@ -30,7 +31,7 @@ include("./PreProcess/TParamsKTR.jl")
 include("./PreProcess/TParamsST.jl")
 include("./PreProcess/PreProcessLDLt.jl")
 include("./PreProcess/PreProcessSpectral.jl")
-include("./PreProcess/PreProcessMA97.jl")
+# include("./PreProcess/PreProcessMA97.jl")
 include("./PreProcess/PreProcessMA57.jl")
 include("./PreProcess/PreProcessKARC.jl")
 include("./PreProcess/PreProcessKTR.jl")
@@ -40,8 +41,8 @@ include("./PreProcess/PreProcessST_TR.jl")
 ################################################################################
 # Functions needed for high order corrections
 ################################################################################
-include("./SolveModel/SolveModelTRDiag-HO.jl")
-include("./SolveModel/SolveModelTRDiag-HO-lambda.jl")
+# include("./SolveModel/SolveModelTRDiag-HO.jl")
+# include("./SolveModel/SolveModelTRDiag-HO-lambda.jl")
 include("./SolveModel/high-order-correction/shamanskii.jl")
 include("./SolveModel/high-order-correction/shamanskii-lambda.jl")
 include("./SolveModel/high-order-correction/shamanskii-ma57.jl")
@@ -55,4 +56,4 @@ include("./SolveModel/high-order-correction/super-halley.jl")
 ################################################################################
 ## Model, temporary, shoudln't be here
 ################################################################################
-include("autodiff_high_order_model.jl")
+# include("autodiff_high_order_model.jl")

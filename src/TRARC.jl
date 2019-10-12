@@ -48,6 +48,10 @@ function TRARC(nlp 		:: AbstractNLPModel,
 	@info log_header([:iter, :f, :nrm_g, :λ,  :status, :α, :nrm_dtr, :nrm_dHO, :f_p_dTR, :f_p_dHO, :dir, :ΔqN], [Int64, T, T, T, String, T, T, T, T, T, String, T])
 	@info log_row(Any[iter, nlp_at_x.fx, norm_∇f, 0.0, "First iteration", α])
 
+	# @info log_header([:iter, :f, :nrm_g, :λ,  :status, :α, :nrm_dtr], [Int64, T, T, T, String, T, T])
+	# @info log_row(Any[iter, nlp_at_x.fx, norm_∇f, 0.0, "First iteration", α])
+
+
     succ, unsucc, verysucc, unsuccinarow = 0, 0, 0, 0
 
     max_unsuccinarow = TR.max_unsuccinarow
@@ -78,6 +82,7 @@ function TRARC(nlp 		:: AbstractNLPModel,
             	println(" Problem in solve_model")
             	return nlp_at_x, nlp_stop.meta.optimal
             end
+			# @show eltype(dTR)
 			if dTR == dHO
 				dir = "dTR == dHO"
 			else
@@ -85,7 +90,9 @@ function TRARC(nlp 		:: AbstractNLPModel,
 			end
 
 			d = copy(dTR)
-			# @show d
+			# printstyled("après solve_model ⇣ \n", color = :yellow)
+			# @show d[1]
+			# @show d[2]
 
             Δq = -(∇f + 0.5 * nlp_at_x.Hx * d)⋅d
 
@@ -126,7 +133,8 @@ function TRARC(nlp 		:: AbstractNLPModel,
             r, good_grad, ∇fnext = compute_r(nlp, ft, Δf, Δq, slope, d, xtnext, ∇fnext, robust)
 
             if r < TR.acceptance_threshold
-				@info log_row(Any[iter, nlp_at_x.fx, norm_∇f, λ, "Unsuccessful", α, norm(d), norm(dHO), obj(nlp, xt_original .+ d), obj(nlp, xt_original .+ dHO), dir, Δq])
+				@info log_row(Any[iter, nlp_at_x.fx, norm_∇f, λ, "U", α, norm(d), norm(dHO), obj(nlp, xt_original .+ d), obj(nlp, xt_original .+ dHO), dir, Δq])
+				# @info log_row(Any[iter, nlp_at_x.fx, norm_∇f, λ, "Unsuccessful", α, norm(d)])
                 # verbose && display_failure(iter, ftnext, λ, α)
 	        	unsucc = unsucc + 1
 	        	unsuccinarow = unsuccinarow + 1
@@ -155,13 +163,15 @@ function TRARC(nlp 		:: AbstractNLPModel,
 					# @show norm_∇f
 					# @show λ
 					# @show α
-					@info log_row(Any[iter, ft, norm_∇f, λ, "Very Successful", α, norm(d), norm(dHO), obj(nlp, xt_original + dTR), obj(nlp, xt_original + dHO), dir, Δq])
+					@info log_row(Any[iter, ft, norm_∇f, λ, "V", α, norm(d), norm(dHO), obj(nlp, xt_original + dTR), obj(nlp, xt_original + dHO), dir, Δq])
+					# @info log_row(Any[iter, ft, norm_∇f, λ, "Very Successful", α, norm(d)])
 		            # verbose && display_v_success(iter, ft, norm_∇f, λ, α)
 		        else
 	                if r < TR.reduce_threshold
 	                    α = decrease(PData, α, TR)
 	                end
-					@info log_row(Any[iter, ft, norm_∇f, λ, "Successful", α, norm(d), norm(dHO),  obj(nlp, xt_original + dTR), obj(nlp, xt_original + dHO), dir, Δq])
+					@info log_row(Any[iter, ft, norm_∇f, λ, "S", α, norm(d), norm(dHO),  obj(nlp, xt_original + dTR), obj(nlp, xt_original + dHO), dir, Δq])
+					# @info log_row(Any[iter, ft, norm_∇f, λ, "Successful", α, norm(d)])
 		            # verbose && display_success(iter, ft, norm_∇f, λ, α)
 		            succ += 1
 		        end

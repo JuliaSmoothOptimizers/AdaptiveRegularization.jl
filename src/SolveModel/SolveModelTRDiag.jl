@@ -3,17 +3,23 @@ export solve_modelTRDiag
 function solve_modelTRDiag(nlp_stop, PData :: PDataFact, δ:: T) where T
     # Solve the TR subproblem once diagonalized into Δ using the norm |Δ|
     # Setup the problem
-    # println("On est dans solve_modelTRDiag")
-    M = T.(fill(1.0, size(PData.Δ)))
+    # printstyled("On est dans solve_modelTRDiag ⇊ \n", color = :red)
+    # M = T.(fill(1.0, size(PData.Δ)))
+    # @show T
+    M = ones(T, size(PData.Δ))
     ϵ = sqrt(eps(T)) / T(100.0)
-    ϵ2 = T.(ϵ * (1.0 + PData.λ))
+    # @show ϵ
+    # ϵ2 = T.(ϵ * (1.0 + PData.λ))
+    ϵ2 = ϵ .* (T(1.0) .+ PData.λ)
+    # @show ϵ2
     global dHO = nothing
 
 
     if PData.success # take care of eventual hard case and Newton's direction interior (λ = 0)
         # (PData.Δ + PData.λ * M) ⪰ 0
         # println("on a PData.succes = $(PData.success)")
-        λ = max(ϵ2, PData.λ + ϵ2) # to make sure (PData.Δ + λ * M) ≻ 0
+        λ = max(ϵ2, ϵ2 + PData.λ) # to make sure (PData.Δ + λ * M) ≻ 0
+        # λ = PData.λ
 
         d̃ = -(PData.Δ .+ λ * M) .\ PData.g̃ # Ajouter Shamanskii ici!
         normd̃ = sqrt(d̃⋅d̃)
@@ -39,8 +45,12 @@ function solve_modelTRDiag(nlp_stop, PData :: PDataFact, δ:: T) where T
     PData.λ = λ
 
     # Transform back d̃ into d
+    # printstyled("on est avant AInv \n", color = :red)
+    # @show d̃[1]
+    # @show d̃[2]
     d = AInv(PData, d̃)
 
+    # printstyled("on sort de solve_mode ⇈ \n", color = :red)
     #try assert((PData.g̃ + 0.5*PData.Δ .* d̃)⋅d̃ <= 0.0)  catch  @bp  end
     return d, NaN * rand(length(d)), λ
 end

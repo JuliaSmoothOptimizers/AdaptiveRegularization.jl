@@ -1,6 +1,6 @@
 module ARCTR
-using NLPModels
 
+using NLPModels
 using LinearOperators
 using LinearAlgebra, GenericLinearAlgebra
 using Krylov
