@@ -108,26 +108,26 @@ push!(ALL_solvers, ST_ARCdense)
 # include("TRMA97_abs.jl")
 # push!(ALL_solvers, TRMA97_abs)
 
-include("ARCMA57.jl")
-push!(ALL_solvers, ARCMA57)
-
-include("ARCMA57_abs.jl")
-push!(ALL_solvers, ARCMA57_abs)
-
-include("TRMA57.jl")
-push!(ALL_solvers, TRMA57)
-
-include("TRMA57_Sham.jl")
-push!(ALL_solvers, TRMA57_Sham)
-
-include("TRMA57-2.jl")
-push!(ALL_solvers, TRMA57_2)
-
-include("TRMA57_Sham_2.jl")
-push!(ALL_solvers, TRMA57_Sham_2)
-
-include("TRMA57_Sham_BFGS.jl")
-push!(ALL_solvers, TRMA57_Sham_BFGS)
-
-include("TRMA57_abs.jl")
-push!(ALL_solvers, TRMA57_abs)
+# include("ARCMA57.jl")
+# push!(ALL_solvers, ARCMA57)
+#
+# include("ARCMA57_abs.jl")
+# push!(ALL_solvers, ARCMA57_abs)
+#
+# include("TRMA57.jl")
+# push!(ALL_solvers, TRMA57)
+#
+# include("TRMA57_Sham.jl")
+# push!(ALL_solvers, TRMA57_Sham)
+#
+# include("TRMA57-2.jl")
+# push!(ALL_solvers, TRMA57_2)
+#
+# include("TRMA57_Sham_2.jl")
+# push!(ALL_solvers, TRMA57_Sham_2)
+#
+# include("TRMA57_Sham_BFGS.jl")
+# push!(ALL_solvers, TRMA57_Sham_BFGS)
+#
+# include("TRMA57_abs.jl")
+# push!(ALL_solvers, TRMA57_abs)

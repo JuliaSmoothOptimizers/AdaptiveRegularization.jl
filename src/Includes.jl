@@ -2,7 +2,7 @@
 include("./HessianRep/HessianDense.jl")
 include("./HessianRep/HessianSparse.jl")
 include("./HessianRep/HessianOp.jl")
-using HSL
+# using HSL
 using LinearOperators
 
 include("./Types/Types.jl")
@@ -32,7 +32,7 @@ include("./PreProcess/TParamsST.jl")
 include("./PreProcess/PreProcessLDLt.jl")
 include("./PreProcess/PreProcessSpectral.jl")
 # include("./PreProcess/PreProcessMA97.jl")
-include("./PreProcess/PreProcessMA57.jl")
+# include("./PreProcess/PreProcessMA57.jl")
 include("./PreProcess/PreProcessKARC.jl")
 include("./PreProcess/PreProcessKTR.jl")
 include("./PreProcess/PreProcessST_TR.jl")
@@ -56,4 +56,4 @@ include("./SolveModel/high-order-correction/super-halley.jl")
 ################################################################################
 ## Model, temporary, shoudln't be here
 ################################################################################
-# include("autodiff_high_order_model.jl")
+include("autodiff_high_order_model.jl")
