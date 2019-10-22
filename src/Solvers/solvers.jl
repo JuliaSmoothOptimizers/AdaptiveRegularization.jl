@@ -36,6 +36,12 @@ push!(ALL_solvers, TRLDLt)
 include("TRLDLt_HO.jl")
 push!(ALL_solvers, TRLDLt_HO)
 
+include("TRLDLt_HO_CGT.jl")
+push!(ALL_solvers, TRLDLt_HO_CGT)
+
+include("TRLDLt_HO_vs_Nwt.jl")
+push!(ALL_solvers, TRLDLt_HO_vs_Nwt)
+
 include("TRLDLt_BBK.jl")
 push!(ALL_solvers, TRLDLt_BK)
 
