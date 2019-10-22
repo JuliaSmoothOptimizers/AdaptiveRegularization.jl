@@ -90,7 +90,6 @@ function TRARC(nlp 		:: AbstractNLPModel,
 			end
 
 			d = copy(dTR)
-			# printstyled("après solve_model ⇣ \n", color = :yellow)
 			# @show d[1]
 			# @show d[2]
 
@@ -115,6 +114,8 @@ function TRARC(nlp 		:: AbstractNLPModel,
             slope = ∇f ⋅ d
 			xt_original = copy(xt)
 			xtnext = xt .+ d
+			# @show xtnext[1]
+			# @show xtnext[2]
 
             iter += 1
 
@@ -123,6 +124,8 @@ function TRARC(nlp 		:: AbstractNLPModel,
             catch
                 ftnext = Inf;
             end
+
+			# printstyled("on a ftnext ↑ \n", color = :yellow)
 
             if isnan(ftnext)
                 ftnext = Inf
@@ -133,6 +136,7 @@ function TRARC(nlp 		:: AbstractNLPModel,
             r, good_grad, ∇fnext = compute_r(nlp, ft, Δf, Δq, slope, d, xtnext, ∇fnext, robust)
 
             if r < TR.acceptance_threshold
+				# printstyled("on est unsucessful \n", color = :yellow)
 				@info log_row(Any[iter, nlp_at_x.fx, norm_∇f, λ, "U", α, norm(d), norm(dHO), obj(nlp, xt_original .+ d), obj(nlp, xt_original .+ dHO), dir, Δq])
 				# @info log_row(Any[iter, nlp_at_x.fx, norm_∇f, λ, "Unsuccessful", α, norm(d)])
                 # verbose && display_failure(iter, ftnext, λ, α)
@@ -157,6 +161,7 @@ function TRARC(nlp 		:: AbstractNLPModel,
 				verysucc += 1
                 Ht = hessian_rep(nlp, xt)
 		        if r > TR.increase_threshold
+					# printstyled("on est very sucessful \n", color = :yellow)
 		            α = increase(PData, α, TR)
 					# @show iter
 					# @show ft
@@ -170,6 +175,7 @@ function TRARC(nlp 		:: AbstractNLPModel,
 	                if r < TR.reduce_threshold
 	                    α = decrease(PData, α, TR)
 	                end
+					# printstyled("on est sucessful \n", color = :yellow)
 					@info log_row(Any[iter, ft, norm_∇f, λ, "S", α, norm(d), norm(dHO),  obj(nlp, xt_original + dTR), obj(nlp, xt_original + dHO), dir, Δq])
 					# @info log_row(Any[iter, ft, norm_∇f, λ, "Successful", α, norm(d)])
 		            # verbose && display_success(iter, ft, norm_∇f, λ, α)
@@ -185,29 +191,28 @@ function TRARC(nlp 		:: AbstractNLPModel,
 		calls = [nlp.counters.neval_obj,  nlp.counters.neval_grad, nlp.counters.neval_hess, nlp.counters.neval_hprod]
     end # while !OK
 
+
     xopt = xt
     fopt = ft
     ∇fopt = ∇f
     norm_∇fopt = norm_∇f
 
-    niter = verysucc + succ + unsucc;
-    verbose && @printf(" %10i unsuccessful iterations \n", unsucc)
-    verbose && @printf(" %10i successful iterations \n", succ)
-    verbose && @printf(" %10i very successful iterations \n", verysucc)
-    verbose && @printf(" %10i total successful iterations \n", verysucc + succ)
-    verbose && @printf(" %10i total iterations \n", niter)
+    # niter = verysucc + succ + unsucc;
+    # verbose && @printf(" %10i unsuccessful iterations \n", unsucc)
+    # verbose && @printf(" %10i successful iterations \n", succ)
+    # verbose && @printf(" %10i very successful iterations \n", verysucc)
+    # verbose && @printf(" %10i total successful iterations \n", verysucc + succ)
+    # verbose && @printf(" %10i total iterations \n", niter)
 
-    calls = [nlp.counters.neval_obj, nlp.counters.neval_grad, nlp.counters.neval_hess, nlp.counters.neval_hprod]
+    # calls = [nlp.counters.neval_obj, nlp.counters.neval_grad, nlp.counters.neval_hess, nlp.counters.neval_hprod]
 
     total_calls = nlp.counters.neval_obj + nlp.counters.neval_grad + n * nlp.counters.neval_hess + nlp.counters.neval_hprod
-     verbose && @printf(" %10i total f %10i g %10i H calls  %10i Hv calls  \n", nlp.counters.neval_obj, nlp.counters.neval_grad, nlp.counters.neval_hess, nlp.counters.neval_hprod)
+     # verbose && @printf(" %10i total f %10i g %10i H calls  %10i Hv calls  \n", nlp.counters.neval_obj, nlp.counters.neval_grad, nlp.counters.neval_hess, nlp.counters.neval_hprod)
 
 
-    if OK && verbose  @printf("\n     Final cost(x) = %f  ||g|| = %9.2e  nb of f/g/H evals = %i  converged\n", fopt, norm_∇fopt, total_calls)
-    elseif verbose
-        @printf("\n     Final cost(x) = %f  ||g|| = %9.2e  nb of f/g/H evals  = %i  NOT converged\n\n", fopt, norm_∇fopt, total_calls)
-    end;
-
+    # if OK && verbose  @printf("\n     Final cost(x) = %f  ||g|| = %9.2e  nb of f/g/H evals = %i  converged\n", fopt, norm_∇fopt, total_calls)
+    # elseif verbose
+        # @printf("\n     Final cost(x) = %f  ||g|| = %9.2e  nb of f/g/H evals  = %i  NOT converged\n\n", fopt, norm_∇fopt, total_calls)
+    # end;
     return nlp_at_x, nlp_stop.meta.optimal
-
 end

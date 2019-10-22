@@ -21,6 +21,11 @@ push!(ALL_solvers, TRSpectral_abs)
 include("ARCLDLt.jl")
 push!(ALL_solvers, ARCLDLt)
 
+include("ARCLDLt_Sham_HO.jl")
+push!(ALL_solvers, ARCLDLt_HO_Sham)
+include("ARCLDLt_Sham_HO_100.jl")
+push!(ALL_solvers, ARCLDLt_HO_Sham_100)
+
 include("ARCLDLt_abs.jl")
 push!(ALL_solvers, ARCLDLt_abs)
 
@@ -36,6 +41,9 @@ push!(ALL_solvers, TRLDLt_BK)
 
 include("TRLDLt_HO_Sham.jl")
 push!(ALL_solvers, TRLDLt_HO_Sham)
+
+include("TRLDLt_HO_Sham_2.jl")
+push!(ALL_solvers, TRLDLt_HO_Sham_2)
 
 include("TRLDLt_HO_Sham_lambda.jl")
 push!(ALL_solvers, TRLDLt_HO_Sham_λ)
