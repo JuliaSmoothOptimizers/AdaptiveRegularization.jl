@@ -1,13 +1,14 @@
-export solve_modelTRDiag_HO
+export solve_modelTRDiag_HO_CGT
 
 """
 If the Newton direction is accepted and the high order correction lies within
 a bigger trust region then we use the high order correction.
 """
-function solve_modelTRDiag_HO(nlp_stop, PData :: PDataFact, δ:: T; ho_correction :: Symbol = :Shamanskii) where T
+function solve_modelTRDiag_HO_CGT(nlp_stop, PData :: PDataFact, δ:: T; ho_correction :: Symbol = :Shamanskii, κmax = 1e-06, β = 0.4) where T
     # Solve the TR subproblem once diagonalized into Δ using the norm |Δ|
     # Setup the problem
-    # printstyled("On est dans solve_modelTRDiag_HO \n", color = :red)
+    # printstyled("On est dans solve_modelTRDiag_HO_CGT \n", color = :red)
+    κmax = T(κmax)
     nlp_at_x = nlp_stop.current_state
     M = fill(T.(1.0), size(PData.Δ))
     ϵ = sqrt(eps(T)) / T(100.0)
@@ -32,7 +33,15 @@ function solve_modelTRDiag_HO(nlp_stop, PData :: PDataFact, δ:: T; ho_correctio
                 # @show dN
                 dHO = eval(ho_correction)(nlp_stop, PData, dN, PData.g̃)
                 # @show dHO
-                if (norm(dHO) < 2.0 .* δ) && ((-(nlp_at_x.gx + 0.5 * nlp_at_x.Hx * dHO)⋅dHO) > 0.0) # && (norm(grad(nlp_stop.pb, nlp_at_x.x + dHO)) < norm(nlp_at_x.gx))
+                # @show κmax
+                # @show normg̃
+                # @show β
+                # @show PData.Δ
+                # @show κmax .* normg̃
+                # @show (normg̃ ./ β)
+                # @show minimum((normg̃ ./ β), PData.Δ)
+                CGT_const = κmax .* normg̃ .* min((normg̃ ./ β), δ)
+                if (norm(dHO) < 2.0 .* δ) && ((-(nlp_at_x.gx + 0.5 * nlp_at_x.Hx * dHO)⋅dHO) > CGT_const) # && (norm(grad(nlp_stop.pb, nlp_at_x.x + dHO)) < norm(nlp_at_x.gx))
                     # printstyled("on prend dHO 🐣\n", color = :green)
                     return dHO, dHO, λ
                 else
