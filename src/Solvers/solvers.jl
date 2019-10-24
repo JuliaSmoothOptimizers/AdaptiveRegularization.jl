@@ -23,6 +23,7 @@ push!(ALL_solvers, ARCLDLt)
 
 include("ARCLDLt_Sham_HO.jl")
 push!(ALL_solvers, ARCLDLt_HO_Sham)
+
 include("ARCLDLt_Sham_HO_100.jl")
 push!(ALL_solvers, ARCLDLt_HO_Sham_100)
 
@@ -35,6 +36,9 @@ push!(ALL_solvers, TRLDLt)
 
 include("TRLDLt_HO.jl")
 push!(ALL_solvers, TRLDLt_HO)
+
+include("TRLDLt_HO_vs_Cauchy.jl")
+push!(ALL_solvers, TRLDLt_HO_vs_Cauchy)
 
 include("TRLDLt_HO_CGT.jl")
 push!(ALL_solvers, TRLDLt_HO_CGT)

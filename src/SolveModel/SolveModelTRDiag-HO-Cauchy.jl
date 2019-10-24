@@ -1,19 +1,21 @@
-export solve_modelTRDiag_HO_vs_Nwt
+export solve_modelTRDiag_HO_vs_Cauchy
 
 """
 If the Newton direction is accepted and the high order correction lies within
 a bigger trust region then we use the high order correction.
 """
-function solve_modelTRDiag_HO_vs_Nwt(nlp_stop, PData :: PDataFact, δ:: T; ho_correction :: Symbol = :Shamanskii, nwt_res_fact = 0.25) where T
+function solve_modelTRDiag_HO_vs_Cauchy(nlp_stop, PData :: PDataFact, δ:: T; ho_correction :: Symbol = :Shamanskii) where T
     # Solve the TR subproblem once diagonalized into Δ using the norm |Δ|
     # Setup the problem
-    # printstyled("On est dans solve_modelTRDiag_HO_vs_Nwt \n", color = :red)
+    # printstyled("On est dans solve_modelTRDiag_HO_vs_cauchy \n", color = :red)
     nlp_at_x = nlp_stop.current_state
     M = fill(T.(1.0), size(PData.Δ))
     ϵ = sqrt(eps(T)) / T(100.0)
     ϵ2 = T.(ϵ * (T(1.0) + PData.λ))
     global dHO = nothing
+    global τ = nothing
 
+    # log_header([:λ, :norm_dn, :norm_dho], [T, T, T, T, T, T])
 
     if PData.success # take care of eventual hard case and Newton's direction interior (λ = 0)
         # printstyled("on a PData.succes = $(PData.success) \n", color = :red)
@@ -30,10 +32,22 @@ function solve_modelTRDiag_HO_vs_Nwt(nlp_stop, PData :: PDataFact, δ:: T; ho_co
                 dN = AInv(PData, d̃)
                 # @show dN
                 dHO = eval(ho_correction)(nlp_stop, PData, dN, PData.g̃)
-                nwt_residual = (-(nlp_at_x.gx + 0.5 * nlp_at_x.Hx * dN)⋅dN)
-                # @show nwt_residual
-                # @show nwt_res_fact .* nwt_residual
-                if (norm(dHO) < 2.0 .* δ) && ((-(nlp_at_x.gx + 0.5 * nlp_at_x.Hx * dHO)⋅dHO) > nwt_res_fact .* nwt_residual) # && (norm(grad(nlp_stop.pb, nlp_at_x.x + dHO)) < norm(nlp_at_x.gx))
+                # @show dHO
+                gBg = (nlp_at_x.Hx * nlp_at_x.gx)' * nlp_at_x.gx
+                ng = norm(nlp_at_x.gx)
+                if gBg <= 0.0
+                    τ = 1.0
+                else
+                    ng3 = ng^3
+                    denom = δ .* gBg
+                    τ = min(ng3 ./ denom, 1)
+                end
+                # @show τ
+                dCauchy = -τ .* ((δ ./ ng) * nlp_at_x.gx)
+                # @show dCauchy
+                cauchy_decrease = -(nlp_at_x.gx + 0.5 * nlp_at_x.Hx * dCauchy)⋅dCauchy
+                # @show cauchy_decrease
+                if (norm(dHO) < 2.0 .* δ) && ((-(nlp_at_x.gx + 0.5 * nlp_at_x.Hx * dHO)⋅dHO) > cauchy_decrease) # && (norm(grad(nlp_stop.pb, nlp_at_x.x + dHO)) < norm(nlp_at_x.gx))
                     # printstyled("on prend dHO 🐣\n", color = :green)
                     return dHO, dHO, λ
                 else
