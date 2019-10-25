@@ -1,6 +1,6 @@
-export solve_modelARCDiag_HO
+export solve_modelARCDiag_HO_vs_Nwt
 
-function solve_modelARCDiag_HO(nlp_stop, PData :: PDataFact, α:: T; ho_correction :: Symbol = :Shamanskii, λfact = 1.0, ) where T
+function solve_modelARCDiag_HO_vs_Nwt(nlp_stop, PData :: PDataFact, α:: T; ho_correction :: Symbol = :Shamanskii, λfact = 1.0, nwt_res_fact = 0.8) where T
     # Solve the ARC subproblem once diagonalized into Δ
     # printstyled("On est dans solve_modelARCDiag ⇊ \n", color = :red)
     nlp_at_x = nlp_stop.current_state
@@ -47,8 +47,11 @@ function solve_modelARCDiag_HO(nlp_stop, PData :: PDataFact, α:: T; ho_correcti
         # @show nlp_at_x.Hx
         # @show -(nlp_at_x.gx + 0.5 .* nlp_at_x.Hx * dHO)
         # @show (-(nlp_at_x.gx + 0.5 .* nlp_at_x.Hx * dHO)⋅dHO)
-        
-        if (norm(dHO) < 2.0 .* α) && ((-(nlp_at_x.gx + 0.5 * nlp_at_x.Hx * dHO)⋅dHO) > 0.0)
+        nwt_residual = (-(nlp_at_x.gx + 0.5 * nlp_at_x.Hx * d)⋅d)
+        # @show nwt_res_fact
+        # @show nwt_residual
+        # @show -(nlp_at_x.gx + 0.5 * nlp_at_x.Hx * dHO)⋅dHO
+        if (norm(dHO) < 2.0 .* α) && ((-(nlp_at_x.gx + 0.5 * nlp_at_x.Hx * dHO)⋅dHO) > nwt_res_fact .* nwt_residual)
             # printstyled("on prend dHO 🐣\n", color = :green)
             return dHO, dHO, PData.λ
         else

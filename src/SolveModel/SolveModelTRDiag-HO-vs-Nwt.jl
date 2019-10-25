@@ -4,7 +4,7 @@ export solve_modelTRDiag_HO_vs_Nwt
 If the Newton direction is accepted and the high order correction lies within
 a bigger trust region then we use the high order correction.
 """
-function solve_modelTRDiag_HO_vs_Nwt(nlp_stop, PData :: PDataFact, δ:: T; ho_correction :: Symbol = :Shamanskii, nwt_res_fact = 0.25) where T
+function solve_modelTRDiag_HO_vs_Nwt(nlp_stop, PData :: PDataFact, δ:: T; ho_correction :: Symbol = :Shamanskii, nwt_res_fact = 0.8) where T
     # Solve the TR subproblem once diagonalized into Δ using the norm |Δ|
     # Setup the problem
     # printstyled("On est dans solve_modelTRDiag_HO_vs_Nwt \n", color = :red)

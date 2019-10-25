@@ -24,6 +24,9 @@ push!(ALL_solvers, ARCLDLt)
 include("ARCLDLt_Sham_HO.jl")
 push!(ALL_solvers, ARCLDLt_HO_Sham)
 
+include("ARCLDLt_HO_vs_Nwt.jl")
+push!(ALL_solvers, ARCLDLt_HO_vs_Nwt)
+
 include("ARCLDLt_Sham_HO_100.jl")
 push!(ALL_solvers, ARCLDLt_HO_Sham_100)
 
