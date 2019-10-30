@@ -134,13 +134,19 @@ push!(ALL_solvers, ST_ARCdense)
 #
 # include("ARCMA57_abs.jl")
 # push!(ALL_solvers, ARCMA57_abs)
-#
-# include("TRMA57.jl")
-# push!(ALL_solvers, TRMA57)
-#
-# include("TRMA57_Sham.jl")
-# push!(ALL_solvers, TRMA57_Sham)
-#
+
+include("TRMA57.jl")
+push!(ALL_solvers, TRMA57)
+
+include("TRMA57_Sham.jl")
+push!(ALL_solvers, TRMA57_Sham)
+
+include("TRMA57_Sham_lambda.jl")
+push!(ALL_solvers, TRMA57_Sham_λ)
+
+include("TRMA57_Sham_vs_Nwt.jl")
+push!(ALL_solvers, TRMA57_Sham_vs_Nwt)
+
 # include("TRMA57-2.jl")
 # push!(ALL_solvers, TRMA57_2)
 #

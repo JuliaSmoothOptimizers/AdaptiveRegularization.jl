@@ -1,6 +1,7 @@
 # Selective includes.
 include("./HessianRep/HessianDense.jl")
 include("./HessianRep/HessianSparse.jl")
+include("./HessianRep/HessianSparseNoTril.jl")
 include("./HessianRep/HessianOp.jl")
 # using HSL
 using LinearOperators
@@ -38,7 +39,7 @@ include("./PreProcess/TParamsST.jl")
 include("./PreProcess/PreProcessLDLt.jl")
 include("./PreProcess/PreProcessSpectral.jl")
 # include("./PreProcess/PreProcessMA97.jl")
-# include("./PreProcess/PreProcessMA57.jl")
+include("./PreProcess/PreProcessMA57.jl")
 include("./PreProcess/PreProcessKARC.jl")
 include("./PreProcess/PreProcessKTR.jl")
 include("./PreProcess/PreProcessST_TR.jl")
