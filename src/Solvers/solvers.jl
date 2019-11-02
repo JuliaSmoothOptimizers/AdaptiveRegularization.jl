@@ -147,6 +147,9 @@ push!(ALL_solvers, TRMA57_Sham_λ)
 include("TRMA57_Sham_vs_Nwt.jl")
 push!(ALL_solvers, TRMA57_Sham_vs_Nwt)
 
+include("TRMA57_Sham_vs_Nwt_lambda.jl")
+push!(ALL_solvers, TRMA57_Sham_vs_Nwt_λ)
+
 # include("TRMA57-2.jl")
 # push!(ALL_solvers, TRMA57_2)
 #
