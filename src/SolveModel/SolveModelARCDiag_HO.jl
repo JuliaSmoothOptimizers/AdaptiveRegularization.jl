@@ -1,6 +1,6 @@
 export solve_modelARCDiag_HO
 
-function solve_modelARCDiag_HO(nlp_stop, PData :: PDataFact, α:: T; ho_correction :: Symbol = :Shamanskii, λfact = 1.0, ) where T
+function solve_modelARCDiag_HO(nlp_stop, PData :: PDataFact, α:: T; ho_correction :: Symbol = :Shamanskii, λfact = 1.0) where T
     # Solve the ARC subproblem once diagonalized into Δ
     # printstyled("On est dans solve_modelARCDiag ⇊ \n", color = :red)
     nlp_at_x = nlp_stop.current_state
@@ -47,7 +47,7 @@ function solve_modelARCDiag_HO(nlp_stop, PData :: PDataFact, α:: T; ho_correcti
         # @show nlp_at_x.Hx
         # @show -(nlp_at_x.gx + 0.5 .* nlp_at_x.Hx * dHO)
         # @show (-(nlp_at_x.gx + 0.5 .* nlp_at_x.Hx * dHO)⋅dHO)
-        
+
         if (norm(dHO) < 2.0 .* α) && ((-(nlp_at_x.gx + 0.5 * nlp_at_x.Hx * dHO)⋅dHO) > 0.0)
             # printstyled("on prend dHO 🐣\n", color = :green)
             return dHO, dHO, PData.λ
