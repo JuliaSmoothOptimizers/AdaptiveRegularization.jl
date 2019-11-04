@@ -64,6 +64,9 @@ push!(ALL_solvers, TRLDLt_HO_Sham_λ)
 include("TRLDLt_HO_Sham_BFGS.jl")
 push!(ALL_solvers, TRLDLt_HO_Sham_BFGS)
 
+include("TRLDLt_HO_vs_Nwt_lambda.jl")
+push!(ALL_solvers, TRLDLt_HO_vs_Nwt_λ)
+
 # include("TRLDLt_HO_MP.jl")                # Still a work in progress
 # push!(ALL_solvers, TRLDLt_HO_MP)
 
