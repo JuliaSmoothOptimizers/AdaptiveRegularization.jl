@@ -9,19 +9,19 @@ function TRARC(nlp 		:: AbstractNLPModel,
                 )
 
 	T = eltype(nlp_stop.current_state.x)
-	# @show nlp.meta.x0
+	@show nlp.meta.x0
 	dTR = nothing
 	dN = nothing
 
 	nlp_at_x = nlp_stop.current_state
     hessian_rep, PData, solve_model, pre_process, decrease, params = extract(c)
-	# println("on a extract")
-	# @show hessian_rep
-	# @show PData
-	# @show solve_model
-	# @show pre_process
-	# @show decrease
-	# @show params
+	println("on a extract")
+	@show hessian_rep
+	@show PData
+	@show solve_model
+	@show pre_process
+	@show decrease
+	@show params
 
     α = TR.α₀  # initial Trust Region size
     xt, xtnext, d, Df = copy(nlp_at_x.x), copy(nlp_at_x.x), copy(nlp_at_x.x), 0.0
