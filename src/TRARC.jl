@@ -9,7 +9,7 @@ function TRARC(nlp 		:: AbstractNLPModel,
                 )
 
 	T = eltype(nlp_stop.current_state.x)
-	@show nlp.meta.x0
+	# @show nlp.meta.x0
 	dTR = nothing
 	dN = nothing
 
