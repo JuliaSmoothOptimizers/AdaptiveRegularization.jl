@@ -7,7 +7,7 @@ a bigger trust region then we use the high order correction.
 function solve_modelTRDiag_HO_vs_Nwt_λ(nlp_stop, PData :: PDataFact, δ:: T; ho_correction :: Symbol = :Shamanskii, fact = 2.0, λfact = 1.0, nwt_res_fact = 0.25) where T
     # Solve the TR subproblem once diagonalized into Δ using the norm |Δ|
     # Setup the problem
-    printstyled("On est ici \n", color = :red)
+    # printstyled("On est ici \n", color = :red)
     nlp_at_x = nlp_stop.current_state
     M = ones(T, size(PData.Δ))
     ϵ = sqrt(eps(T)) / T(100.0)
@@ -47,14 +47,14 @@ function solve_modelTRDiag_HO_vs_Nwt_λ(nlp_stop, PData :: PDataFact, δ:: T; ho
     # Transform back d̃ into d
 
     d = AInv(PData, d̃)
-    @show λfact
+    # @show λfact
     if λ < λfact
-        printstyled("on a λ < λfact \n", color = :yellow)
-        @show ho_correction
+        # printstyled("on a λ < λfact \n", color = :yellow)
+        # @show ho_correction
         dHO = eval(ho_correction)(nlp_stop, PData, d, PData.g̃)
-        printstyled("on a dHO \n", color = :yellow)
+        # printstyled("on a dHO \n", color = :yellow)
         nwt_residual = (-(nlp_at_x.gx + 0.5 * nlp_at_x.Hx * d)⋅d)
-        printstyled("on a nwt_residual \n", color = :yellow)
+        # printstyled("on a nwt_residual \n", color = :yellow)
         if (norm(dHO) < 2.0 .* δ) && ((-(nlp_at_x.gx + 0.5 * nlp_at_x.Hx * dHO)⋅dHO) > nwt_res_fact .* nwt_residual)
             return dHO, dHO, λ
         else
