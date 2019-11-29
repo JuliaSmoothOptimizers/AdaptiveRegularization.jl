@@ -10,7 +10,7 @@ using State
 using Stopping
 using Quadmath
 using LDLFactorizations
-using HSL
+# using HSL
 using Logging, SolverTools
 
 include("Includes.jl")
