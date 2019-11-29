@@ -8,8 +8,7 @@ function solve_modelST_TR(nlp_stop, X :: PDataST, δ:: T; cgtol :: T = 0.1) wher
                      radius = δ,  itmax = max(2 * n, 50),
                      verbose = false)
 
-
     λ = 0.0  #  dummy for this variant
 
-    return d, λ#, cgtol
+    return d, NaN * rand(length(d)), λ#, cgtol
 end

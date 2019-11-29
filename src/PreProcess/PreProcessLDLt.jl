@@ -17,6 +17,8 @@ function preprocessLDLt(H ,g, params :: Tparams, n1, n2)
     global ρ = nothing
     global ncomp = nothing
 
+    # @show H
+
     try
         (L, D, pp, ρ, ncomp) = ldlt_symm(H, 'r')
     catch
@@ -54,7 +56,8 @@ function preprocessLDLt(H ,g, params :: Tparams, n1, n2)
     # @show pp
 
     # D = Hermitian(D)
-    X = eigen(D)
+    # @show D
+    X = eigen(SymTridiagonal(D))
     Δ = X.values
     # @show Δ[1]
     # @show Δ[2]
@@ -79,6 +82,7 @@ function preprocessLDLt(H ,g, params :: Tparams, n1, n2)
     n_g = norm(g)
     # @show n_g
     λ =  max(-l_m, 0.0)
+    # @show eltype(λ)
     # @show eltype(λ)
     # @show λ
     # printstyled("avant de sortir de PreProcessLDLt ↑ \n", color = :red)

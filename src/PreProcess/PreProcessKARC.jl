@@ -5,7 +5,8 @@ function preprocessKARC(Hop, g, params::Tparams, calls, max_calls)
 
     n = length(g)
     gNorm2 = BLAS.nrm2(n, g, 1)
-    precision =  max(1e-12,min(0.5,(gNorm2^τ)))
+    # gNorm2 = norm(g)
+    precision =  max(1e-12, min(0.5,(gNorm2^τ)))
     (xShift, stats) = cg_lanczos_shift_seq(Hop,
                                            -g,
                                            shifts,

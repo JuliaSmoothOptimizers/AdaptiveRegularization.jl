@@ -1,8 +1,9 @@
 # Selective includes.
 include("./HessianRep/HessianDense.jl")
 include("./HessianRep/HessianSparse.jl")
+include("./HessianRep/HessianSparseNoTril.jl")
 include("./HessianRep/HessianOp.jl")
-using HSL
+# using HSL
 using LinearOperators
 
 include("./Types/Types.jl")
@@ -12,15 +13,14 @@ include("./SolveModel/SolveModelKARC.jl")
 include("./SolveModel/SolveModelKTR.jl")
 include("./SolveModel/SolveModelARCDiagAbs.jl")
 include("./SolveModel/SolveModelARCDiag.jl")
+include("./SolveModel/SolveModelARCDiag_HO.jl")
+include("./SolveModel/SolveModelARCDiag_HO_vs_Nwt.jl")
 include("./SolveModel/SolveModelTRDiag.jl")
 include("./SolveModel/SolveModelTRDiagAbs.jl")
-include("./SolveModel/SolveModelTRDiag-HO.jl")
-include("./SolveModel/SolveModelTRDiag-HO-lambda.jl")
+include("./SolveModel/SolveModelTRDiag-HO-lambda-vs-Nwt.jl")
 include("./SolveModel/SolveDiag.jl")
 include("./SolveModel/SolveDiagTR.jl")
 include("./SolveModel/SolveModelST_TR.jl")
-include("./SolveModel/SolveModelST_TR_Sham.jl")
-include("./SolveModel/SolveModelST_TR_Sham_BFGS.jl")
 include("./SolveModel/SolveModelST_ARC.jl")
 include("./SolveModel/cgARC.jl")
 #include("./SolveModel/krylov_aux.jl")
@@ -45,8 +45,8 @@ include("./PreProcess/PreProcessST_TR.jl")
 # include("./SolveModel/SolveModelTRDiag-HO-lambda.jl")
 include("./SolveModel/high-order-correction/shamanskii.jl")
 include("./SolveModel/high-order-correction/shamanskii-lambda.jl")
-include("./SolveModel/high-order-correction/shamanskii-ma57.jl")
-include("./SolveModel/high-order-correction/shamanskii-ma57-bfgs.jl")
+# include("./SolveModel/high-order-correction/shamanskii-ma57.jl")
+# include("./SolveModel/high-order-correction/shamanskii-ma57-bfgs.jl")
 include("./SolveModel/high-order-correction/shamanskii-bfgs.jl")
 include("./SolveModel/high-order-correction/chebyshev.jl")
 include("./SolveModel/high-order-correction/halley.jl")
@@ -56,4 +56,4 @@ include("./SolveModel/high-order-correction/super-halley.jl")
 ################################################################################
 ## Model, temporary, shoudln't be here
 ################################################################################
-# include("autodiff_high_order_model.jl")
+include("autodiff_high_order_model.jl")
