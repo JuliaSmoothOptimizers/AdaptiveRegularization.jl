@@ -1,22 +1,21 @@
-# Documentation: http://docs.travis-ci.com/user/languages/julia/
-
+## Documentation: http://docs.travis-ci.com/user/languages/julia/
 language: julia
-
 os:
   - linux
   - osx
-
 julia:
-  - release
-#  - nightly
-
+  - 1.0
+  - 1.1
+  - 1.2
+  - nightly
 notifications:
   email: false
 
-script:
-  - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
-  - julia -e 'Pkg.clone(pwd()); Pkg.build("ARCTR"); Pkg.test("ARCTR"; coverage=true)'
+codecov: true
+coveralls: true
 
-after_success:
-  - julia -e 'cd(Pkg.dir("ARCTR")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'
-  - julia -e 'cd(Pkg.dir("ARCTR")); using Coverage; Codecov.submit(process_folder())'
+## uncomment the following lines to allow failures on nightly julia
+# (tests will run but not make your overall status red)
+matrix:
+ allow_failures:
+ - julia: nightly

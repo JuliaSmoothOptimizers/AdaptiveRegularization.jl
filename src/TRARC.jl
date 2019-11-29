@@ -36,7 +36,8 @@ function TRARC(nlp 		:: AbstractNLPModel,
     ft = obj(nlp, xt)
     fopt = ft
     grad!(nlp, xt, ∇f)
-	OK = update_and_start!(nlp_stop, x = xt, fx = ft, gx = ∇f, g0 = copy(∇f))
+	nlp_stop.meta.optimality0 = norm(copy(∇f))
+	OK = update_and_start!(nlp_stop, x = xt, fx = ft, gx = ∇f)#, g0 = copy(∇f))
 
 	norm_∇f = norm(nlp_at_x.gx)
     norm_∇f0 = norm_∇f
@@ -92,6 +93,7 @@ function TRARC(nlp 		:: AbstractNLPModel,
             	return nlp_at_x, nlp_stop.meta.optimal
             end
 			# @show eltype(dTR)
+			# @show dTR == dHO 
 			if dTR == dHO
 				dir = "dTR == dHO"
 			else
