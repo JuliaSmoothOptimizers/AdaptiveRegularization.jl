@@ -1,5 +1,5 @@
 function preprocessST(H, g, params::TparamsST, n1, n2)
-    τ = params.τ
+    ζ = params.ζ
 
-    return  PDataST(H, g, τ, true)
+    return  PDataST(H, g, ζ, true)
 end
