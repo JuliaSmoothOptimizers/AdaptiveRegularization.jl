@@ -1,10 +1,10 @@
-export ARCqKOp1
+export ARCqKOp1b
 
 
-function ARCqKOp1(nlp 		:: AbstractNLPModel,
+function ARCqKOp1b(nlp 		:: AbstractNLPModel,
               	  nlpstop 	:: NLPStopping;
                   ζ = 0.5,
-                  τ = 1.0,
+                  τ = 0.5,
 		  kwargs...
                	  )
     

@@ -1,15 +1,16 @@
 function preprocessKARC(Hop, g, params::Tparams, calls, max_calls) #where T
     τ = params.τ
+    ζ = params.ζ
     nshifts = params.nshifts
     shifts = params.shifts
 
     n = length(g)
     gNorm2 = BLAS.nrm2(n, g, 1)
-    precision =  max(1e-12,min(0.5,(gNorm2^τ)))
+    precision =  max(1e-12,min(0.5,(gNorm2^ζ)))
 
     #ϵ = sqrt(eps(T)) # * 100.0
     ϵ = 1e-12#sqrt(eps()) # * 100.0
-    cgtol = max(ϵ, min(0.09, 0.01 * norm(g)^(1.0 + τ)))
+    cgtol = max(ϵ, min(0.09, 0.01 * norm(g)^(1.0 + ζ)))
 
 
     (xShift, stats) = cg_lanczos_shift_seq(Hop,
@@ -44,7 +45,7 @@ function preprocessKARC(Hop, g, params::Tparams, calls, max_calls) #where T
     Ndirs = map(norm, dirs);
 
     d = g # bidon
-    return  PDataK(d, -1.0, τ, 0 , positives, xShift,   shifts, nshifts, Ndirs, true)
+    return  PDataK(d, -1.0, ζ, τ, 0 , positives, xShift,   shifts, nshifts, Ndirs, true)
 end
 
 

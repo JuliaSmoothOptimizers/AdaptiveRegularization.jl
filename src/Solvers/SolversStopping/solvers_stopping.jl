@@ -57,6 +57,9 @@ push!(ALL_solvers_stopping, ARCqKOp)
 include("ARCqKOp1.jl")
 push!(ALL_solvers_stopping, ARCqKOp1)
 
+include("ARCqKOp1b.jl")
+push!(ALL_solvers_stopping, ARCqKOp1b)
+
 include("ARCqKOp2.jl")
 push!(ALL_solvers_stopping, ARCqKOp2)
 
