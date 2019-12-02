@@ -2,16 +2,15 @@ export solve_modelKTR
 function solve_modelKTR(nlp_stop, X :: PDataK, α:: T) where T
     # target value should be close to satisfy α=||d||
     target = [ ( abs( α - X.norm_dirs[i]) )   for i = 1 : X.nshifts ];
-
     # pick the closest shift to the target within positive definite H+λI
     # before, check the shift = 0 for direction within the trust region
 
-    if (X.indmin ==0)  #  try Newton's direction
+    if (X.indmin == 0)  #  try Newton's direction
         X.indmin = 1
         if (X.positives[1]==1) & (X.norm_dirs[1] <= α)
             X.d = X.xShift[:,1]
             X.λ = 0.0
-            return X.d, NaN * ones(length((X.d))), X.λ
+            return X.d, NaN * rand(length(X.d)), X.λ
         end
     end
     start = X.indmin
@@ -26,7 +25,7 @@ function solve_modelKTR(nlp_stop, X :: PDataK, α:: T) where T
     #println("In SolveModel   $(X.Ndirs[p_imin]-α) , $(X.Ndirs[p_imin+1]-α)  ,  α = $α")
 
     #end
-    return X.d, NaN * ones(length((X.d))), X.λ
+    return X.d, NaN * rand(length(X.d)), X.λ
 end
 
 # To replace.

@@ -1,5 +1,14 @@
-fname = :ARCSpectral
+export ARCSpectral
 
-c = ARCTR.Combi(ARCTR.hessian_dense, ARCTR.PDataSpectral{Nothing}, ARCTR.solve_modelARCDiag, ARCTR.preprocessSpectral, ARCTR.decreaseFact, ARCTR.Tparam{Nothing}())
+function ARCSpectral(nlp 		:: AbstractNLPModel,
+               		 nlpstop 	:: NLPStopping;
+					 kwargs...
+               		 )
 
-include("Template.jl")
+	return TRARC(nlp,
+				  nlpstop;
+				  TR = TrustRegion(10.0),
+				  c = Combi(ARCTR.hessian_dense,ARCTR.PDataSpectral{eltype(nlp.meta.x0)},ARCTR.solve_modelARCDiag,ARCTR.preprocessSpectral,ARCTR.decreaseFact,ARCTR.Tparam{eltype(nlp.meta.x0)}()),
+				  kwargs...
+				  )
+end

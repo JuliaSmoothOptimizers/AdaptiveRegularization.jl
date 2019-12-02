@@ -13,6 +13,7 @@ function preprocessKARC(Hop, g, params::Tparams, calls, max_calls) #where T
     cgtol = max(ϵ, min(0.09, 0.01 * norm(g)^(1.0 + ζ)))
 
 
+
     (xShift, stats) = cg_lanczos_shift_seq(Hop,
                                            -g,
                                            shifts,

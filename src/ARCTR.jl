@@ -1,6 +1,6 @@
 module ARCTR
-using NLPModels
 
+using NLPModels
 using LinearOperators
 using LinearAlgebra, GenericLinearAlgebra
 using Krylov
@@ -10,15 +10,13 @@ using State
 using Stopping
 using Quadmath
 using LDLFactorizations
+# using HSL
+using Logging, SolverTools
 
 include("Includes.jl")
 
-# include("TRARC.jl")
-include("TRARCStop.jl")
-# include("TRARCStop_MP.jl")
-# include("TRARCStop-HO.jl")
+include("TRARC.jl")
 
-# include("Solvers/solvers.jl")
-include("Solvers/SolversStopping/solvers_stopping.jl")
+include("Solvers/solvers.jl")
 
 end # module

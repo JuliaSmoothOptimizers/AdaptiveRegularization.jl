@@ -1,7 +1,11 @@
 function solve_diag(λ, Δ, g̃, seuil, α, ϵ; M = [0.0])
+    # printstyled("on est ici ↓ \n", color = :red)
+    T = eltype(α)
+    # @show T
     if M == [0.0]
         # M = ones(Δ) ;
-        M = fill(1.0, size(Δ))
+        # M = fill(T(1.0), size(Δ))
+        M = ones(T, size(Δ))
     end
     λin = λ
     λtry = seuil
@@ -16,7 +20,7 @@ function solve_diag(λ, Δ, g̃, seuil, α, ϵ; M = [0.0])
     global iter_bis = 0
     if λin < seuil
         while (λtry > seuiltry && (iter_bis < 10))
-            λtry = λ + (λtry - λ) / max((seuil - seuiltry), 2.0)
+            λtry = λ + (λtry - λ) / max((seuil - seuiltry), T(2.0))
             dtry = -(Δ .+ λtry * M) .\ g̃
             normdtry = sqrt(dtry⋅dtry)
             seuiltry = normdtry / α
@@ -35,7 +39,8 @@ function solve_diag(λ, Δ, g̃, seuil, α, ϵ; M = [0.0])
     while (abs(seuil - λ)/max(seuil,λ) > ϵ) && (iter_nwt < 40)
         dotd̃ = (Δ .+ λ * M) .\ (M .* d̃)
         Δλ = λ * (seuil - λ) / (seuil + λ * (λ * (d̃ ⋅ dotd̃) / (d̃ ⋅ d̃)))
-        λ =  max(λ + Δλ, λin + 1.0e-10)
+        λ = max(λ + Δλ, λin + T(1.0e-10))
+        λ = max(λ + Δλ, λin + (sqrt(eps(T) ./ 100.0)))
         d̃ = -(Δ .+ λ * M) .\ g̃
         normd̃ = sqrt(d̃⋅d̃)
         seuil = normd̃ / α

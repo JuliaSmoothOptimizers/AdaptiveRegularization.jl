@@ -13,12 +13,14 @@ using Stopping
 # include("../src/Utilities/testLDLt.jl")
 
 # test all solvers with the well known Woods test function
-include("woods.jl")
+# include("woods.jl")
+include("rosenbrock.jl")
 
 global nbsolver = 0
-for solver in ALL_solvers_stopping
+for solver in ALL_solvers
     global nbsolver += 1
-    nlp = MathProgNLPModel(woods(), name = "Woods");
+    # nlp = MathProgNLPModel(woods(4), name = "Woods");
+    nlp = MathProgNLPModel(extrosnb(2), name = "rosenbrock");
     nlpatx = NLPAtX(nlp.meta.x0)
     nlpstop = NLPStopping(nlp, Stopping.unconstrained, nlpatx)
     println(nbsolver,"  ",solver)
