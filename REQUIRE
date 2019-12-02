@@ -1,5 +1,7 @@
 Compat
 LinearOperators
+ForwardDiff
+ReverseDiff
 JuMP
 NLPModels
 NLPModelsJuMP

@@ -19,19 +19,30 @@ function SuperHalley(nlp_stop,
         ∇³fdₙ = hcat(∇³fdₙ, ∇f³xuv(nlp_stop.pb, x, dₙ, eᵢ))
     end
 
-	hess_plus_tenseur = (nlp_at_x.Hx + ∇³fdₙ)
+	# hess_plus_tenseur = (nlp_at_x.Hx + ∇³fdₙ)
+	if PData.λ .== 0.0
+		hess_plus_tenseur = (nlp_at_x.Hx .+  ∇³fdₙ)
+	else
+		hess_plus_tenseur = (nlp_at_x.Hx .+ ∇³fdₙ) .+ (PData.λ .* Matrix(1.0I, n, n))
+	end
 
-
-	try
-       (L, D, pp, ρ, ncomp) = ldlt_symm(hess_plus_tenseur, 'r')
-	catch
- 		println("*******   Problem in LDLt Halley")
-       	#res = PDataLDLt()
-       	#res.OK = false
-       	#return res
-       	d = NaN * zeros(n)
-       	return d, xdemi
+	if isposdef(hess_plus_tenseur)
+        (L, D, pp, ρ, ncomp) = ldlt_symm(hess_plus_tenseur, 'r')
+   	else
+		# println("on est ici")
+	   	return dₙ
    	end
+
+	# try
+    #    (L, D, pp, ρ, ncomp) = ldlt_symm(hess_plus_tenseur, 'r')
+	# catch
+ 	# 	println("*******   Problem in LDLt Halley")
+    #    	#res = PDataLDLt()
+    #    	#res.OK = false
+    #    	#return res
+    #    	d = NaN * zeros(n)
+    #    	return d, xdemi
+   	# end
 
 	if true in isnan.(D)
    	   println("*******   Problem in D from LDLt: NaN")

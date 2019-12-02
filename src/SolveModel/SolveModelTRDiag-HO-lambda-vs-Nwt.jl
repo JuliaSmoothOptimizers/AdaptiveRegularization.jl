@@ -1,17 +1,17 @@
-export solve_modelTRDiag
+export solve_modelTRDiag_HO_vs_Nwt_λ
 
-function solve_modelTRDiag(nlp_stop, PData :: PDataFact, δ:: T) where T
+"""
+If the Newton direction is accepted and the high order correction lies within
+a bigger trust region then we use the high order correction.
+"""
+function solve_modelTRDiag_HO_vs_Nwt_λ(nlp_stop, PData :: PDataFact, δ:: T; ho_correction :: Symbol = :Shamanskii, fact = 2.0, λfact = 1.0, nwt_res_fact = 0.25) where T
     # Solve the TR subproblem once diagonalized into Δ using the norm |Δ|
     # Setup the problem
-    # printstyled("On est dans solve_modelTRDiag ⇊ \n", color = :red)
-    # M = T.(fill(1.0, size(PData.Δ)))
-    # @show T
+    # printstyled("On est dans solve_model_TRDiag_HO_vs_Nwt_λ  ↓ \n", color = :red)
+    nlp_at_x = nlp_stop.current_state
     M = ones(T, size(PData.Δ))
     ϵ = sqrt(eps(T)) / T(100.0)
-    # @show ϵ
-    # ϵ2 = T.(ϵ * (1.0 + PData.λ))
     ϵ2 = ϵ .* (T(1.0) .+ PData.λ)
-    # @show ϵ2
     global dHO = nothing
 
 
@@ -45,12 +45,30 @@ function solve_modelTRDiag(nlp_stop, PData :: PDataFact, δ:: T) where T
     PData.λ = λ
 
     # Transform back d̃ into d
-    # printstyled("on est avant AInv \n", color = :red)
-    # @show d̃[1]
-    # @show d̃[2]
-    d = AInv(PData, d̃)
 
-    # printstyled("on sort de solve_mode ⇈ \n", color = :red)
+    d = AInv(PData, d̃)
+    # @show λfact
+    if λ <= λfact
+        # printstyled("on a λ < λfact \n", color = :yellow)
+        # @show ho_correction
+        dHO = eval(ho_correction)(nlp_stop, PData, d, PData.g̃)
+        # @show dHO
+        # @show d
+        # @show dHO == d
+        if dHO == d
+            # println("on est ici")
+            return d, NaN * rand(length(d)), λ
+        end
+        # printstyled("on a dHO \n", color = :yellow)
+        nwt_residual = (-(nlp_at_x.gx + 0.5 * nlp_at_x.Hx * d)⋅d)
+        # printstyled("on a nwt_residual \n", color = :yellow)
+        if (norm(dHO) < 2.0 .* δ) && ((-(nlp_at_x.gx + 0.5 * nlp_at_x.Hx * dHO)⋅dHO) >= nwt_res_fact .* nwt_residual)
+            return dHO, dHO, λ
+        else
+            return d, dHO, λ
+        end
+    end
+
     #try assert((PData.g̃ + 0.5*PData.Δ .* d̃)⋅d̃ <= 0.0)  catch  @bp  end
     return d, NaN * rand(length(d)), λ
 end

@@ -1,4 +1,5 @@
 using Compat
+using Pkg
 import Compat.String
 
 const home = "https://github.com/JuliaSmoothOptimizers"
