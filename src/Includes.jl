@@ -3,8 +3,6 @@ include("./HessianRep/HessianDense.jl")
 include("./HessianRep/HessianSparse.jl")
 include("./HessianRep/HessianSparseNoTril.jl")
 include("./HessianRep/HessianOp.jl")
-# using HSL
-using LinearOperators
 
 include("./Types/Types.jl")
 include("./Utilities/Utilities.jl")

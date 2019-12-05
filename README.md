@@ -1,9 +1,9 @@
 # ARCTR
 [![Build Status](https://travis-ci.org/Goysa2/ARCTR.jl.svg?branch=master)](https://travis-ci.org/Goysa2/ARCTR.jl)
 
-[![Coverage Status](https://coveralls.io/repos/github/Goysa2/ARCTR.jl/badge.svg?branch=master)](https://coveralls.io/github/Goysa2/ARCTR.jl?branch=master)
+<!-- [![Coverage Status](https://coveralls.io/repos/github/Goysa2/ARCTR.jl/badge.svg?branch=master)](https://coveralls.io/github/Goysa2/ARCTR.jl?branch=master) -->
 
-Several ARC and TR optimization solvers.
+Several ARC and TR optimization solvers based on the [ARCTR](https://doi.org/10.1080/03155986.2019.1624490) and [ARCq](https://doi.org/10.1080/10556788.2017.1322080) articles.
 
 
 ## Purpose
@@ -25,13 +25,12 @@ such that ||d(λ)|| ⩽ Δ, with Δ being the size of the trust region.
 
 
 ## Installing
-The optimal use of this package is through the <b>State</b> and <b>Stopping</b> packages.
+The optimal use of this package is through <b>Stopping</b> package.
 ```
-] add https://github.com/Goysa2/State.jl
 ] add https://github.com/Goysa2/Stopping.jl
 ```
 
-Although it is possible to use ARCTR in a self contained manner, support and update for future version of Julia will be garanteed only for usage with State and Stopping.
+Although it is possible to use ARCTR in a self contained manner, support and update for future version of Julia will be guaranteed only for usage with Stopping.
 
 ```
 ] add https://github.com/Goysa2/ARCTR.jl
@@ -70,7 +69,7 @@ final_state, optimal = ARCqKOp(nlp, nlpstop, verbose = true)
 The `final_state` provide information at the last iteration and `optimal` is a boolean value saying if the problem has reached an optimal solution or not.
 
 ### High-order correction
-A limited selection of our methods offer the option to add an high-order correction if we reduce to Newton method's. The high-order correction we offer are Shamanskii, Chebyshev, Halley and SuperHalley. More documentation will be provided when those methods are more developed. 
+A limited selection of our methods offer the option to add an high-order correction if we reduce to Newton method's. The high-order correction we offer are Shamanskii, Chebyshev, Halley and SuperHalley. More documentation will be provided when those methods are more developed.
 
 
 ## Long term goals

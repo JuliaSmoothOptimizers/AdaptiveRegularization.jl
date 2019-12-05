@@ -17,7 +17,8 @@ mutable struct Tparam{T} <: Tparams{T} end
 mutable struct PDataK{T} <: PDataIter{T}
     d :: Array{T,1}             # (H+λI)\g ; on first call = g
     λ :: T                      # "active" value of λ; on first call = 0
-    τ :: T                      # Inexact Newton order parameter: stop when ||∇q||<||g||^(1+τ )
+    ζ :: T                      # Inexact Newton order parameter: stop when ||∇q||<||g||^(1+ζ )
+    τ :: T                      # temporary testing parameter for decreaseARCqK
 
     indmin :: Int               # index of best shift value  within "positive". On first call = 0
 
@@ -33,7 +34,7 @@ end
 mutable struct PDataST{T} <: PDataIter{T}
     H             # Hessian representation, most likely as a linear operator or a sparse matrix
     g             # gradient vector
-    τ :: T        # Inexact Newton order parameter: stop when ||∇q||<||g||^(1+τ)
+    ζ :: T        # Inexact Newton order parameter: stop when ||∇q||<||g||^(1+ζ)
 
     OK :: Bool    # preprocess success
 end

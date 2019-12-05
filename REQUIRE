@@ -1,16 +1,7 @@
-Compat
 LinearOperators
 ForwardDiff
-ReverseDiff
-JuMP
 NLPModels
-NLPModelsJuMP
 Krylov
-HSL
 Stopping
-State
-GenericLinearAlgebra
-Quadmath
-LDLFactorizations
 Logging
 SolverTools

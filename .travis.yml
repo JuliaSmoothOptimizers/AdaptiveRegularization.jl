@@ -1,22 +1,20 @@
 # Documentation: http://docs.travis-ci.com/user/languages/julia/
-
 language: julia
-
 os:
   - linux
   - osx
-
 julia:
-  - release
-#  - nightly
-
+  - 1.1
+  - 1.2
+  - 1.3
+ - nightly
 notifications:
   email: false
 
-script:
-  - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
-  - julia -e 'Pkg.clone(pwd()); Pkg.build("ARCTR"); Pkg.test("ARCTR"; coverage=true)'
+matrix:
+ allow_failures:
+  - julia: nightly
 
 after_success:
-  - julia -e 'cd(Pkg.dir("ARCTR")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'
-  - julia -e 'cd(Pkg.dir("ARCTR")); using Coverage; Codecov.submit(process_folder())'
+ - julia -e 'using Pkg; Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder()); Codecov.submit(process_folder())'
+  
