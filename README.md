@@ -1,9 +1,9 @@
 # ARCTR
 [![Build Status](https://travis-ci.org/Goysa2/ARCTR.jl.svg?branch=master)](https://travis-ci.org/Goysa2/ARCTR.jl)
 
-<!-- [![Coverage Status](https://coveralls.io/repos/github/Goysa2/ARCTR.jl/badge.svg?branch=master)](https://coveralls.io/github/Goysa2/ARCTR.jl?branch=master) -->
+[![Coverage Status](https://coveralls.io/repos/github/Goysa2/ARCTR.jl/badge.svg?branch=master)](https://coveralls.io/github/Goysa2/ARCTR.jl?branch=master)
 
-Several ARC and TR optimization solvers based on the [ARCTR](https://doi.org/10.1080/03155986.2019.1624490) and [ARCq](https://doi.org/10.1080/10556788.2017.1322080) articles.
+Several ARC and TR optimization solvers.
 
 
 ## Purpose
@@ -25,12 +25,13 @@ such that ||d(λ)|| ⩽ Δ, with Δ being the size of the trust region.
 
 
 ## Installing
-The optimal use of this package is through <b>Stopping</b> package.
+The optimal use of this package is through the <b>State</b> and <b>Stopping</b> packages.
 ```
+] add https://github.com/Goysa2/State.jl
 ] add https://github.com/Goysa2/Stopping.jl
 ```
 
-Although it is possible to use ARCTR in a self contained manner, support and update for future version of Julia will be guaranteed only for usage with Stopping.
+Although it is possible to use ARCTR in a self contained manner, support and update for future version of Julia will be guaranteed only for usage with  Stopping.
 
 ```
 ] add https://github.com/Goysa2/ARCTR.jl
