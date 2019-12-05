@@ -7,10 +7,10 @@ uuid = "14f7f29c-3bd6-536c-9a0b-7339e30b5a3e"
 version = "0.3.1"
 
 [[ARCTR]]
-deps = ["ForwardDiff", "Krylov", "LinearAlgebra", "LinearOperators", "Logging", "NLPModels", "Pkg", "Printf", "SolverTools", "SparseArrays", "Stopping", "Test"]
+deps = ["ForwardDiff", "Krylov", "LinearAlgebra", "LinearOperators", "Logging", "NLPModels", "Printf", "SolverTools", "SparseArrays", "Stopping"]
 path = "../../../Bureau/ARCTR.jl"
 uuid = "15e703c6-3082-5408-986e-da883d7d033a"
-version = "0.0.0"
+version = "0.1.0"
 
 [[AbstractFFTs]]
 deps = ["LinearAlgebra"]
@@ -1300,7 +1300,9 @@ version = "0.13.0"
 
 [[Stopping]]
 deps = ["LinearAlgebra", "NLPModels", "Printf", "Test"]
-path = "../../../Bureau/Stopping.jl"
+git-tree-sha1 = "8a9033a914cd6b45c42c16f9f0e56b32f0f233b8"
+repo-rev = "master"
+repo-url = "https://github.com/Goysa2/Stopping.jl"
 uuid = "c4fe5a9e-e7fb-5c3d-89d5-7f405ab2214f"
 version = "0.1.0"
 
