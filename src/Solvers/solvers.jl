@@ -37,6 +37,9 @@ push!(ALL_solvers, TRLDLt)
 include("TRLDLt_HO_vs_Nwt_lambda.jl")
 push!(ALL_solvers, TRLDLt_HO_vs_Nwt_λ)
 
+include("ARCqKOp1.jl")			   #works in 0.7/1.1
+push!(ALL_solvers, ARCqKOp1)
+
 include("TRLDLt_abs.jl")
 push!(ALL_solvers, TRLDLt_abs)
 

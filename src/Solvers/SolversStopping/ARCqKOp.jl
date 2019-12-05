@@ -1,5 +1,6 @@
 export ARCqKOp
 
+
 function ARCqKOp(nlp 		:: AbstractNLPModel,
               	nlpstop 	:: NLPStopping;
 				kwargs...

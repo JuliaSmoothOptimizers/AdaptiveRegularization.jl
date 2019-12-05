@@ -1,10 +1,10 @@
 export TparamsST
 
 mutable struct TparamsST{T} <: Tparams{T}  # specific parameters for this Krylov variant
-    τ :: T
+    ζ :: T
 
     function TparamsST{T}() where T
-        τ = 0.5
-        return new{T}(τ)
+        ζ = 0.5
+        return new{T}(ζ)
     end
 end

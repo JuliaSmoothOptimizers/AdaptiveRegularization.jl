@@ -1,12 +1,13 @@
 export preprocessKTR, decreaseKTR
 function preprocessKTR(Hop, g, params::Tparams, calls, max_calls)
-    τ = params.τ
+    ζ = params.ζ
+    #τ = params.τ
     nshifts = params.nshifts
     shifts = params.shifts
 
     n = length(g)
     gNorm2 = BLAS.nrm2(n, g, 1)
-    precision =  max(1e-12,min(0.5,(gNorm2^τ)))
+    precision =  max(1e-12,min(0.5,(gNorm2^ζ)))
     (xShift, stats) = cg_lanczos_shift_seq(Hop,
                                            -g,
                                            shifts,
@@ -29,7 +30,7 @@ function preprocessKTR(Hop, g, params::Tparams, calls, max_calls)
 
     d = g # bidon
 
-    return  PDataK(d,-1.0,τ,0,positives,xShift,shifts,nshifts,Ndirs,true)
+    return  PDataK(d,-1.0, ζ, 0.0, 0, positives,xShift,shifts,nshifts,Ndirs,true)
 end
 
 function decreaseKTR(X :: PDataK, α:: Float64, TR:: TrustRegion)
