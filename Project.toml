@@ -1,0 +1,32 @@
+name = "ARCTR"
+uuid = "79adfba0-1eab-50d9-8528-0589417a2bfe"
+authors = ["Goysa2 <samuel.goyette@usherbrooke.ca>"]
+version = "0.1.0"
+
+[deps]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
+Krylov = "ba0b0d4f-ebba-5204-a429-3ac8c609bfb7"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+LinearOperators = "5c8ed15e-5a4c-59e4-a42b-c7e8811fb125"
+Logging = "56ddb016-857b-54e1-b83d-db4d58db5568"
+NLPModels = "a4795742-8479-5a88-8948-cc11e1c8c1a6"
+Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
+SolverTools = "b5612192-2639-5dc1-abfe-fbedd65fab29"
+SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
+Stopping = "c4fe5a9e-e7fb-5c3d-89d5-7f405ab2214f"
+
+[compat]
+NLPModels = "0.10.0, 1"
+Krylov = "0.3.1, 1"
+ForwardDiff = "0.10.7, 1"
+SolverTools = "0.1.4, 1"
+LinearOperators = "1, 1"
+julia = "^1.0.0"
+
+[extras]
+JuMP = "4076af6c-e467-56ae-b986-b466b2749572"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
+SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"

@@ -31,7 +31,7 @@ The optimal use of this package is through the <b>State</b> and <b>Stopping</b> 
 ] add https://github.com/Goysa2/Stopping.jl
 ```
 
-Although it is possible to use ARCTR in a self contained manner, support and update for future version of Julia will be garanteed only for usage with State and Stopping.
+Although it is possible to use ARCTR in a self contained manner, support and update for future version of Julia will be guaranteed only for usage with  Stopping.
 
 ```
 ] add https://github.com/Goysa2/ARCTR.jl
@@ -70,7 +70,7 @@ final_state, optimal = ARCqKOp(nlp, nlpstop, verbose = true)
 The `final_state` provide information at the last iteration and `optimal` is a boolean value saying if the problem has reached an optimal solution or not.
 
 ### High-order correction
-A limited selection of our methods offer the option to add an high-order correction if we reduce to Newton method's. The high-order correction we offer are Shamanskii, Chebyshev, Halley and SuperHalley. More documentation will be provided when those methods are more developed. 
+A limited selection of our methods offer the option to add an high-order correction if we reduce to Newton method's. The high-order correction we offer are Shamanskii, Chebyshev, Halley and SuperHalley. More documentation will be provided when those methods are more developed.
 
 
 ## Long term goals

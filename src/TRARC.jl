@@ -43,7 +43,7 @@ function TRARC(nlp 	:: AbstractNLPModel,
     norm_∇f0 = norm_∇f
     ∇fopt = ∇f
     norm_∇fopt = norm_∇f
-	!OK && State.update!(nlp_at_x, Hx = hessian_rep(nlp, xt))
+	!OK && Stopping.update!(nlp_at_x, Hx = hessian_rep(nlp, xt))
 
 
 	# global cgtol = 1.0
@@ -93,7 +93,7 @@ function TRARC(nlp 	:: AbstractNLPModel,
             	return nlp_at_x, nlp_stop.meta.optimal
             end
 			# @show eltype(dTR)
-			# @show dTR == dHO 
+			# @show dTR == dHO
 			if dTR == dHO
 				dir = "dTR == dHO"
 			else

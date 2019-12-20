@@ -10,6 +10,7 @@ function solve_modelST_ARC(nlp_stop, X :: PDataST, δ:: T) where T
                      itmax = max(2 * n, 50),
                      verbose=false)
 
+
     λ = 0.0  #  dummy for this variant
     return d, NaN * rand(length(d)), λ
 end

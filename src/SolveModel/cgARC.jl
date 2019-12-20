@@ -1,4 +1,4 @@
-using Compat
+# using Compat
 using LinearOperators
 
 

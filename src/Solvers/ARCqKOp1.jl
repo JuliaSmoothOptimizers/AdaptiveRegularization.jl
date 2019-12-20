@@ -7,9 +7,8 @@ function ARCqKOp1(nlp 		:: AbstractNLPModel,
                   τ = 1.0,
 		  kwargs...
                	  )
-    
+
     shifts = 10.0.^(collect(-15.0:1.0:15.0))
-    
     return TRARC(nlp,
 		  nlpstop;
 		  TR = TrustRegion(10.0),
