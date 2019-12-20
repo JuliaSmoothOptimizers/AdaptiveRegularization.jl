@@ -1,12 +1,12 @@
 export TRARC
 
-function TRARC(nlp 		:: AbstractNLPModel,
-                nlp_stop 	:: NLPStopping;
-                TR 			:: TrustRegion = TrustRegion(eltype(nlp.meta.x0)(10.0)),
-			    c 			:: Combi = Combi{eltype(nlp.meta.x0)}(hessian_dense, PDataLDLt{eltype(nlp.meta.x0)}, solve_modelTRDiag, preprocessLDLt, decreaseFact, Tparam{eltype(nlp.meta.x0)}()),
-			    robust 		:: Bool = true,
-                verbose 	:: Bool = false
-                )
+function TRARC(nlp 	:: AbstractNLPModel,
+               nlp_stop	:: NLPStopping;
+               TR 	:: TrustRegion = TrustRegion(eltype(nlp.meta.x0)(10.0)),
+	       c 	:: Combi = Combi{eltype(nlp.meta.x0)}(hessian_dense, PDataLDLt{eltype(nlp.meta.x0)}, solve_modelTRDiag, preprocessLDLt, decreaseFact, Tparam{eltype(nlp.meta.x0)}()),
+	       robust 	:: Bool = true,
+               verbose  :: Bool = false
+               )
 
 	T = eltype(nlp_stop.current_state.x)
 	# @show nlp.meta.x0
