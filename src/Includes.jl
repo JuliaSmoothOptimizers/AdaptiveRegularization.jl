@@ -1,7 +1,6 @@
 # Selective includes.
 include("./HessianRep/HessianDense.jl")
 include("./HessianRep/HessianSparse.jl")
-include("./HessianRep/HessianSparseNoTril.jl")
 include("./HessianRep/HessianOp.jl")
 
 include("./Types/Types.jl")
