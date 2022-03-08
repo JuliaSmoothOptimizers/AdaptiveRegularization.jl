@@ -13,4 +13,4 @@ SolverCore = "ff4d7338-4cf1-434d-91df-b86cb86fb843"
 
 [compat]
 ADNLPModels = "0.3"
-Documenter = "0.28"
+Documenter = "0.27"
