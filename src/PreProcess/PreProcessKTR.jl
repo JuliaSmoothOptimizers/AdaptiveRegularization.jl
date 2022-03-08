@@ -16,9 +16,17 @@ function preprocessKTR(Hop, g, params::Tparams, calls, max_calls)
                                            atol = 1.0e-8,
                                            rtol = precision,
                                            verbose=0,
-                                           check_curvature=true)
+                                           check_curvature=true,
+                                           history = true)
 
-    positives = collect(findfirst(!, stats.flagged):length(stats.flagged))
+    # positives = collect(findfirst(!, stats.flagged):length(stats.flagged))
+    ϵ = 1.0e-8 + norm(g) * precision
+    tmp = map(x -> x[end] <= ϵ, stats.residuals)
+    positives = findall(tmp)
+    if stats.solved
+      @warn "We need to fix `stats.flagged`"
+      # @show tmp, positives
+    end
 
     success = false
     good_grad = false

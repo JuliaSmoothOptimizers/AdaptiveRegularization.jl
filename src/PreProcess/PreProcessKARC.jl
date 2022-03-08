@@ -7,34 +7,29 @@ function preprocessKARC(Hop, g, params::Tparams, calls, max_calls) #where T
     n = length(g)
     gNorm2 = BLAS.nrm2(n, g, 1)
     precision =  max(1e-12,min(0.5,(gNorm2^ζ)))
-
     #ϵ = sqrt(eps(T)) # * 100.0
     ϵ = 1e-12#sqrt(eps()) # * 100.0
     cgtol = max(ϵ, min(0.09, 0.01 * norm(g)^(1.0 + ζ)))
-
 
     (xShift, stats) = cg_lanczos(Hop,
                                            -g,
                                            shifts,
                                            itmax=min(max_calls-sum(calls),2*n),
                                            #τ = τ,
-                                           atol = 1.0e-8,
-                                           rtol = precision,
+                                           atol = 1.0e-8, # cgtol
+                                           rtol = precision, # ϵ
                                            verbose=0,
-                                           check_curvature=true)
+                                           check_curvature=true,
+                                           history = true)
 
-#    (xShift, stats) = cg_lanczos(Hop,
-#                                           -g,
-#                                           shifts,
-#                                           itmax=min(max_calls-sum(calls),2*n),
-#                                           #τ = τ,
-#                                           atol = cgtol,
-#                                           rtol = ϵ,
-#                                           verbose=false,
-#                                           check_curvature=true)
-
-
-    positives = collect(findfirst(!, stats.flagged):length(stats.flagged))
+    # positives = collect(findfirst(!, stats.flagged):length(stats.flagged))
+    ϵ = 1.0e-8 + norm(g) * precision
+    tmp = map(x -> x[end] <= ϵ, stats.residuals)
+    positives = findall(tmp)
+    if stats.solved
+      @warn "We need to fix `stats.flagged`"
+      # @show tmp, positives
+    end
 
     success = false
     good_grad = false
