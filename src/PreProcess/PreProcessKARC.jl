@@ -13,18 +13,17 @@ function preprocessKARC(Hop, g, params::Tparams, calls, max_calls) #where T
     cgtol = max(ϵ, min(0.09, 0.01 * norm(g)^(1.0 + ζ)))
 
 
-
-    (xShift, stats) = cg_lanczos_shift_seq(Hop,
+    (xShift, stats) = cg_lanczos(Hop,
                                            -g,
                                            shifts,
                                            itmax=min(max_calls-sum(calls),2*n),
                                            #τ = τ,
                                            atol = 1.0e-8,
                                            rtol = precision,
-                                           verbose=false,
+                                           verbose=0,
                                            check_curvature=true)
 
-#    (xShift, stats) = cg_lanczos_shift_seq(Hop,
+#    (xShift, stats) = cg_lanczos(Hop,
 #                                           -g,
 #                                           shifts,
 #                                           itmax=min(max_calls-sum(calls),2*n),

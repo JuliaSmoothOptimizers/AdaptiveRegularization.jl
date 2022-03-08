@@ -8,14 +8,14 @@ function preprocessKTR(Hop, g, params::Tparams, calls, max_calls)
     n = length(g)
     gNorm2 = BLAS.nrm2(n, g, 1)
     precision =  max(1e-12,min(0.5,(gNorm2^ζ)))
-    (xShift, stats) = cg_lanczos_shift_seq(Hop,
+    (xShift, stats) = cg_lanczos(Hop,
                                            -g,
                                            shifts,
                                            itmax=min(max_calls-sum(calls),2*n),
                                            #τ = τ,
                                            atol = 1.0e-8,
                                            rtol = precision,
-                                           verbose=false,
+                                           verbose=0,
                                            check_curvature=true)
 
     positives = collect(findfirst(!, stats.flagged):length(stats.flagged))
