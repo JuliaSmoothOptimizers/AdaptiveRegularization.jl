@@ -1,5 +1,4 @@
 using ForwardDiff
-using ForwardDiff
 
 import NLPModels.obj, NLPModels.grad, NLPModels.grad!, NLPModels.cons, NLPModels.cons!
 import NLPModels.jac, NLPModels.jprod, NLPModels.jprod!, NLPModels.jtprod

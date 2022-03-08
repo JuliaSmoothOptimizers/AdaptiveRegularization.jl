@@ -7,7 +7,7 @@ using Krylov
 using Printf
 using SparseArrays
 using Stopping
-using Logging, SolverTools
+using Logging, SolverCore, SolverTools
 
 include("Includes.jl")
 
