@@ -43,8 +43,10 @@ function TRARC(nlp 	:: AbstractNLPModel,
     norm_∇f0 = norm_∇f
     ∇fopt = ∇f
     norm_∇fopt = norm_∇f
-	!OK && Stopping.update!(nlp_at_x, Hx = hessian_rep(nlp, xt))
 
+	if !OK
+	  nlp_at_x.Hx = hessian_rep(nlp, xt)
+	end
 
 	# global cgtol = 1.0
 
@@ -84,16 +86,8 @@ function TRARC(nlp 	:: AbstractNLPModel,
 		Ht = nothing
 
         while !success & !OK & (unsuccinarow < TR.max_unsuccinarow)
-			# printstyled("yoy! \n", color = :green)
-			try
-				# @show solve_model
-            	dTR, dHO, λ = solve_model(nlp_stop, PData, α)
-            catch
-            	println(" Problem in solve_model")
-            	return nlp_at_x, nlp_stop.meta.optimal
-            end
-			# @show eltype(dTR)
-			# @show dTR == dHO
+			dTR, dHO, λ = solve_model(nlp_stop, PData, α)
+
 			if dTR == dHO
 				dir = "dTR == dHO"
 			else
