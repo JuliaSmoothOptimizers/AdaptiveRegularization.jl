@@ -1,3 +1,5 @@
+export ldlt_symm
+
 """
 Higams' ldlt_symm translated from matlab. Performs  a so called
  BKK  Bounded Bunch Kaufman factorization of A0, that means
