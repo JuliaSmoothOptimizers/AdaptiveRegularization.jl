@@ -10,5 +10,5 @@ function solve_modelST_TR(nlp_stop, X :: PDataST, δ:: T; cgtol :: T = 0.1) wher
 
     λ = 0.0  #  dummy for this variant
 
-    return d, NaN * rand(length(d)), λ#, cgtol
+    return d, λ
 end

@@ -53,12 +53,12 @@ function solve_modelARCDiag_HO_vs_Nwt(nlp_stop, PData :: PDataFact, α:: T; ho_c
         # @show -(nlp_at_x.gx + 0.5 * nlp_at_x.Hx * dHO)⋅dHO
         if (norm(dHO) < 2.0 .* norm(d)) && ((-(nlp_at_x.gx + 0.5 * nlp_at_x.Hx * dHO)⋅dHO) >= nwt_res_fact .* nwt_residual)
             # printstyled("on prend dHO 🐣\n", color = :green)
-            return dHO, dHO, PData.λ
+            return dHO, PData.λ
         else
             # printstyled("on prend d 🐲 \n", color = :green)
-            return d, dHO, PData.λ
+            return d, PData.λ
         end
     end
 
-    return d, NaN * rand(length(d)), λ
+    return d, λ
 end

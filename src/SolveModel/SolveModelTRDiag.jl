@@ -52,5 +52,5 @@ function solve_modelTRDiag(nlp_stop, PData :: PDataFact, δ:: T) where T
 
     # printstyled("on sort de solve_mode ⇈ \n", color = :red)
     #try assert((PData.g̃ + 0.5*PData.Δ .* d̃)⋅d̃ <= 0.0)  catch  @bp  end
-    return d, NaN * rand(length(d)), λ
+    return d, λ
 end
