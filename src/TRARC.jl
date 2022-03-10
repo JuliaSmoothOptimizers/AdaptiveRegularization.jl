@@ -32,6 +32,9 @@ function TRARC(
 
     α = TR.α₀  # initial Trust Region size
 	max_unsuccinarow = TR.max_unsuccinarow
+	acceptance_threshold = TR.acceptance_threshold
+	increase_threshold = TR.increase_threshold
+	reduce_threshold = TR.reduce_threshold
 
 	xt .= nlp_at_x.x
     ft, ∇f = objgrad!(nlp, xt, ∇f)
@@ -43,13 +46,10 @@ function TRARC(
 	!OK && Stopping.update!(nlp_at_x, Hx = hessian_rep(nlp, xt), convert = true)
 
 	iter = 0 # counter different than stop count
-    succ, unsucc, verysucc, unsuccinarow = 0, 0, 0, 0 # There is an issue with the way we cound unsuccinarow
+    succ, unsucc, verysucc, unsuccinarow = 0, 0, 0, 0
 
-	verbose && @info log_header([:iter, :f, :nrm_g, :λ,  :status, :α, :nrm_dtr, :nrm_dHO, :f_p_dTR, :f_p_dHO, :dir, :ΔqN], [Int64, T, T, T, String, T, T, T, T, T, String, T])
+	verbose && @info log_header([:iter, :f, :nrm_g, :λ,  :status, :α, :nrm_dtr, :f_p_dTR, :ΔqN], [Int64, T, T, T, String, T, T, T])
 	verbose && @info log_row(Any[iter, nlp_at_x.fx, norm_∇f, 0.0, "First iteration", α])
-
-	global dHO = nothing
-	global dir = nothing # What is this information ?
 
     while !OK
 		calls = [nlp.counters.neval_obj,  nlp.counters.neval_grad, nlp.counters.neval_hess, nlp.counters.neval_hprod]
@@ -62,8 +62,7 @@ function TRARC(
 
         success = false
         while !success & (unsuccinarow < max_unsuccinarow)
-			d, dHO, λ = solve_model(nlp_stop, PData, α)
-			dir = d == dHO ? "dTR == dHO" : "dTR != dHO" # Some unknown information?
+			d, λ = solve_model(nlp_stop, PData, α) # Est-ce que le λ n'est pas dans PData ?
 
             Δq = -(∇f + 0.5 * nlp_at_x.Hx * d)⋅d
 
@@ -73,30 +72,16 @@ function TRARC(
 				return nlp_at_x, nlp_stop.meta.optimal
             end
             slope = ∇f ⋅ d
-			xt_original = copy(xt) # only used in prints, related to d et dHO
 			xtnext .= xt .+ d
+			ftnext = obj(nlp, xtnext)
+			Δf = ft - ftnext
 
             iter += 1
 
-			######################################
-			# Why not just ...?
-			# ftnext = obj(nlp, xtnext)
-            try
-                ftnext = obj(nlp, xtnext)
-            catch
-                ftnext = Inf;
-            end
-
-            if isnan(ftnext)
-                ftnext = Inf
-            end
-			######################################
-            Δf = ft - ftnext
-
             r, good_grad, ∇fnext = compute_r(nlp, ft, Δf, Δq, slope, d, xtnext, ∇fnext, robust)
 
-            if r < TR.acceptance_threshold # unsucessful
-				verbose && @info log_row(Any[iter, nlp_at_x.fx, norm_∇f, λ, "U", α, norm(d), norm(dHO), obj(nlp, xt_original .+ d), obj(nlp, xt_original .+ dHO), dir, Δq])
+            if r < acceptance_threshold # unsucessful
+				verbose && @info log_row(Any[iter, nlp_at_x.fx, norm_∇f, λ, "U", α, norm(d), Δq])
 	        	unsucc += 1
 	        	unsuccinarow += 1
 	        	α = decrease(PData, α, TR)
@@ -113,22 +98,22 @@ function TRARC(
                 end
 
 				verysucc += 1
-		        if r > TR.increase_threshold # very sucessful
+		        if r > increase_threshold # very sucessful
 		            α = increase(PData, α, TR)
-					verbose && @info log_row(Any[iter, ft, stop_norm(∇f), λ, "V", α, norm(d), norm(dHO), obj(nlp, xt_original + d), obj(nlp, xt_original + dHO), dir, Δq])
+					verbose && @info log_row(Any[iter, ft, stop_norm(∇f), λ, "V", α, norm(d), Δq])
 		        else # sucessful
-	                if r < TR.reduce_threshold
+	                if r < reduce_threshold
 	                    α = decrease(PData, α, TR)
 	                end
-					verbose && @info log_row(Any[iter, ft, stop_norm(∇f), λ, "S", α, norm(d), norm(dHO),  obj(nlp, xt_original + d), obj(nlp, xt_original + dHO), dir, Δq])
+					verbose && @info log_row(Any[iter, ft, stop_norm(∇f), λ, "S", α, norm(d), Δq])
 		            succ += 1
 		        end
 	    	end
         end # while !success
 
+		nlp_stop.meta.nb_of_stop = iter
 		OK = update_and_stop!(nlp_stop, x = xt, fx = ft, gx = ∇f)
 		success && Stopping.update!(nlp_at_x, Hx = hessian_rep(nlp, xt))
-		nlp_stop.meta.nb_of_stop = iter
     end # while !OK
 
     return nlp_at_x, nlp_stop.meta.optimal

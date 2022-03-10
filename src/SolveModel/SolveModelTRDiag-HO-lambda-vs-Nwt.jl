@@ -57,18 +57,18 @@ function solve_modelTRDiag_HO_vs_Nwt_λ(nlp_stop, PData :: PDataFact, δ:: T; ho
         # @show dHO == d
         if dHO == d
             # println("on est ici")
-            return d, NaN * rand(length(d)), λ
+            return d, λ
         end
         # printstyled("on a dHO \n", color = :yellow)
         nwt_residual = (-(nlp_at_x.gx + 0.5 * nlp_at_x.Hx * d)⋅d)
         # printstyled("on a nwt_residual \n", color = :yellow)
         if (norm(dHO) < 2.0 .* δ) && ((-(nlp_at_x.gx + 0.5 * nlp_at_x.Hx * dHO)⋅dHO) >= nwt_res_fact .* nwt_residual)
-            return dHO, dHO, λ
+            return dHO, λ
         else
-            return d, dHO, λ
+            return d, λ
         end
     end
 
     #try assert((PData.g̃ + 0.5*PData.Δ .* d̃)⋅d̃ <= 0.0)  catch  @bp  end
-    return d, NaN * rand(length(d)), λ
+    return d, λ
 end

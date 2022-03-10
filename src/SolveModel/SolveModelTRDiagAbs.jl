@@ -44,5 +44,5 @@ function solve_modelTRDiagAbs(nlp_stop, PData :: PDataFact, δ:: T) where T
     d = AInv(PData, d̃)
     #try assert((PData.g̃ + 0.5*PData.Δ .* d̃)⋅d̃ <= 0.0)  catch  @bp  end
     #println("*******SolveModelDiagAbs:  PData.g̃⋅d̃ = $(PData.g̃⋅d̃), 0.5 d̃'PData.Δd̃ = $(0.5*(PData.Δ .* d̃)⋅d̃)")
-    return d, NaN * rand(length(d)), λ
+    return d, λ
 end
