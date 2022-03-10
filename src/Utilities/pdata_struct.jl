@@ -1,4 +1,3 @@
-export Tparam
 export PDataIter
 export PDataLDLt, PDataK, PDataST
 
@@ -7,12 +6,6 @@ abstract type TPData{T} end  # Ancestor of all PreProcess data
 abstract type PDataFact{T} <: TPData{T}  end # Variants using matricial factorization
 
 abstract type PDataIter{T} <: TPData{T}  end # Variants using iterative (Krylov) solvers
-
-abstract type Tparams{T}  end # Ancestor of variant specific parameters
-
-mutable struct Tparam{T} <: Tparams{T} end
-
-
 
 mutable struct PDataK{T} <: PDataIter{T}
     d :: Array{T,1}             # (H+λI)\g ; on first call = g
