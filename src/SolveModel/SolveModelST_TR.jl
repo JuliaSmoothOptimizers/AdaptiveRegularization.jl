@@ -6,7 +6,7 @@ function solve_modelST_TR(nlp_stop, X :: PDataST, δ:: T; cgtol :: T = 0.1) wher
 
     (d, cg_stats) = cg(X.H, -X.g, atol = cgtol, rtol = ϵ,
                      radius = δ,  itmax = max(2 * n, 50),
-                     verbose = false)
+                     verbose = 0)
 
     λ = 0.0  #  dummy for this variant
 

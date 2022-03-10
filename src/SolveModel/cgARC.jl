@@ -35,27 +35,12 @@ end
 include("krylov_aux.jl")
 
 export cgARC
-# Methods for various argument types.
-#include("cg_methods.jl")
-# cgARC{TA <: Number, Tb <: Number}(A :: Array{TA,2}, b :: Array{Tb,1};
-#                                atol :: Float64=1.0e-8, rtol :: Float64=1.0e-6, itmax :: Int=0, regulα :: Float64=1.0, verbose :: Bool=false)
-cgARC(A::Array{TA, 2}, b::Array{Tb, 1}; atol::Float64 = 1e-08, rtol::Float64 = 1e-06, itmax::Int = 0, regulα::Float64 = 1, verbose::Bool = false) where {TA <: Number, Tb <: Number}  = cgARC(LinearOperator(A), b, atol=atol, rtol=rtol, itmax=itmax, regulα=regulα, verbose=verbose);
 
-# cgARC{TA <: Number, Tb <: Number, IA <: Integer}(A :: SparseMatrixCSC{TA,IA}, b :: Array{Tb,1};
-#                                               atol :: Float64=1.0e-8, rtol ::
-#                                               Float64=1.0e-6, itmax :: Int=0, regulα :: Float64=1.0,  verbose :: Bool=false) =
-cgARC(A::SparseMatrixCSC{TA, IA}, b::Array{Tb, 1}; atol::Float64 = 1e-08, rtol::Float64 = 1e-06, itmax::Int = 0, regulα::Float64 = 1, verbose::Bool = false) where {TA <: Number, Tb <: Number, IA <: Integer}  = cgARC(LinearOperator(A), b, atol=atol, rtol=rtol, itmax=itmax, regulα=regulα, verbose=verbose);
-
-
-
-# function cgARC{T <: Real}(A :: LinearOperator, b :: Array{T,1};
-#                        atol :: Float64=1.0e-8, rtol :: Float64=1.0e-6, itmax :: Int=0,
-#                        regulα :: Float64=1.0, verbose :: Bool=false)
 """The conjugate gradient method to solve the symmetric linear system Ax=b.
 
 The method does _not_ abort if A is not definite.
 """
-function cgARC(A::LinearOperator, b::Array{T, 1}; atol::Float64 = 1e-08, rtol::Float64 = 1e-06, itmax::Int = 0, regulα::Float64 = 1, verbose::Bool = false) where T <: Real
+function cgARC(A, b::Array{T, 1}; atol::Float64 = 1e-08, rtol::Float64 = 1e-06, itmax::Int = 0, regulα::Float64 = 1, verbose::Bool = false) where T <: Real
   n = size(b, 1);
   (size(A, 1) == n & size(A, 2) == n) || error("Inconsistent problem size");
   #isequal(triu(A)',tril(A)) || error("Must supply Hermitian matrix")

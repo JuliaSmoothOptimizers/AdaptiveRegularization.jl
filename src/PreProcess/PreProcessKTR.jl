@@ -8,17 +8,24 @@ function preprocessKTR(Hop, g, params::Tparams, calls, max_calls)
     n = length(g)
     gNorm2 = BLAS.nrm2(n, g, 1)
     precision =  max(1e-12,min(0.5,(gNorm2^ζ)))
-    (xShift, stats) = cg_lanczos(Hop,
-                                           -g,
-                                           shifts,
-                                           itmax=min(max_calls-sum(calls),2*n),
-                                           #τ = τ,
-                                           atol = 1.0e-8,
-                                           rtol = precision,
-                                           verbose=0,
-                                           check_curvature=true)
 
-    positives = collect(findfirst(!, stats.flagged):length(stats.flagged))
+    nshifts = length(shifts)
+    solver = CgLanczosShiftSolver(Hop, -g, nshifts)
+    cg_lanczos!(
+        solver,
+        Hop,
+        -g,
+        shifts,
+        itmax=min(max_calls-sum(calls),2*n),
+        #τ = τ,
+        atol = 1.0e-8, # cgtol
+        rtol = precision, # ϵ
+        verbose=0,
+        check_curvature=true,
+    )
+    xShift = solver.x
+    stats = solver.stats
+    positives = findall(.!solver.not_cv)
 
     success = false
     good_grad = false

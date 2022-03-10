@@ -6,7 +6,7 @@
 
 in the Euclidean norm.
 """
-function to_minimum(A :: LinearOperator, b :: Array{T,1},
+function to_minimum(A, b :: Array{T,1},
                                x :: Vector{T},
                                p :: Vector{T}, Ap :: Vector{T}, pAp :: T,
                                α :: T,
