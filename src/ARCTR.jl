@@ -30,7 +30,6 @@ for file in files
     end
     include("Solvers/" * file)
     push!(ALL_solvers, eval(Symbol(split(file, ".")[1])))
-    @show file, split(file, ".")[1]
 end
 ####################################################################
 
