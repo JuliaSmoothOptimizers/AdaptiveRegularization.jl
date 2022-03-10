@@ -2,7 +2,7 @@ export ARCMA57_Sham_λ
 
 function ARCMA57_Sham_λ(nlp 		:: AbstractNLPModel,
               	 	  nlpstop 	:: NLPStopping;
-					  λfact     :: Float64 = 1.0
+					  λfact     :: Float64 = 1.0,
 				 	  kwargs...
                	 	  )
 
