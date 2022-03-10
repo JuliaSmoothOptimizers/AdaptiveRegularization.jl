@@ -44,9 +44,7 @@ function TRARC(nlp 	:: AbstractNLPModel,
     ∇fopt = ∇f
     norm_∇fopt = norm_∇f
 
-	if !OK
-	  nlp_at_x.Hx = hessian_rep(nlp, xt)
-	end
+	!OK && Stopping.update!(nlp_at_x, Hx = hessian_rep(nlp, xt), convert = true)
 
 	# global cgtol = 1.0
 
