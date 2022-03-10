@@ -11,25 +11,23 @@ function preprocessKARC(Hop, g, params::Tparams, calls, max_calls) #where T
     ϵ = 1e-12#sqrt(eps()) # * 100.0
     cgtol = max(ϵ, min(0.09, 0.01 * norm(g)^(1.0 + ζ)))
 
-    (xShift, stats) = cg_lanczos(Hop,
-                                           -g,
-                                           shifts,
-                                           itmax=min(max_calls-sum(calls),2*n),
-                                           #τ = τ,
-                                           atol = 1.0e-8, # cgtol
-                                           rtol = precision, # ϵ
-                                           verbose=0,
-                                           check_curvature=true,
-                                           history = true)
-
-    # positives = collect(findfirst(!, stats.flagged):length(stats.flagged))
-    ϵ = 1.0e-8 + norm(g) * precision
-    tmp = map(x -> x[end] <= ϵ, stats.residuals)
-    positives = findall(tmp)
-    if stats.solved
-      @warn "We need to fix `stats.flagged`"
-      # @show tmp, positives
-    end
+    nshifts = length(shifts)
+    solver = CgLanczosShiftSolver(Hop, -g, nshifts)
+    cg_lanczos!(
+        solver,
+        Hop,
+        -g,
+        shifts,
+        itmax=min(max_calls-sum(calls),2*n),
+        #τ = τ,
+        atol = 1.0e-8, # cgtol
+        rtol = precision, # ϵ
+        verbose=0,
+        check_curvature=true,
+    )
+    xShift = solver.x
+    stats = solver.stats
+    positives = findall(.!solver.not_cv)
 
     success = false
     good_grad = false
