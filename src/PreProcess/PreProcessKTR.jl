@@ -24,20 +24,10 @@ function preprocessKTR(Hop, g, params::Tparams, calls, max_calls)
         check_curvature=true,
     )
     xShift = solver.x
-    stats = solver.stats
     positives = findall(.!solver.not_cv)
+    Ndirs = [ norm(xShift[i]) for i = 1 : nshifts ]
 
-    success = false
-    good_grad = false
-    if VERSION >= v"1.1.0"
-        xShift = hcat(xShift...)
-    end
-    dirs = [ (xShift[:,i]) for i = 1 : nshifts ];
-    Ndirs = map(norm, dirs);
-
-    d = g # bidon
-
-    return  PDataK(d,-1.0, ζ, 0.0, 0, positives,xShift,shifts,nshifts,Ndirs,true)
+    return  PDataK(g,-1.0, ζ, 0.0, 0, positives,xShift,shifts,nshifts,Ndirs,true)
 end
 
 function decreaseKTR(X :: PDataK, α:: Float64, TR:: TrustRegion)
@@ -55,7 +45,7 @@ function decreaseKTR(X :: PDataK, α:: Float64, TR:: TrustRegion)
         α2 = X.norm_dirs[p_imin]
     end
 
-    X.d = X.xShift[:,p_imin]
+    X.d = X.xShift[p_imin]
     X.λ = X.shifts[p_imin]
 
     return α2

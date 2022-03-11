@@ -49,11 +49,10 @@ function TRARC(
     succ, unsucc, verysucc, unsuccinarow = 0, 0, 0, 0
 
 	verbose && @info log_header([:iter, :f, :nrm_g, :λ,  :status, :α, :nrm_dtr, :f_p_dTR, :ΔqN], [Int64, T, T, T, String, T, T, T])
-	verbose && @info log_row(Any[iter, nlp_at_x.fx, norm_∇f, 0.0, "First iteration", α])
+	verbose && @info log_row(Any[iter, ft, norm_∇f, 0.0, "First iteration", α])
 
     while !OK
-		calls = [nlp.counters.neval_obj,  nlp.counters.neval_grad, nlp.counters.neval_hess, nlp.counters.neval_hprod]
-        PData = pre_process(nlp_at_x.Hx, ∇f, params, calls, nlp_stop.meta.max_eval)
+        PData = pre_process(nlp_at_x.Hx, ∇f, params, nlp.counters.neval_hprod, nlp_stop.meta.max_cntrs[:neval_hprod])
 
         if ~PData.OK
 			@warn("Something wrong with PData")
@@ -81,7 +80,7 @@ function TRARC(
             r, good_grad, ∇fnext = compute_r(nlp, ft, Δf, Δq, slope, d, xtnext, ∇fnext, robust)
 
             if r < acceptance_threshold # unsucessful
-				verbose && @info log_row(Any[iter, nlp_at_x.fx, norm_∇f, λ, "U", α, norm(d), Δq])
+				verbose && @info log_row(Any[iter, ft, norm_∇f, λ, "U", α, norm(d), Δq])
 	        	unsucc += 1
 	        	unsuccinarow += 1
 	        	α = decrease(PData, α, TR)
