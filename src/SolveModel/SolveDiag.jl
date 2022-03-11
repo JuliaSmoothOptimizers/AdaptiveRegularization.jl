@@ -10,7 +10,7 @@ function solve_diag(λ, Δ, g̃, seuil, α, ϵ; M = [0.0])
     λin = λ
     λtry = seuil
     dtry = -(Δ .+ λtry * M) .\ g̃
-    normdtry = sqrt(dtry⋅dtry)
+    normdtry = sqrt(dtry ⋅ dtry)
     seuiltry = normdtry / α
     d̃ = dtry
 
@@ -22,7 +22,7 @@ function solve_diag(λ, Δ, g̃, seuil, α, ϵ; M = [0.0])
         while (λtry > seuiltry && (iter_bis < 10))
             λtry = λ + (λtry - λ) / max((seuil - seuiltry), T(2.0))
             dtry = -(Δ .+ λtry * M) .\ g̃
-            normdtry = sqrt(dtry⋅dtry)
+            normdtry = sqrt(dtry ⋅ dtry)
             seuiltry = normdtry / α
             global iter_bis += 1
             #println(" λ computation, iter_bis : $iter_bis  λtry  $λtry")
@@ -36,13 +36,13 @@ function solve_diag(λ, Δ, g̃, seuil, α, ϵ; M = [0.0])
 
     # Newton iterations
     global iter_nwt = 0
-    while (abs(seuil - λ)/max(seuil,λ) > ϵ) && (iter_nwt < 40)
+    while (abs(seuil - λ) / max(seuil, λ) > ϵ) && (iter_nwt < 40)
         dotd̃ = (Δ .+ λ * M) .\ (M .* d̃)
         Δλ = λ * (seuil - λ) / (seuil + λ * (λ * (d̃ ⋅ dotd̃) / (d̃ ⋅ d̃)))
         λ = max(λ + Δλ, λin + T(1.0e-10))
         λ = max(λ + Δλ, λin + (sqrt(eps(T) ./ 100.0)))
         d̃ = -(Δ .+ λ * M) .\ g̃
-        normd̃ = sqrt(d̃⋅d̃)
+        normd̃ = sqrt(d̃ ⋅ d̃)
         seuil = normd̃ / α
 
 
@@ -53,5 +53,5 @@ function solve_diag(λ, Δ, g̃, seuil, α, ϵ; M = [0.0])
     #try assert((g̃ + 0.5*Δ.*d̃)⋅d̃ <= 0.0)  catch  @bp  end
     #println("*******SolveDiag:  g̃⋅d̃ = $(g̃⋅d̃), 0.5 d̃'Δd̃ = $(0.5*(Δ .* d̃)⋅d̃)")
 
-    return d̃,λ
+    return d̃, λ
 end

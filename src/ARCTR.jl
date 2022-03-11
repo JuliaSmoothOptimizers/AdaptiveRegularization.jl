@@ -18,7 +18,7 @@ include("./Utilities/Utilities.jl")
 include("./Utilities/ldlt_symm.jl")
 
 path = joinpath(dirname(@__FILE__), "SolveModel")
-files = filter(x -> x[(end - 2):end] == ".jl", readdir(path))
+files = filter(x -> x[(end-2):end] == ".jl", readdir(path))
 for file in files
     if file in ["krylov_aux.jl"]
         continue
@@ -27,7 +27,7 @@ for file in files
 end
 
 pathHO = joinpath(dirname(@__FILE__), "SolveModel", "high-order-correction")
-files = filter(x -> x[(end - 2):end] == ".jl", readdir(pathHO))
+files = filter(x -> x[(end-2):end] == ".jl", readdir(pathHO))
 for file in files
     if file in []
         continue
@@ -36,7 +36,7 @@ for file in files
 end
 
 path = joinpath(dirname(@__FILE__), "PreProcess")
-files = filter(x -> x[(end - 2):end] == ".jl", readdir(path))
+files = filter(x -> x[(end-2):end] == ".jl", readdir(path))
 for file in files
     if occursin(r"MA", file)
         continue # Remove MA57 and MA97 solvers for now
@@ -56,7 +56,7 @@ export ALL_solvers
 ALL_solvers = Function[]
 
 path = joinpath(dirname(@__FILE__), "Solvers")
-files = filter(x -> x[(end - 2):end] == ".jl", readdir(path))
+files = filter(x -> x[(end-2):end] == ".jl", readdir(path))
 for file in files
     if occursin(r"MA", file)
         continue # Remove MA57 and MA97 solvers for now
@@ -69,7 +69,7 @@ for file in files
     push!(ALL_solvers, eval(fun))
 
     @eval begin
-        function $fun(nlp :: AbstractNLPModel; kwargs...)
+        function $fun(nlp::AbstractNLPModel; kwargs...)
             nlpstop = NLPStopping(nlp; kwargs...)
             nlpstop = $fun(nlpstop; kwargs...)
             return stopping_to_stats(nlpstop)

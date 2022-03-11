@@ -7,11 +7,11 @@ abstract type KrylovStats end
 
 "Type for statistics returned by non-Lanczos solvers"
 mutable struct SimpleStats <: KrylovStats
-  solved :: Bool
-  inconsistent :: Bool
-  residuals :: Array{Float64,1}
-  Aresiduals :: Array{Float64,1}
-  status :: String
+    solved::Bool
+    inconsistent::Bool
+    residuals::Array{Float64,1}
+    Aresiduals::Array{Float64,1}
+    status::String
 end
 
 # A standard implementation of the Conjugate Gradient method.
@@ -40,86 +40,99 @@ export cgARC
 
 The method does _not_ abort if A is not definite.
 """
-function cgARC(A, b::Array{T, 1}; atol::Float64 = 1e-08, rtol::Float64 = 1e-06, itmax::Int = 0, regulα::Float64 = 1, verbose::Bool = false) where T <: Real
-  n = size(b, 1);
-  (size(A, 1) == n & size(A, 2) == n) || error("Inconsistent problem size");
-  #isequal(triu(A)',tril(A)) || error("Must supply Hermitian matrix")
-  regulα > 0.0  ||  error("Regularization must be strictly positive")
+function cgARC(
+    A,
+    b::Array{T,1};
+    atol::Float64 = 1e-08,
+    rtol::Float64 = 1e-06,
+    itmax::Int = 0,
+    regulα::Float64 = 1,
+    verbose::Bool = false,
+) where {T<:Real}
+    n = size(b, 1)
+    (size(A, 1) == n & size(A, 2) == n) || error("Inconsistent problem size")
+    #isequal(triu(A)',tril(A)) || error("Must supply Hermitian matrix")
+    regulα > 0.0 || error("Regularization must be strictly positive")
 
-  verbose && @printf("CG: system of %d equations in %d variables\n", n, n);
+    verbose && @printf("CG: system of %d equations in %d variables\n", n, n)
 
-  # Initial state.
-  x = zeros(n)
-  x̂ = copy(x)
+    # Initial state.
+    x = zeros(n)
+    x̂ = copy(x)
 
-  γ = dot(b, b);
-  γ == 0 && return x;
-  r = copy(b);
-  p = copy(r);
+    γ = dot(b, b)
+    γ == 0 && return x
+    r = copy(b)
+    p = copy(r)
 
-  σ = 0.0
+    σ = 0.0
 
-  iter = 0;
-  itmax == 0 && (itmax = 2 * n);
+    iter = 0
+    itmax == 0 && (itmax = 2 * n)
 
-  rNorm = sqrt(γ);
-  rNorms = [rNorm;];
-  ε = atol + rtol * rNorm;
-  verbose && @printf("%5d  %8.1e ", iter, rNorm)
+    rNorm = sqrt(γ)
+    rNorms = [rNorm;]
+    ε = atol + rtol * rNorm
+    verbose && @printf("%5d  %8.1e ", iter, rNorm)
 
-  solved = rNorm <= ε;
-  tired = iter >= itmax;
-  on_boundary = false;
-  status = "unknown";
+    solved = rNorm <= ε
+    tired = iter >= itmax
+    on_boundary = false
+    status = "unknown"
 
-  q = s ->  0.5 * dot(s, copy(A * s)) - dot(b, s)
+    q = s -> 0.5 * dot(s, copy(A * s)) - dot(b, s)
 
-  m = s ->  q(s) + norm(s)^3/(3*regulα)
-  #hO = α -> m(x+α*p)
+    m = s -> q(s) + norm(s)^3 / (3 * regulα)
+    #hO = α -> m(x+α*p)
 
 
-  while ! (solved || tired)
-    Ap = copy(A * p);  # Bug in LinearOperators? A side effect spoils the computation without the copy.
-    pAp = BLAS.dot(n, p, 1, Ap, 1);
+    while !(solved || tired)
+        Ap = copy(A * p)  # Bug in LinearOperators? A side effect spoils the computation without the copy.
+        pAp = BLAS.dot(n, p, 1, Ap, 1)
 
-    α = γ / pAp;
+        α = γ / pAp
 
-    # Compute step size to the min of the regularized model.
-    σ = to_minimum(A, b, x, p, Ap, pAp, α, regulα)
+        # Compute step size to the min of the regularized model.
+        σ = to_minimum(A, b, x, p, Ap, pAp, α, regulα)
 
-    verbose && @printf("%8.1e  %7.1e  %7.1e\n", pAp, α, σ);
+        verbose && @printf("%8.1e  %7.1e  %7.1e\n", pAp, α, σ)
 
-    # Move along p from x to the min if either
-    # the next step leads farther than the min of the regularized model or
-    # we have nonpositive curvature.
-    if ((pAp <= 0.0) | (α > (σ/2)))
-      α = σ
-      on_boundary = true
-      verbose &&println("at minimum after ",iter," CG iterations.")
+        # Move along p from x to the min if either
+        # the next step leads farther than the min of the regularized model or
+        # we have nonpositive curvature.
+        if ((pAp <= 0.0) | (α > (σ / 2)))
+            α = σ
+            on_boundary = true
+            verbose && println("at minimum after ", iter, " CG iterations.")
+        end
+
+        verbose && @printf("    %8.1e  %7.1e  %7.1e\n", pAp, α, σ)
+        BLAS.axpy!(n, α, p, 1, x, 1)  # Faster than x = x + σ * p;
+        BLAS.axpy!(n, -α, Ap, 1, r, 1)  # Faster than r = r - α * Ap;
+        γ_next = BLAS.dot(n, r, 1, r, 1)
+        rNorm = sqrt(γ)
+        push!(rNorms, rNorm)
+
+        solved = (rNorm <= ε) | on_boundary
+        tired = iter >= itmax
+
+        if !solved
+            β = γ_next / γ
+            γ = γ_next
+            BLAS.scal!(n, β, p, 1)
+            BLAS.axpy!(n, 1.0, r, 1, p, 1)  # Faster than p = r + β * p;
+        end
+        iter = iter + 1
+        verbose && @printf("%5d  %8.1e ", iter, rNorm)
     end
+    verbose && @printf("\n")
 
-    verbose && @printf("    %8.1e  %7.1e  %7.1e\n", pAp, α, σ);
-    BLAS.axpy!(n,  α,  p, 1, x, 1);  # Faster than x = x + σ * p;
-    BLAS.axpy!(n, -α, Ap, 1, r, 1);  # Faster than r = r - α * Ap;
-    γ_next = BLAS.dot(n, r, 1, r, 1);
-    rNorm = sqrt(γ);
-    push!(rNorms, rNorm);
-
-    solved = (rNorm <= ε) | on_boundary;
-    tired = iter >= itmax;
-
-    if !solved
-      β = γ_next / γ;
-      γ = γ_next;
-      BLAS.scal!(n, β, p, 1)
-      BLAS.axpy!(n, 1.0, r, 1, p, 1);  # Faster than p = r + β * p;
-    end
-    iter = iter + 1;
-    verbose && @printf("%5d  %8.1e ", iter, rNorm);
-  end
-  verbose && @printf("\n");
-
-  status = on_boundary ? "at min of the cubic regularization" : (tired ? "maximum number of iterations exceeded" : "solution good enough given atol and rtol")
-  stats = SimpleStats(solved, false, rNorms, [], status);
-  return (x, stats);
+    status =
+        on_boundary ? "at min of the cubic regularization" :
+        (
+            tired ? "maximum number of iterations exceeded" :
+            "solution good enough given atol and rtol"
+        )
+    stats = SimpleStats(solved, false, rNorms, [], status)
+    return (x, stats)
 end
