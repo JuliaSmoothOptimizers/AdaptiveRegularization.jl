@@ -1,4 +1,15 @@
 shifts = 10.0.^(collect(-15.0:0.50:15.0))
+λfact = 100.0,
+corr_ho :: Symbol = :Shamanskii,
+nwt_res_fact = 0.8,
+λfact = 100.0,
+λfact 	:: Float64 = 1.0, # ARCMA57_Sham_vs_Nwt_λ, ARCMA57_Sham_λ
+nwt_res_fact = 0.25,
+ζ = 0.5,
+τ = 1.0,
+corr_ho :: Symbol = :Shamanskii_MA57, # TRMA57_Sham_vs_Nwt_λ
+nwt_res_fact = 0.25, # TRMA57_Sham_vs_Nwt_λ
+λfact = 1.0, # TRMA57_Sham_vs_Nwt_λ
 
 solvers_const = Dict(
     :ARCLDLt_abs => (hessian_dense, PDataLDLt, solve_modelARCDiagAbs, preprocessLDLt, decreaseFact, Tparam()),
