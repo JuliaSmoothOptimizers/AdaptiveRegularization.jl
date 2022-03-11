@@ -1,5 +1,5 @@
 export preprocessLDLt, preprocessLDLt2
-function preprocessLDLt(H ,g, params :: Tparams, n1, n2)
+function preprocessLDLt(H, g, params::Tparams, n1, n2)
     # printstyled("dans preprocessLDLt ⤈ \n", color = :red)
     T = eltype(H)
     # @show T
@@ -22,7 +22,7 @@ function preprocessLDLt(H ,g, params :: Tparams, n1, n2)
     try
         (L, D, pp, ρ, ncomp) = ldlt_symm(H, 'r')
     catch
- 	println("*******   Problem in LDLt")
+        println("*******   Problem in LDLt")
         res = PDataLDLt()
         res.OK = false
         return res
@@ -44,7 +44,7 @@ function preprocessLDLt(H ,g, params :: Tparams, n1, n2)
     # @show ncomp
 
     if true in isnan.(D)
- 	println("*******   Problem in D from LDLt: NaN")
+        println("*******   Problem in D from LDLt: NaN")
         println(" cond (H) = $(cond(H))")
         res = PDataLDLt()
         res.OK = false
@@ -61,7 +61,7 @@ function preprocessLDLt(H ,g, params :: Tparams, n1, n2)
     Δ = X.values
     # @show Δ[1]
     # @show Δ[2]
-    Q =  X.vectors
+    Q = X.vectors
     # @show Q[1, 1]
     # @show Q[2, 1]
     # @show Q[1, 2]
@@ -81,15 +81,15 @@ function preprocessLDLt(H ,g, params :: Tparams, n1, n2)
 
     n_g = norm(g)
     # @show n_g
-    λ =  max(-l_m, 0.0)
+    λ = max(-l_m, 0.0)
     # @show eltype(λ)
     # @show eltype(λ)
     # @show λ
     # printstyled("avant de sortir de PreProcessLDLt ↑ \n", color = :red)
-    return  PDataLDLt(L, D, pp, Δ, Q, g̃, λ, true, true)
+    return PDataLDLt(L, D, pp, Δ, Q, g̃, λ, true, true)
 end
 
-function preprocessLDLt2(H ,g, params :: Tparams, n1, n2)
+function preprocessLDLt2(H, g, params::Tparams, n1, n2)
     # printstyled("dans preprocessLDLt \n", color = :red)
     T = eltype(H)
     # @show H
@@ -111,13 +111,13 @@ function preprocessLDLt2(H ,g, params :: Tparams, n1, n2)
         # @show H
         S = bunchkaufman(Symmetric(H, :L), true, check = false)
     catch
- 	println("*******   Problem in LDLt")
+        println("*******   Problem in LDLt")
         res = PDataLDLt()
         res.OK = false
         return res
     end
-    L  = S.L
-    D  = S.D
+    L = S.L
+    D = S.D
     pp = S.p
 
     # printstyled("dans preprocessLDLt apres ldlt_symm eltype(L) = $(eltype(L)) \n", color = :cyan)
@@ -128,7 +128,7 @@ function preprocessLDLt2(H ,g, params :: Tparams, n1, n2)
     # @show ncomp
 
     if true in isnan.(D)
- 	println("*******   Problem in D from LDLt: NaN")
+        println("*******   Problem in D from LDLt: NaN")
         println(" cond (H) = $(cond(H))")
         res = PDataLDLt()
         res.OK = false
@@ -143,7 +143,7 @@ function preprocessLDLt2(H ,g, params :: Tparams, n1, n2)
     X = eigen(Matrix(D))
     Δ = X.values
     # @show Δ
-    Q =  X.vectors
+    Q = X.vectors
     l_m, = findmin(Δ)
     # @show l_m
     ĝ = L \ (g[pp])
@@ -157,13 +157,13 @@ function preprocessLDLt2(H ,g, params :: Tparams, n1, n2)
 
     n_g = norm(g)
     # @show n_g
-    λ =  max(-l_m, 0.0)
+    λ = max(-l_m, 0.0)
     # @show λ
     # printstyled("avant de sortir de PreProcessLDLt ↑ \n", color = :red)
-    return  PDataLDLt(L, D, pp, Δ, Q, g̃, λ, true, true)
+    return PDataLDLt(L, D, pp, Δ, Q, g̃, λ, true, true)
 end
 
-function AInv(X :: PDataLDLt, d̃ ::  Array{T,1}) where T
+function AInv(X::PDataLDLt, d̃::Array{T,1}) where {T}
     d̂ = X.Q * d̃
     u = X.L' \ d̂
     # @show u[invperm(X.pp)][1]
@@ -173,7 +173,7 @@ function AInv(X :: PDataLDLt, d̃ ::  Array{T,1}) where T
 end
 
 
-function reconstructH(X :: PDataLDLt)
+function reconstructH(X::PDataLDLt)
     A = X.L * X.D * X.L'
     return A[X.pp.X.pp]
 end

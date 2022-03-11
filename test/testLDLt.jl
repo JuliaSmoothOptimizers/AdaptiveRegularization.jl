@@ -2,17 +2,18 @@ using Test
 
 
 n = 10;
-A = rand(n, n); A = A + A';
+A = rand(n, n);
+A = A + A';
 
 # L = Array(Float64, 2)
 # D = Array(Float64, 2)
 # P = Array(Float64, 2)
 # pp = Array(Int, 1)
-global L     = Matrix{Float64}(undef, n, n)
-global D     = Matrix{Float64}(undef, n, n)
-global P     = Matrix{Float64}(undef, n, n)
-global pp    = Vector{Float64}(undef, n)
-global ρ     = Float64
+global L = Matrix{Float64}(undef, n, n)
+global D = Matrix{Float64}(undef, n, n)
+global P = Matrix{Float64}(undef, n, n)
+global pp = Vector{Float64}(undef, n)
+global ρ = Float64
 global ncomp = Int64
 
 (L, D, pp, ρ, ncomp) = ldlt_symm(A)

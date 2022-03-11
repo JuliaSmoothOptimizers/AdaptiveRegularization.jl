@@ -4,7 +4,15 @@ export solve_modelTRDiag_HO_vs_Nwt_λ
 If the Newton direction is accepted and the high order correction lies within
 a bigger trust region then we use the high order correction.
 """
-function solve_modelTRDiag_HO_vs_Nwt_λ(nlp_stop, PData :: PDataFact, δ:: T; ho_correction :: Symbol = :Shamanskii, fact = 2.0, λfact = 1.0, nwt_res_fact = 0.25) where T
+function solve_modelTRDiag_HO_vs_Nwt_λ(
+    nlp_stop,
+    PData::PDataFact,
+    δ::T;
+    ho_correction::Symbol = :Shamanskii,
+    fact = 2.0,
+    λfact = 1.0,
+    nwt_res_fact = 0.25,
+) where {T}
     # Solve the TR subproblem once diagonalized into Δ using the norm |Δ|
     # Setup the problem
     # printstyled("On est dans solve_model_TRDiag_HO_vs_Nwt_λ  ↓ \n", color = :red)
@@ -22,7 +30,7 @@ function solve_modelTRDiag_HO_vs_Nwt_λ(nlp_stop, PData :: PDataFact, δ:: T; ho
         # λ = PData.λ
 
         d̃ = -(PData.Δ .+ λ * M) .\ PData.g̃ # Ajouter Shamanskii ici!
-        normd̃ = sqrt(d̃⋅d̃)
+        normd̃ = sqrt(d̃ ⋅ d̃)
         if normd̃ < δ
             if PData.λ == 0.0 # Newton's direction
                 λ = PData.λ
@@ -31,10 +39,11 @@ function solve_modelTRDiag_HO_vs_Nwt_λ(nlp_stop, PData :: PDataFact, δ:: T; ho
             else              # hard case
                 # println(" hard case")
                 bidon, i = findmin(PData.Δ)
-                d̃[i] = 0.0; d̃[i] = - sign(PData.g̃[i]) * sqrt(δ^2 - d̃⋅d̃)
+                d̃[i] = 0.0
+                d̃[i] = -sign(PData.g̃[i]) * sqrt(δ^2 - d̃ ⋅ d̃)
             end
         else
-            d̃,λ = solve_diagTR(λ, PData.Δ, PData.g̃, δ, ϵ)
+            d̃, λ = solve_diagTR(λ, PData.Δ, PData.g̃, δ, ϵ)
         end
     else # hard case impossible, λ already > λ_min
         # println("on est dans le cas hard cases impossible")
@@ -60,9 +69,12 @@ function solve_modelTRDiag_HO_vs_Nwt_λ(nlp_stop, PData :: PDataFact, δ:: T; ho
             return d, λ
         end
         # printstyled("on a dHO \n", color = :yellow)
-        nwt_residual = (-(nlp_at_x.gx + 0.5 * nlp_at_x.Hx * d)⋅d)
+        nwt_residual = (-(nlp_at_x.gx + 0.5 * nlp_at_x.Hx * d) ⋅ d)
         # printstyled("on a nwt_residual \n", color = :yellow)
-        if (norm(dHO) < 2.0 .* δ) && ((-(nlp_at_x.gx + 0.5 * nlp_at_x.Hx * dHO)⋅dHO) >= nwt_res_fact .* nwt_residual)
+        if (norm(dHO) < 2.0 .* δ) && (
+            (-(nlp_at_x.gx + 0.5 * nlp_at_x.Hx * dHO) ⋅ dHO) >=
+            nwt_res_fact .* nwt_residual
+        )
             return dHO, λ
         else
             return d, λ

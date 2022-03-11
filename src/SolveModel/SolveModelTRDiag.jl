@@ -1,6 +1,6 @@
 export solve_modelTRDiag
 
-function solve_modelTRDiag(nlp_stop, PData :: PDataFact, δ:: T) where T
+function solve_modelTRDiag(nlp_stop, PData::PDataFact, δ::T) where {T}
     # Solve the TR subproblem once diagonalized into Δ using the norm |Δ|
     # Setup the problem
     # printstyled("On est dans solve_modelTRDiag ⇊ \n", color = :red)
@@ -22,7 +22,7 @@ function solve_modelTRDiag(nlp_stop, PData :: PDataFact, δ:: T) where T
         # λ = PData.λ
 
         d̃ = -(PData.Δ .+ λ * M) .\ PData.g̃ # Ajouter Shamanskii ici!
-        normd̃ = sqrt(d̃⋅d̃)
+        normd̃ = sqrt(d̃ ⋅ d̃)
         if normd̃ < δ
             if PData.λ == 0.0 # Newton's direction
                 λ = PData.λ
@@ -31,10 +31,11 @@ function solve_modelTRDiag(nlp_stop, PData :: PDataFact, δ:: T) where T
             else              # hard case
                 # println(" hard case")
                 bidon, i = findmin(PData.Δ)
-                d̃[i] = 0.0; d̃[i] = - sign(PData.g̃[i]) * sqrt(δ^2 - d̃⋅d̃)
+                d̃[i] = 0.0
+                d̃[i] = -sign(PData.g̃[i]) * sqrt(δ^2 - d̃ ⋅ d̃)
             end
         else
-            d̃,λ = solve_diagTR(λ, PData.Δ, PData.g̃, δ, ϵ)
+            d̃, λ = solve_diagTR(λ, PData.Δ, PData.g̃, δ, ϵ)
         end
     else # hard case impossible, λ already > λ_min
         # println("on est dans le cas hard cases impossible")
