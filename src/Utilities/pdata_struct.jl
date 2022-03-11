@@ -16,7 +16,7 @@ mutable struct PDataK{T} <: PDataIter{T}
     indmin :: Int               # index of best shift value  within "positive". On first call = 0
 
     positives :: Array{Int,1}   # indices of the shift values yielding (H+λI)⪰0
-    xShift :: Array{T,2}        # solutions for each shifted system
+    xShift :: Array{Array{T,1},1}        # solutions for each shifted system
     shifts :: Array{T,1}        # values of the shifts
     nshifts :: Int              # number of shifts
     norm_dirs :: Array{T,1}     # norms of xShifts

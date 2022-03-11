@@ -7,7 +7,6 @@ function preprocessKARC(Hop, g, params::Tparams, calls, max_calls) #where T
     n = length(g)
     gNorm2 = BLAS.nrm2(n, g, 1)
     precision =  max(1e-12,min(0.5,(gNorm2^ζ)))
-    #ϵ = sqrt(eps(T)) # * 100.0
     ϵ = 1e-12#sqrt(eps()) # * 100.0
     cgtol = max(ϵ, min(0.09, 0.01 * norm(g)^(1.0 + ζ)))
 
@@ -19,28 +18,17 @@ function preprocessKARC(Hop, g, params::Tparams, calls, max_calls) #where T
         -g,
         shifts,
         itmax=min(max_calls-sum(calls),2*n),
-        #τ = τ,
         atol = 1.0e-8, # cgtol
         rtol = precision, # ϵ
         verbose=0,
         check_curvature=true,
     )
     xShift = solver.x
-    stats = solver.stats
     positives = findall(.!solver.not_cv)
+    Ndirs = [norm(dx) for dx in xShift]
 
-    success = false
-    good_grad = false
-    if VERSION >= v"1.1.0"
-        xShift = hcat(xShift...)
-    end
-    dirs = [ (xShift[:,i]) for i = 1 : nshifts ];
-    Ndirs = map(norm, dirs);
-
-    d = g # bidon
-    return  PDataK(d, -1.0, ζ, τ, 0 , positives, xShift,   shifts, nshifts, Ndirs, true)
+    return  PDataK(g, -1.0, ζ, τ, 0 , positives, xShift, shifts, nshifts, Ndirs, true)
 end
-
 
 function decreaseKARC(X :: PDataK, α:: Float64, TR:: TrustRegion)
     X.indmin += 1
@@ -57,7 +45,7 @@ function decreaseKARC(X :: PDataK, α:: Float64, TR:: TrustRegion)
         α2 = X.norm_dirs[p_imin]^X.τ/X.shifts[p_imin]
     end
 
-    X.d = X.xShift[:,p_imin]
+    X.d = X.xShift[p_imin]
     X.λ = X.shifts[p_imin]
 
     return α2
