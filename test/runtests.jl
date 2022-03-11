@@ -19,7 +19,11 @@ for solver in ALL_solvers
     nlp = extrosnb(n = 2)
     nlpstop = NLPStopping(nlp)
     println(nbsolver,"  ",solver)
-    final_nlp_at_x, optimal = solver(nlp, nlpstop, verbose = true)
+    solver(nlpstop, verbose = true)
+    final_nlp_at_x, optimal = nlpstop.current_state, nlpstop.meta.optimal
     @test optimal
+    reset!(nlp)
+    stats = solver(nlp, verbose = false)
+    @test stats.status == :first_order
     reset!(nlp)
 end

@@ -1,16 +1,12 @@
-export ARCLDLt
-
-function ARCLDLt(nlp 		:: AbstractNLPModel,
-              	nlpstop 	:: NLPStopping;
+function ARCLDLt(nlpstop 	:: NLPStopping;
 				kwargs...
                		)
 
-	T = eltype(nlp.meta.x0)
+	T = eltype(nlpstop.pb.meta.x0)
 
-	return TRARC(nlp,
-				  nlpstop;
+	return TRARC(nlpstop;
 				  TR = TrustRegion(T(10.0)),
-				  c = Combi(hessian_dense, PDataLDLt{eltype(nlp.meta.x0)}, solve_modelARCDiag, preprocessLDLt, decreaseFact, Tparam{eltype(nlp.meta.x0)}()),
+				  c = Combi(hessian_dense, PDataLDLt{T}, solve_modelARCDiag, preprocessLDLt, decreaseFact, Tparam{T}()),
 				  kwargs...
 				  )
 end

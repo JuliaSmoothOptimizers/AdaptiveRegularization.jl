@@ -1,12 +1,9 @@
-export TRMA97_abs
-
-function TRMA97_abs(nlp 		:: AbstractNLPModel,
-                 	nlpstop 	:: NLPStopping;
+function TRMA97_abs(nlpstop 	:: NLPStopping;
 				    kwargs...
                		)
-
-	return TRARC(nlp, nlpstop; TR = TrustRegion(10.0),
-				  c = Combi(hessian_dense, PDataMA97{eltype(nlp.meta.x0)}, solve_modelTRDiagAbs, preprocessMA97, decreaseFact, Tparam{eltype(nlp.meta.x0)}()),
+					   T = eltype(nlpstop.pb.meta.x0)
+	return TRARC(nlpstop; TR = TrustRegion(10.0),
+				  c = Combi(hessian_dense, PDataMA97{T}, solve_modelTRDiagAbs, preprocessMA97, decreaseFact, Tparam{T}()),
 				  kwargs...
 				  )
 end

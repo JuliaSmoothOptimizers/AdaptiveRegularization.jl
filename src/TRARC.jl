@@ -18,14 +18,13 @@ struct TRARCWorkspace
 end
 
 function TRARC(
-	nlp 	:: AbstractNLPModel{T, S},
-    nlp_stop	:: NLPStopping;
+    nlp_stop :: NLPStopping{Pb, M, SRC, NLPAtX{T, S}, MStp, LoS};
     TR 	:: TrustRegion = TrustRegion(T(10.0)),
 	c 	:: Combi = Combi{T}(hessian_dense, PDataLDLt{T}, solve_modelTRDiag, preprocessLDLt, decreaseFact, Tparam{T}()),
 	robust 	:: Bool = true,
     verbose  :: Bool = false,
-) where {T, S}
-	nlp_at_x = nlp_stop.current_state
+) where {Pb, M, SRC, MStp, LoS, S, T}
+	nlp, nlp_at_x = nlp_stop.pb, nlp_stop.current_state
     hessian_rep, PData, solve_model, pre_process, decrease, params = extract(c)
 	workspace = TRARCWorkspace(T, S, nlp.meta.nvar)
 	xt, xtnext, d, ∇f, ∇fnext = workspace.xt, workspace.xtnext, workspace.d, workspace.∇f, workspace.∇fnext
@@ -56,7 +55,7 @@ function TRARC(
 
         if ~PData.OK
 			@warn("Something wrong with PData")
-			return nlp_at_x, nlp_stop.meta.optimal
+			return nlp_stop
 		end
 
         success = false
@@ -68,7 +67,7 @@ function TRARC(
             if Δq < 0.0 println("*******   Ascent direction in SolveModel: Δq = $Δq")
                 println("  g⋅d = $(∇f⋅d), 0.5 d'Hd = $(0.5*(nlp_at_x.Hx*d)⋅d)  α = $α  λ = $λ")
                 # cond issue with H?
-				return nlp_at_x, nlp_stop.meta.optimal
+				return nlp_stop
             end
             slope = ∇f ⋅ d
 			xtnext .= xt .+ d
@@ -115,5 +114,5 @@ function TRARC(
 		success && Stopping.update!(nlp_at_x, Hx = hessian_rep(nlp, xt))
     end # while !OK
 
-    return nlp_at_x, nlp_stop.meta.optimal
+    return nlp_stop
 end
