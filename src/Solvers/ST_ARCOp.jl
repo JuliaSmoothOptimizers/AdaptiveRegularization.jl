@@ -1,14 +1,10 @@
-export ST_ARCOp
-
-function ST_ARCOp(nlp 		:: AbstractNLPModel,
-              	nlpstop 	:: NLPStopping;
+function ST_ARCOp(nlpstop 	:: NLPStopping;
 				kwargs...
                		)
-
-	return TRARC(nlp,
-				  nlpstop;
+					   T = eltype(nlpstop.pb.meta.x0)
+	return TRARC(nlpstop;
 				  TR = TrustRegion(10.0),
-				  c = Combi(hessian_operator, PDataST{eltype(nlp.meta.x0)}, solve_modelST_ARC, preprocessST, decreaseGen, TparamsST{eltype(nlp.meta.x0)}()),
+				  c = Combi(hessian_operator, PDataST{T}, solve_modelST_ARC, preprocessST, decreaseGen, TparamsST{T}()),
 				  kwargs...
 				  )
 end

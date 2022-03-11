@@ -1,14 +1,10 @@
-export TRKdense
-
-function TRKdense(nlp 		:: AbstractNLPModel,
-               nlpstop 	:: NLPStopping;
+function TRKdense(nlpstop 	:: NLPStopping;
 							 kwargs...
                )
-
-	return TRARC(nlp,
-				  nlpstop;
+			   T = eltype(nlpstop.pb.meta.x0)
+	return TRARC(nlpstop;
 				  TR = TrustRegion(10.0),
-				  c = Combi(hessian_dense, PDataK{eltype(nlp.meta.x0)}, solve_modelKTR, preprocessKTR, decreaseKTR, TparamsKTR{eltype(nlp.meta.x0)}()),
+				  c = Combi(hessian_dense, PDataK{T}, solve_modelKTR, preprocessKTR, decreaseKTR, TparamsKTR{T}()),
 				  kwargs...
 				  )
 end

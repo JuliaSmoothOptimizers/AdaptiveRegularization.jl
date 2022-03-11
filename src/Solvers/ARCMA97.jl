@@ -1,12 +1,9 @@
-export ARCMA97
-
-function ARCMA97(nlp 		:: AbstractNLPModel,
-              	 nlpstop 	:: NLPStopping;
+function ARCMA97(nlpstop 	:: NLPStopping;
 				 kwargs...
                	 )
-
+					T = eltype(nlpstop.pb.meta.x0)
 	return TRARC(nlp, nlpstop; TR = TrustRegion(10.0),
-				  c = Combi(hessian_dense, PDataMA97{eltype(nlp.meta.x0)}, solve_modelARCDiag, preprocessMA97, decreaseFact, Tparam{eltype(nlp.meta.x0)}()),
+				  c = Combi(hessian_dense, PDataMA97{T}, solve_modelARCDiag, preprocessMA97, decreaseFact, Tparam{T}()),
 				  kwargs...
 				  )
 end

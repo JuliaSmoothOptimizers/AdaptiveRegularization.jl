@@ -1,17 +1,12 @@
-export ARCqKOp2
-
-
-function ARCqKOp2(nlp 		:: AbstractNLPModel,
-              	nlpstop 	:: NLPStopping;
+function ARCqKOp2(nlpstop 	:: NLPStopping;
 				kwargs...
                		)
-
+					   T = eltype(nlpstop.pb.meta.x0)
     shifts = 10.0.^(collect(-15.0:2.0:15.0))
 
-    return TRARC2(nlp,
-		  nlpstop;
+    return TRARC2(nlpstop;
 		  TR = TrustRegion(10.0),
-		  c = Combi(hessian_operator, PDataK{eltype(nlp.meta.x0)}, solve_modelKARC, preprocessKARC, decreaseKARC, TparamsKARC{eltype(nlp.meta.x0)}(shifts)),
+		  c = Combi(hessian_operator, PDataK{T}, solve_modelKARC, preprocessKARC, decreaseKARC, TparamsKARC{T}(shifts)),
 		  kwargs...
 		  )
 end

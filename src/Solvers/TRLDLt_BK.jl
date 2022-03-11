@@ -1,14 +1,10 @@
-export TRLDLt_BK
-
-function TRLDLt_BK(nlp 		:: AbstractNLPModel,
-              	nlpstop 	:: NLPStopping;
+function TRLDLt_BK(nlpstop 	:: NLPStopping;
 				kwargs...
                		)
-
-	return TRARC(nlp,
-				  nlpstop;
+					   T = eltype(nlpstop.pb.meta.x0)
+	return TRARC(nlpstop;
 				  TR = TrustRegion(10.0),
-				  c = Combi(hessian_dense, PDataLDLt{eltype(nlp.meta.x0)}, solve_modelTRDiag, preprocessLDLt2, decreaseFact, Tparam{eltype(nlp.meta.x0)}()),
+				  c = Combi(hessian_dense, PDataLDLt{T}, solve_modelTRDiag, preprocessLDLt2, decreaseFact, Tparam{T}()),
 				  kwargs...
 				  )
 end

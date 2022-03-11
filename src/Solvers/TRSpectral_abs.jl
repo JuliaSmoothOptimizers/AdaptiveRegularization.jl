@@ -1,14 +1,10 @@
-export TRSpectral_abs
-
-function TRSpectral_abs(nlp 		:: AbstractNLPModel,
-               			nlpstop 	:: NLPStopping;
+function TRSpectral_abs(nlpstop 	:: NLPStopping;
 						kwargs...
                			)
-
-	return TRARC(nlp,
-				  nlpstop;
+						   T = eltype(nlpstop.pb.meta.x0)
+	return TRARC(nlpstop;
 				  TR = TrustRegion(10.0),
-				  c = Combi(hessian_dense, PDataSpectral{eltype(nlp.meta.x0)}, solve_modelTRDiagAbs, preprocessSpectral, decreaseFact,Tparam{eltype(nlp.meta.x0)}()),
+				  c = Combi(hessian_dense, PDataSpectral{T}, solve_modelTRDiagAbs, preprocessSpectral, decreaseFact,Tparam{T}()),
 				  kwargs...
 				  )
 end

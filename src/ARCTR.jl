@@ -5,7 +5,7 @@ using LinearAlgebra, Logging, Printf, SparseArrays
 # JSO
 using Krylov, LinearOperators, NLPModels, SolverCore, SolverTools
 # Stopping
-using Stopping
+using Stopping, StoppingInterface
 
 # Selective includes.
 include("./HessianRep/HessianDense.jl")
@@ -65,7 +65,17 @@ for file in files
         continue
     end
     include("Solvers/" * file)
-    push!(ALL_solvers, eval(Symbol(split(file, ".")[1])))
+    fun = Symbol(split(file, ".")[1])
+    push!(ALL_solvers, eval(fun))
+
+    @eval begin
+        function $fun(nlp :: AbstractNLPModel; kwargs...)
+            nlpstop = NLPStopping(nlp; kwargs...)
+            nlpstop = $fun(nlpstop; kwargs...)
+            return stopping_to_stats(nlpstop)
+        end
+    end
+    @eval export $fun
 end
 
 end # module

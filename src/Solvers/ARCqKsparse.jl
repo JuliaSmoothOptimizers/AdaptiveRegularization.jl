@@ -1,16 +1,12 @@
-export ARCqKsparse
-
-function ARCqKsparse(nlp 		:: AbstractNLPModel,
-              	nlpstop 	:: NLPStopping;
+function ARCqKsparse(nlpstop 	:: NLPStopping;
 				kwargs...
                		)
-
+					   T = eltype(nlpstop.pb.meta.x0)
 	shifts = 10.0.^(collect(-15.0:1.0:15.0))
 
-	return TRARC(nlp,
-				  nlpstop;
+	return TRARC(nlpstop;
 				  TR = TrustRegion(10.0),
-				  c = Combi(hessian_sparse, PDataK{eltype(nlp.meta.x0)}, solve_modelKARC, preprocessKARC, decreaseKARC, TparamsKARC{eltype(nlp.meta.x0)}(shifts)),
+				  c = Combi(hessian_sparse, PDataK{T}, solve_modelKARC, preprocessKARC, decreaseKARC, TparamsKARC{T}(shifts)),
 				  kwargs...
 				  )
 end
