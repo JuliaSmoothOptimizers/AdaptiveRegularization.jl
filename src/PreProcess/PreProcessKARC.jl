@@ -1,5 +1,4 @@
 function preprocessKARC(Hop, g, params::Tparams, calls, max_calls) #where T
-    τ = params.τ
     ζ = params.ζ
     nshifts = params.nshifts
     shifts = params.shifts
@@ -27,22 +26,22 @@ function preprocessKARC(Hop, g, params::Tparams, calls, max_calls) #where T
     positives = findall(.!solver.not_cv)
     Ndirs = [norm(dx) for dx in xShift]
 
-    return PDataK(g, -1.0, ζ, τ, 0, positives, xShift, shifts, nshifts, Ndirs, true)
+    return PDataK(g, -1.0, ζ, 0, positives, xShift, shifts, nshifts, Ndirs, true)
 end
 
 function decreaseKARC(X::PDataK, α::Float64, TR::TrustRegion)
     X.indmin += 1
     p_imin = X.positives[X.indmin]
-    α2 = X.norm_dirs[p_imin]^X.τ / X.shifts[p_imin]
+    α2 = X.norm_dirs[p_imin] / X.shifts[p_imin]
 
     targetα = α * TR.decrease_factor
 
-    # fix α to its "ideal" value to satisfy αλ=||d||^τ
+    # fix α to its "ideal" value to satisfy αλ=||d||
     # while ensuring α decreases enough
     while α2 > targetα && p_imin < length(X.positives)
         X.indmin += 1
         p_imin = X.positives[X.indmin]
-        α2 = X.norm_dirs[p_imin]^X.τ / X.shifts[p_imin]
+        α2 = X.norm_dirs[p_imin] / X.shifts[p_imin]
     end
 
     if p_imin == length(X.positives)

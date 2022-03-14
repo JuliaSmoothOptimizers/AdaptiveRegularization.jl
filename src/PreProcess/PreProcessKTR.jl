@@ -1,7 +1,6 @@
 export preprocessKTR, decreaseKTR
 function preprocessKTR(Hop, g, params::Tparams, calls, max_calls)
     ζ = params.ζ
-    #τ = params.τ
     nshifts = params.nshifts
     shifts = params.shifts
 
@@ -17,7 +16,6 @@ function preprocessKTR(Hop, g, params::Tparams, calls, max_calls)
         -g,
         shifts,
         itmax = min(max_calls - sum(calls), 2 * n),
-        #τ = τ,
         atol = 1.0e-8, # cgtol
         rtol = precision, # ϵ
         verbose = 0,
@@ -27,7 +25,7 @@ function preprocessKTR(Hop, g, params::Tparams, calls, max_calls)
     positives = findall(.!solver.not_cv)
     Ndirs = [norm(xShift[i]) for i = 1:nshifts]
 
-    return PDataK(g, -1.0, ζ, 0.0, 0, positives, xShift, shifts, nshifts, Ndirs, true)
+    return PDataK(g, -1.0, ζ, 0, positives, xShift, shifts, nshifts, Ndirs, true)
 end
 
 function decreaseKTR(X::PDataK, α::Float64, TR::TrustRegion)
