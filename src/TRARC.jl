@@ -30,6 +30,7 @@ function TRARC(
     ),
     robust::Bool = true,
     verbose::Bool = false,
+    kwargs...,
 ) where {Pb,M,SRC,MStp,LoS,S,T}
     nlp, nlp_at_x = nlp_stop.pb, nlp_stop.current_state
     hessian_rep, PData, solve_model, pre_process, decrease, params = extract(c)
