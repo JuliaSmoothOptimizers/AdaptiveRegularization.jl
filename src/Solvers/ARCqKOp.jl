@@ -1,6 +1,5 @@
-function ARCqKOp(nlpstop::NLPStopping; kwargs...)
+function ARCqKOp(nlpstop::NLPStopping, shifts = 10.0 .^ (collect(-15.0:1.0:15.0)); kwargs...)
     T = eltype(nlpstop.pb.meta.x0)
-    shifts = 10.0 .^ (collect(-15.0:1.0:15.0))
 
     return TRARC(
         nlpstop;
