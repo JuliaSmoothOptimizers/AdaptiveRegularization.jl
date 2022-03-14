@@ -1,7 +1,7 @@
 using Pkg; Pkg.activate(".")
 using JLD2, Plots, SolverBenchmark
 
-name = "2022-03-14_ST_TROp_ARCqKsparse_ARCqKOp_ST_ARCOp_cutest_129_10"
+name = "2022-03-14_ST_TROp_ARCqKOp_ST_ARCOp_cutest_129_10"
 @load "$name.jld2" stats
 solved(df) = (df.status .== :first_order)
 
