@@ -39,10 +39,14 @@ function decreaseKARC(X::PDataK, α::Float64, TR::TrustRegion)
 
     # fix α to its "ideal" value to satisfy αλ=||d||^τ
     # while ensuring α decreases enough
-    while α2 > targetα
+    while α2 > targetα && p_imin < length(X.positives)
         X.indmin += 1
         p_imin = X.positives[X.indmin]
         α2 = X.norm_dirs[p_imin]^X.τ / X.shifts[p_imin]
+    end
+
+    if p_imin == length(X.positives)
+        @warn "PreProcessKTR failure no α2 found"
     end
 
     X.d = X.xShift[p_imin]

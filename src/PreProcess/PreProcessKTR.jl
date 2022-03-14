@@ -39,10 +39,14 @@ function decreaseKTR(X::PDataK, α::Float64, TR::TrustRegion)
     # while ensuring α decreases enough
     targetα = α * TR.decrease_factor
 
-    while α2 > targetα
+    while α2 > targetα && p_imin < length(X.positives)
         X.indmin += 1
         p_imin = X.positives[X.indmin]
         α2 = X.norm_dirs[p_imin]
+    end
+
+    if p_imin == length(X.positives)
+        @warn "PreProcessKTR failure no α2 found"
     end
 
     X.d = X.xShift[p_imin]
