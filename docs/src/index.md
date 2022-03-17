@@ -21,8 +21,8 @@ The package contains several implementations:
 -[X] update for in-place preprocess functions
 -[X] update for in-place `hessian_rep` functions
 -[X] we should probably move decreaseKTR and decreaseKARC here in Utilies.jl
--[ ] Unify `TParams.shifts` and in `PData.shifts`
--[ ] Why is there a LDLt and LDLt2? LDLt2 that depend on a `bunchkaufman` function (from LinearAlgebra?)
+-[X] Unify `TParams.shifts` and in `PData.shifts`
+-[X] Why is there a LDLt and LDLt2? LDLt2 that depend on a `bunchkaufman` function (from LinearAlgebra?)
 -[X] we could use multiple-dispatch and have just one function `decrease` and `increase`.
 -[X] remove `reconstructH` as it is nowhere used.
 -[ ] extract parameters in KARC and KTR
