@@ -22,8 +22,8 @@ function preprocessKTR(Hop, g, params::Tparams, calls, max_calls)
         check_curvature = true,
     )
     xShift = solver.x
-    positives = findall(.!solver.not_cv)
-    Ndirs = [norm(xShift[i]) for i = 1:nshifts]
+    positives = findall(solver.converged)
+    Ndirs = [norm(dx) for dx in xShift]
 
     return PDataK(g, -1.0, ζ, 0, positives, xShift, shifts, nshifts, Ndirs, true)
 end

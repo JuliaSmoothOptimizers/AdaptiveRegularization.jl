@@ -23,7 +23,7 @@ function preprocessKARC(Hop, g, params::Tparams, calls, max_calls) #where T
         check_curvature = true,
     )
     xShift = solver.x
-    positives = findall(.!solver.not_cv)
+    positives = findall(solver.converged)
     Ndirs = [norm(dx) for dx in xShift]
 
     return PDataK(g, -1.0, ζ, 0, positives, xShift, shifts, nshifts, Ndirs, true)
@@ -35,13 +35,6 @@ function decreaseKARC(X::PDataK, α::Float64, TR::TrustRegion)
     α2 = max(X.norm_dirs[p_imin] / X.shifts[p_imin], eps())
 
     targetα = α * TR.decrease_factor
-    @show X.positives
-    @show X.indmin
-    @show α, targetα, α2
-    @show X.norm_dirs
-    @show X.shifts
-    @show X.norm_dirs ./ X.shifts
-    @show X.xShift
 
     # fix α to its "ideal" value to satisfy αλ=||d||
     # while ensuring α decreases enough
