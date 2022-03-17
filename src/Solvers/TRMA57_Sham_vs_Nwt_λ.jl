@@ -5,7 +5,6 @@ function TRMA57_Sham_vs_Nwt_λ(
     λfact = 1.0,
     kwargs...,
 )
-    T = eltype(nlpstop.pb.meta.x0)
     return TRARC(
         nlpstop;
         c = Combi(

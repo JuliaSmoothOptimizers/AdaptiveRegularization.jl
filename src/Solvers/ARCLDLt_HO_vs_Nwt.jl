@@ -5,9 +5,6 @@ function ARCLDLt_HO_vs_Nwt(
     λfact = 100.0,
     kwargs...,
 )
-
-    T = eltype(nlpstop.pb.meta.x0)
-
     return TRARC(
         nlpstop;
         c = Combi(

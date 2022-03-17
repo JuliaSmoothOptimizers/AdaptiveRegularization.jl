@@ -1,5 +1,4 @@
 function TRMA57(nlpstop::NLPStopping; kwargs...)
-
     return TRARC(
         nlpstop;
         c = Combi(

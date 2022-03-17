@@ -1,7 +1,4 @@
 function ARCLDLt_HO_Sham(nlpstop::NLPStopping; λfact = 100.0, kwargs...)
-
-    T = eltype(nlpstop.pb.meta.x0)
-
     return TRARC(
         nlpstop;
         c = Combi(
