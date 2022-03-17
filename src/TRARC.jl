@@ -22,7 +22,7 @@ end
 function TRARC(
     nlp_stop::NLPStopping{Pb,M,SRC,NLPAtX{T,S},MStp,LoS};
     TR::TrustRegion = TrustRegion(T(10.0)),
-    c::Combi{T, Hess} = Combi{T, Hess}(
+    c::Combi{T, Hess, ParamData} = Combi(
         HessDense,
         PDataLDLt{T},
         solve_modelTRDiag,
@@ -33,9 +33,9 @@ function TRARC(
     robust::Bool = true,
     verbose::Bool = false,
     kwargs...,
-) where {Pb,M,SRC,MStp,LoS,S,T,Hess}
+) where {Pb,M,SRC,MStp,LoS,S,T,Hess,ParamData}
     nlp, nlp_at_x = nlp_stop.pb, nlp_stop.current_state
-    PData, solve_model, pre_process, decrease, params = extract(c)
+    solve_model, pre_process, decrease, params = extract(c)
     workspace = TRARCWorkspace(T, S, Hess, nlp.meta.nvar)
     xt, xtnext, d, ∇f, ∇fnext =
         workspace.xt, workspace.xtnext, workspace.d, workspace.∇f, workspace.∇fnext
