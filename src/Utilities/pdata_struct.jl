@@ -20,6 +20,8 @@ mutable struct PDataKARC{T} <: PDataIter{T}
     nshifts::Int              # number of shifts
     norm_dirs::Array{T,1}     # norms of xShifts
     OK::Bool                  # preprocess success
+
+    solver::CgLanczosShiftSolver
 end
 
 function PDataKARC(::Type{S}, ::Type{T}, n; ζ = 0.5, shifts = 10.0 .^ collect(-20.0:1.0:20.0)) where {S, T}
@@ -34,7 +36,8 @@ function PDataKARC(::Type{S}, ::Type{T}, n; ζ = 0.5, shifts = 10.0 .^ collect(-
     end
     norm_dirs = S(undef, nshifts)
     OK = true
-    return PDataKARC(d, λ, ζ, indmin, positives, xShift, shifts, nshifts, norm_dirs, OK)
+    solver = CgLanczosShiftSolver(n, n, nshifts, S)
+    return PDataKARC(d, λ, ζ, indmin, positives, xShift, shifts, nshifts, norm_dirs, OK, solver)
 end
 
 mutable struct PDataKTR{T} <: PDataIter{T}
@@ -50,6 +53,8 @@ mutable struct PDataKTR{T} <: PDataIter{T}
     nshifts::Int              # number of shifts
     norm_dirs::Array{T,1}     # norms of xShifts
     OK::Bool                  # preprocess success
+
+    solver::CgLanczosShiftSolver
 end
 
 function PDataKTR(::Type{S}, ::Type{T}, n; ζ = 0.5, shifts = [0.0; 10.0 .^ (collect(-20.0:1.0:20.0))]) where {S, T}
@@ -64,7 +69,8 @@ function PDataKTR(::Type{S}, ::Type{T}, n; ζ = 0.5, shifts = [0.0; 10.0 .^ (col
     end
     norm_dirs = S(undef, nshifts)
     OK = true
-    return PDataKTR(d, λ, ζ, indmin, positives, xShift, shifts, nshifts, norm_dirs, OK)
+    solver = CgLanczosShiftSolver(n, n, nshifts, S)
+    return PDataKTR(d, λ, ζ, indmin, positives, xShift, shifts, nshifts, norm_dirs, OK, solver)
 end
 
 mutable struct PDataST{T} <: PDataIter{T}

@@ -5,11 +5,11 @@ function preprocessKTR(PData::PDataKTR, Hop, g, params::Tparams, calls, max_call
     shifts = params.shifts
 
     n = length(g)
-    gNorm2 = BLAS.nrm2(n, g, 1)
+    gNorm2 = norm(g) # BLAS.nrm2(n, g, 1)
     precision = max(1e-12, min(0.5, (gNorm2^ζ)))
 
     nshifts = length(shifts)
-    solver = CgLanczosShiftSolver(Hop, -g, nshifts)
+    solver = PData.solver
     cg_lanczos!(
         solver,
         Hop,
@@ -21,8 +21,6 @@ function preprocessKTR(PData::PDataKTR, Hop, g, params::Tparams, calls, max_call
         verbose = 0,
         check_curvature = true,
     )
-    xShift = solver.x
-    Ndirs = [norm(dx) for dx in xShift]
 
     PData.d .= g
     PData.λ = -1.0
@@ -30,8 +28,8 @@ function preprocessKTR(PData::PDataKTR, Hop, g, params::Tparams, calls, max_call
     PData.indmin = 0
     PData.positives .= solver.converged
     for i=1:nshifts
-        PData.xShift[i] .= xShift[i]
-        PData.norm_dirs[i] = norm(xShift[i])
+        PData.xShift[i] .= solver.x[i]
+        PData.norm_dirs[i] = norm(solver.x[i])
     end
     PData.shifts .= shifts
     PData.nshifts = nshifts
