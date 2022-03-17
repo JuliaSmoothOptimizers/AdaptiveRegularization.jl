@@ -9,7 +9,6 @@ function ARCMA97(nlpstop::NLPStopping; kwargs...)
             PDataMA97,
             solve_modelARCDiag,
             preprocessMA97,
-            Tparam{T}(),
         ),
         kwargs...,
     )

@@ -21,7 +21,6 @@ function TRMA57_Sham_vs_Nwt_λ(
                 λfact = λfact,
             ),
             preprocessMA57,
-            Tparam{T}(),
         ),
         kwargs...,
     )

@@ -8,7 +8,6 @@ function TRLDLt_BK(nlpstop::NLPStopping; kwargs...)
             PDataLDLt,
             solve_modelTRDiag,
             preprocessLDLt2,
-            Tparam{T}(),
         ),
         kwargs...,
     )

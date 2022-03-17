@@ -8,7 +8,6 @@ function ARCMA57_abs(nlpstop::NLPStopping; kwargs...)
             PDataMA57,
             solve_modelARCDiagAbs,
             preprocessMA57,
-            Tparam{T}(),
         ),
         kwargs...,
     )

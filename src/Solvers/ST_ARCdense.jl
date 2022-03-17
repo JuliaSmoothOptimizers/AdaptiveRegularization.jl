@@ -8,7 +8,6 @@ function ST_ARCdense(nlpstop::NLPStopping; kwargs...)
             PDataST,
             solve_modelST_ARC,
             preprocessST,
-            TparamsST{T}(),
         ),
         kwargs...,
     )

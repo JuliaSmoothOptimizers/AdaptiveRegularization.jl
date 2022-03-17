@@ -20,7 +20,6 @@ function ARCMA57_Sham_vs_Nwt_λ(
                 ho_correction = :Shamanskii_MA57,
             ),
             preprocessMA57,
-            Tparam{T}(),
         ),
         kwargs...,
     )

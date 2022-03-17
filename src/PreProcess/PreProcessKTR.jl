@@ -1,8 +1,8 @@
 export preprocessKTR, decreaseKTR
-function preprocessKTR(PData::PDataKTR, Hop, g, params::Tparams, calls, max_calls)
-    ζ = params.ζ
-    nshifts = params.nshifts
-    shifts = params.shifts
+function preprocessKTR(PData::PDataKTR, Hop, g, calls, max_calls)
+    ζ = PData.ζ
+    nshifts = PData.nshifts
+    shifts = PData.shifts
 
     n = length(g)
     gNorm2 = norm(g) # BLAS.nrm2(n, g, 1)

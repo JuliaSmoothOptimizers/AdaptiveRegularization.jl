@@ -24,7 +24,7 @@ mutable struct PDataKARC{T} <: PDataIter{T}
     solver::CgLanczosShiftSolver
 end
 
-function PDataKARC(::Type{S}, ::Type{T}, n; ζ = 0.5, shifts = 10.0 .^ collect(-20.0:1.0:20.0)) where {S, T}
+function PDataKARC(::Type{S}, ::Type{T}, n; ζ = 0.5, shifts = 10.0 .^ collect(-20.0:1.0:20.0), kwargs...) where {S, T}
     d = S(undef, n)
     λ = zero(T)
     indmin = 1
@@ -57,7 +57,7 @@ mutable struct PDataKTR{T} <: PDataIter{T}
     solver::CgLanczosShiftSolver
 end
 
-function PDataKTR(::Type{S}, ::Type{T}, n; ζ = 0.5, shifts = [0.0; 10.0 .^ (collect(-20.0:1.0:20.0))]) where {S, T}
+function PDataKTR(::Type{S}, ::Type{T}, n; ζ = 0.5, shifts = [0.0; 10.0 .^ (collect(-20.0:1.0:20.0))], kwargs...) where {S, T}
     d = S(undef, n)
     λ = zero(T)
     indmin = 1
@@ -81,7 +81,7 @@ mutable struct PDataST{T} <: PDataIter{T}
     OK::Bool    # preprocess success
 end
 
-function PDataST(::Type{S}, ::Type{T}, n; ζ = 0.5) where {S, T}
+function PDataST(::Type{S}, ::Type{T}, n; ζ = 0.5, kwargs...) where {S, T}
     OK = true
     return PDataST(nothing, nothing, ζ, OK)
 end
@@ -106,7 +106,7 @@ mutable struct PDataLDLt{T} <: PDataFact{T}
         new{eltype(L)}(L, D, pp, Δ, Q, g, l, success, OK)
 end
 
-function PDataLDLt(::Type{S}, ::Type{T}, n) where {S, T}
+function PDataLDLt(::Type{S}, ::Type{T}, n; kwargs...) where {S, T}
     L = Array{T, 2}(undef, n, n) # ::Array{T,2}          # could be sparse
     D = Array{T, 2}(undef, n, n) #::Array{T,2}          # block diagonal 1X1 and 2X2
     pp = collect(1:n) #::Array{Int,1}        # permutation vector LDL' = H[pp,pp]
@@ -131,7 +131,7 @@ mutable struct PDataSpectral{T} <: PDataFact{T}
     PDataSpectral(V, Λ, g, l, success, OK) = new{eltype(V)}(V, Λ, g, l, success, OK)
 end
 
-function PDataSpectral(::Type{S}, ::Type{T}, n) where {S, T}
+function PDataSpectral(::Type{S}, ::Type{T}, n; kwargs...) where {S, T}
     V = Array{T, 2}(undef, n, n) # ::Array{T,2}          # could be sparse
     Δ = Array{T, 1}(undef, n) #::Array{T,1}          # diagonal, eigenvalues of D
     g̃ = Array{T, 1}(undef, n) #::Array{T,1}           # transformed gradient

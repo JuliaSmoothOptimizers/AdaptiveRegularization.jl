@@ -8,7 +8,6 @@ function TRKdense(nlpstop::NLPStopping; kwargs...)
             PDataKTR,
             solve_modelKTR,
             preprocessKTR,
-            TparamsKTR{T}(),
         ),
         kwargs...,
     )

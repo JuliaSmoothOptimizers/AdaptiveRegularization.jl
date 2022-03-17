@@ -8,7 +8,6 @@ function ST_TRdense(nlpstop::NLPStopping; kwargs...)
             PDataST,
             solve_modelST_TR,
             preprocessST,
-            TparamsST{T}(),
         ),
         kwargs...,
     )

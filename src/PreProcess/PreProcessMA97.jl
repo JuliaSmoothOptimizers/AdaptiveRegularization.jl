@@ -19,7 +19,7 @@ mutable struct PDataMA97{T} <: PDataFact{T}
 end
 
 
-function preprocessMA97(PData::PDataMA97, H, g, params::Tparams, n1, n2)
+function preprocessMA97(PData::PDataMA97, H, g, n1, n2)
     PLD = Ma97
     pivot = Array{Int32,1}
     vD1 = Array{Float64,2}

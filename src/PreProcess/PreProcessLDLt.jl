@@ -1,5 +1,5 @@
 export preprocessLDLt, preprocessLDLt2
-function preprocessLDLt(PData::PDataLDLt, H, g, params::Tparams, n1, n2)
+function preprocessLDLt(PData::PDataLDLt, H, g, n1, n2)
     # printstyled("dans preprocessLDLt ⤈ \n", color = :red)
     T = eltype(H)
     # @show T
@@ -100,7 +100,7 @@ function preprocessLDLt(PData::PDataLDLt, H, g, params::Tparams, n1, n2)
     return PData
 end
 
-function preprocessLDLt2(PData::PDataLDLt, H, g, params::Tparams, n1, n2)
+function preprocessLDLt2(PData::PDataLDLt, H, g, n1, n2)
     # printstyled("dans preprocessLDLt \n", color = :red)
     T = eltype(H)
     # @show H
