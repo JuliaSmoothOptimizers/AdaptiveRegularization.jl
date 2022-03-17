@@ -1,10 +1,9 @@
-export TrustRegion, Combi, decreaseFact, convert_TR, convert_TR!, extract
+export TrustRegion, Combi, convert_TR, convert_TR!, extract
 
 "Exception type raised in case of error."
 mutable struct TrustRegionException <: Exception
     msg::String
 end
-
 
 mutable struct TrustRegion{T}
     α₀::T
@@ -79,104 +78,6 @@ function compute_r(nlp, f, Δf, Δq, slope, d, xnext, gnext, robust)
     return r, good_grad, gnext
 end
 
-
-# A few headers displays
-function print_header(Title)
-
-    @printf(" \n\n %-15s\n", Title)
-    @printf(
-        "\n%-16s  %5s  %9s  %7s %7s  %5s  %5s  %5s  %6s  %s   %s\n",
-        "Name",
-        "nvar",
-        "f",
-        "‖∇f‖∞",
-        "‖∇f‖₂",
-        "#obj",
-        "#grad",
-        " H  ",
-        "#hprod",
-        "status",
-        "time"
-    )
-end
-
-
-function display_header_problems()
-    @printf(
-        "%-15s  %5s  %9s  %7s %7s  %5s  %5s  %6s  %s\n",
-        "Name",
-        "nvar",
-        "f",
-        "‖∇f‖∞",
-        "‖∇f‖₂",
-        "#obj",
-        "#grad",
-        "#hprod",
-        "status"
-    )
-end
-
-function display_header_iterations()
-    @printf(" Iter    f          ||g||       λ        α       status \n",)
-end
-
-# A few displays for verbose iterations
-function display_failure(iter, fnext, λ, α)
-    @printf("%4d  %10.3e             %7.1e %7.1e    unsuccessful\n", iter, fnext, λ, α)
-end
-
-function display_v_success(iter, f, norm_g, λ, α)
-    @printf("%4d  %10.3e %9.2e   %7.1e %7.1e Very successful\n", iter, f, norm_g, λ, α)
-end
-
-function display_success(iter, f, norm_g, λ, α)
-    @printf("%4d  %10.3e %9.2e   %7.1e %7.1e      successful\n", iter, f, norm_g, λ, α)
-end
-
-function print_stats(prob, dim, f, gNorm, gnorm2, calls, status, timt)
-    @printf(
-        "%-16s  %5d  %9.2e  %7.1e  %7.1e  %5d  %5d %5d %6d  %s  %8.3f\n",
-        prob,
-        dim,
-        f,
-        gNorm,
-        gnorm2,
-        calls[1],
-        calls[2],
-        calls[3],
-        calls[4],
-        status,
-        timt
-    )
-end
-
-
-
-# default increase and decrease functions.
-function decreaseBase(α::T, TR::TrustRegion) where {T}
-    return α * TR.decrease_factor
-end
-
-function increase(α::T, TR::TrustRegion) where {T}
-    return min(α * TR.increase_factor, TR.max_α)
-end
-
-
-function decreaseGen(X::TPData, α::T, TR::TrustRegion) where {T}
-    return decreaseBase(α, TR)
-end
-
-function decreaseFact(X::PDataFact, α::T, TR::TrustRegion) where {T}
-    X.success = false
-    return decreaseBase(α, TR)
-end
-
-
-function increase(X::TPData, α::T, TR::TrustRegion) where {T}
-    return increase(α, TR)
-end
-
-
 stop_norm(x) = norm(x, Inf)
 
 # Valid combinations
@@ -184,22 +85,20 @@ stop_norm(x) = norm(x, Inf)
 mutable struct Combi{T, Hess, PData}
     solve_model::Function
     pre_process::Function
-    decrease::Function
     params::Union{Tparams{T},Tparams}
     function Combi(
         ::Type{Hess},
         ::Type{PData},
         solve_model::Function,
         pre_process::Function,
-        decrease::Function,
         params::Union{Tparams{T},Tparams},
     ) where {T, Hess, PData}
-        return new{T, Hess, PData}(solve_model, pre_process, decrease, params)
+        return new{T, Hess, PData}(solve_model, pre_process, params)
     end
 end
 
 function extract(c::Combi)
-    return c.solve_model, c.pre_process, c.decrease, c.params
+    return c.solve_model, c.pre_process, c.params
 end
 
 function convert_TR(T, TR_init::TrustRegion)

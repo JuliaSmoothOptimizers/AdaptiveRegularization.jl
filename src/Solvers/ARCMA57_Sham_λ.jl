@@ -14,7 +14,6 @@ function ARCMA57_Sham_λ(nlpstop::NLPStopping; λfact::Float64 = 1.0, kwargs...)
                 λfact = λfact,
             ),
             preprocessMA57,
-            decreaseFact,
             Tparam{T}(),
         ),
         kwargs...,

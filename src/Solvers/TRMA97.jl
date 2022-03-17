@@ -8,7 +8,6 @@ function TRMA97(nlpstop::NLPStopping; kwargs...)
             PDataMA97{T},
             solve_modelTRDiag,
             preprocessMA97,
-            decreaseFact,
             Tparam{T}(),
         ),
         kwargs...,

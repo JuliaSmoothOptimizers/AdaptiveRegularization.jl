@@ -27,7 +27,6 @@ function TRARC(
         PDataLDLt{T},
         solve_modelTRDiag,
         preprocessLDLt,
-        decreaseFact,
         Tparam{T}(),
     ),
     robust::Bool = true,
@@ -35,7 +34,7 @@ function TRARC(
     kwargs...,
 ) where {Pb,M,SRC,MStp,LoS,S,T,Hess,ParamData}
     nlp, nlp_at_x = nlp_stop.pb, nlp_stop.current_state
-    solve_model, pre_process, decrease, params = extract(c)
+    solve_model, pre_process, params = extract(c)
     workspace = TRARCWorkspace(T, S, Hess, nlp.meta.nvar)
     xt, xtnext, d, ∇f, ∇fnext =
         workspace.xt, workspace.xtnext, workspace.d, workspace.∇f, workspace.∇fnext

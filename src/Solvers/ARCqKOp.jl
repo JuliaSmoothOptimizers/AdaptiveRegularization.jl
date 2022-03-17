@@ -6,10 +6,9 @@ function ARCqKOp(nlpstop::NLPStopping, shifts = 10.0 .^ (collect(-20.0:1.0:20.0)
         TR = TrustRegion(10.0),
         c = Combi(
             HessOp,
-            PDataK{T},
+            PDataKARC{T},
             solve_modelKARC,
             preprocessKARC,
-            decreaseKARC,
             TparamsKARC{T}(shifts),
         ),
         kwargs...,

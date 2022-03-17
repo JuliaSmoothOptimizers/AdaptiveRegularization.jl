@@ -10,7 +10,6 @@ function ARCLDLt(nlpstop::NLPStopping; kwargs...)
             PDataLDLt{T},
             solve_modelARCDiag,
             preprocessLDLt,
-            decreaseFact,
             Tparam{T}(),
         ),
         kwargs...,

@@ -8,7 +8,6 @@ function ARCSpectral_abs(nlpstop::NLPStopping; kwargs...)
             ARCTR.PDataSpectral{T},
             ARCTR.solve_modelARCDiagAbs,
             ARCTR.preprocessSpectral,
-            ARCTR.decreaseFact,
             ARCTR.Tparam{T}(),
         ),
         kwargs...,

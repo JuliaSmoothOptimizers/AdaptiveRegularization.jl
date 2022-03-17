@@ -21,7 +21,6 @@ function TRLDLt_HO_vs_Nwt_λ(
                 λfact = λfact,
             ),
             preprocessLDLt,
-            decreaseFact,
             Tparam{T}(),
         ),
         kwargs...,

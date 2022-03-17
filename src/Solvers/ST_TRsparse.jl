@@ -8,7 +8,6 @@ function ST_TRsparse(nlpstop::NLPStopping; kwargs...)
             PDataST{T},
             solve_modelST_TR,
             preprocessST,
-            decreaseGen,
             TparamsST{T}(),
         ),
         kwargs...,
