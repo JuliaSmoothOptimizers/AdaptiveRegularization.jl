@@ -10,7 +10,7 @@ function TRLDLt_HO_vs_Nwt_λ(
         nlpstop;
         TR = TrustRegion(T(10.0)),
         c = Combi(
-            hessian_dense,
+            HessDense,
             PDataLDLt{T},
             (x, y, z) -> solve_modelTRDiag_HO_vs_Nwt_λ(
                 x,

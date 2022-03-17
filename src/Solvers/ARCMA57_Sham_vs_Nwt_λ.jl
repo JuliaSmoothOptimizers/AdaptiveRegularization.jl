@@ -9,7 +9,7 @@ function ARCMA57_Sham_vs_Nwt_λ(
         nlpstop;
         TR = TrustRegion(10.0),
         c = Combi(
-            hessian_sparse,
+            HessSparse,
             PDataMA57{T},
             (x, y, z) -> solve_modelARCDiag_HO_vs_Nwt(
                 x,

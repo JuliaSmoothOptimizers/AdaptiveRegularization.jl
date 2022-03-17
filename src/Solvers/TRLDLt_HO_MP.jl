@@ -5,7 +5,7 @@ function TRLDLt_HO_MP(nlpstop::NLPStopping; corr_ho::Symbol = :Shamanskii, kwarg
         nlpstop;
         TR = TrustRegion(10.0),
         c = Combi(
-            hessian_dense,
+            HessDense,
             PDataLDLt{T},
             (x, y, z) -> solve_modelTRDiag_HO(x, y, z, ho_correction = corr_ho, fact = 2.0),
             preprocessLDLt,

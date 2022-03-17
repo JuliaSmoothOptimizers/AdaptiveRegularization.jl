@@ -4,7 +4,7 @@ function ARCLDLt_abs(nlpstop::NLPStopping; kwargs...)
         nlpstop;
         TR = TrustRegion(10.0),
         c = Combi(
-            hessian_dense,
+            HessDense,
             PDataLDLt{T},
             solve_modelARCDiagAbs,
             preprocessLDLt,

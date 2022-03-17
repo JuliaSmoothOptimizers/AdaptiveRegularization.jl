@@ -4,7 +4,7 @@ function TRLDLt(nlpstop::NLPStopping; kwargs...)
         nlpstop;
         TR = TrustRegion(T(10.0)),
         c = Combi(
-            hessian_dense,
+            HessDense,
             PDataLDLt{T},
             solve_modelTRDiag,
             preprocessLDLt,

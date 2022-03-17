@@ -4,7 +4,7 @@ function ST_ARCdense(nlpstop::NLPStopping; kwargs...)
         nlpstop;
         TR = TrustRegion(10.0),
         c = Combi(
-            hessian_dense,
+            HessDense,
             PDataST{T},
             solve_modelST_ARC,
             preprocessST,

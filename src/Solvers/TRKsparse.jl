@@ -4,7 +4,7 @@ function TRKsparse(nlpstop::NLPStopping; kwargs...)
         nlpstop;
         TR = TrustRegion(10.0),
         c = Combi(
-            hessian_sparse,
+            HessSparse,
             PDataK{T},
             solve_modelKTR,
             preprocessKTR,

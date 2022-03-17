@@ -4,7 +4,7 @@ function TRKOp(nlpstop::NLPStopping; kwargs...)
         nlpstop;
         TR = TrustRegion(10.0),
         c = Combi(
-            hessian_operator,
+            HessOp,
             PDataK{T},
             solve_modelKTR,
             preprocessKTR,

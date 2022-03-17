@@ -6,7 +6,7 @@ function ARCLDLt_HO_Sham(nlpstop::NLPStopping; λfact = 100.0, kwargs...)
         nlpstop;
         TR = TrustRegion(T(10.0)),
         c = Combi(
-            hessian_dense,
+            HessDense,
             PDataLDLt{T},
             (x, y, z) ->
                 solve_modelARCDiag_HO(x, y, z, ho_correction = :Shamanskii, λfact = λfact),

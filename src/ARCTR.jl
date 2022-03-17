@@ -8,9 +8,7 @@ using Krylov, LinearOperators, NLPModels, SolverCore, SolverTools
 using Stopping, StoppingInterface
 
 # Selective includes.
-include("./HessianRep/HessianDense.jl")
-include("./HessianRep/HessianSparse.jl")
-include("./HessianRep/HessianOp.jl") # allocate
+include("hessian_rep.jl")
 
 include("./Utilities/pdata_struct.jl")
 include("./Utilities/preprocess_struct.jl")
