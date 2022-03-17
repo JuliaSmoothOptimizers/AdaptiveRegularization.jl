@@ -78,7 +78,7 @@ function TRARC(
 
         success = false
         while !success & (unsuccinarow < max_unsuccinarow)
-            d, λ = solve_model(nlp_stop, PData, α) # Est-ce que le λ n'est pas dans PData ?
+            d, λ = solve_model(nlp_stop, PData, α) # Est-ce que le d et λ ne sont pas dans PData ?
 
             Δq = -(∇f + 0.5 * nlp_at_x.Hx * d) ⋅ d
 
