@@ -10,9 +10,11 @@ using Stopping, StoppingInterface
 # Selective includes.
 include("hessian_rep.jl")
 
+include("./Utilities/show.jl")
 include("./Utilities/pdata_struct.jl")
 include("./Utilities/preprocess_struct.jl")
 include("./Utilities/Utilities.jl")
+include("./Utilities/increase_decrease.jl")
 include("./Utilities/ldlt_symm.jl")
 
 path = joinpath(dirname(@__FILE__), "SolveModel")

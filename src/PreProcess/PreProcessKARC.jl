@@ -28,28 +28,3 @@ function preprocessKARC(Hop, g, params::Tparams, calls, max_calls) #where T
 
     return PDataKARC(g, -1.0, ζ, 0, positives, xShift, shifts, nshifts, Ndirs, true)
 end
-
-function decrease(X::PDataKARC, α::Float64, TR::TrustRegion)
-    X.indmin += 1
-    p_imin = X.positives[X.indmin]
-    α2 = max(X.norm_dirs[p_imin] / X.shifts[p_imin], eps())
-
-    targetα = α * TR.decrease_factor
-
-    # fix α to its "ideal" value to satisfy αλ=||d||
-    # while ensuring α decreases enough
-    while α2 > targetα && p_imin < length(X.positives)
-        X.indmin += 1
-        p_imin = X.positives[X.indmin]
-        α2 = max(X.norm_dirs[p_imin] / X.shifts[p_imin], eps())
-    end
-
-    if p_imin == length(X.positives)
-        @warn "PreProcessKTR failure: α2=$α2"
-    end
-
-    X.d = X.xShift[p_imin]
-    X.λ = X.shifts[p_imin]
-
-    return α2
-end
