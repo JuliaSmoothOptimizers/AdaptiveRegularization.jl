@@ -25,10 +25,10 @@ function preprocessKTR(Hop, g, params::Tparams, calls, max_calls)
     positives = findall(solver.converged)
     Ndirs = [norm(dx) for dx in xShift]
 
-    return PDataK(g, -1.0, ζ, 0, positives, xShift, shifts, nshifts, Ndirs, true)
+    return PDataKTR(g, -1.0, ζ, 0, positives, xShift, shifts, nshifts, Ndirs, true)
 end
 
-function decreaseKTR(X::PDataK, α::Float64, TR::TrustRegion)
+function decreaseKTR(X::PDataKTR, α::Float64, TR::TrustRegion)
     X.indmin += 1
     p_imin = X.positives[X.indmin]
     α2 = X.norm_dirs[p_imin]

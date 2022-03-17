@@ -8,7 +8,6 @@ function ST_ARCOp(nlpstop::NLPStopping; kwargs...)
             PDataST{T},
             solve_modelST_ARC,
             preprocessST,
-            decreaseGen,
             TparamsST{T}(),
         ),
         kwargs...,

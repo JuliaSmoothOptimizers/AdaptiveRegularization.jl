@@ -22,7 +22,6 @@ function ARCLDLt_HO_vs_Nwt(
                 nwt_res_fact = nwt_res_fact,
             ),
             preprocessLDLt,
-            decreaseFact,
             Tparam{T}(),
         ),
         kwargs...,

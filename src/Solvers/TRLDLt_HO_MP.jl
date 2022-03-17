@@ -9,7 +9,6 @@ function TRLDLt_HO_MP(nlpstop::NLPStopping; corr_ho::Symbol = :Shamanskii, kwarg
             PDataLDLt{T},
             (x, y, z) -> solve_modelTRDiag_HO(x, y, z, ho_correction = corr_ho, fact = 2.0),
             preprocessLDLt,
-            decreaseFact,
             Tparam{T}(),
         ),
         kwargs...,

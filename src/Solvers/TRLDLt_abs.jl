@@ -8,7 +8,6 @@ function TRLDLt_abs(nlpstop::NLPStopping; kwargs...)
             PDataLDLt{T},
             solve_modelTRDiagAbs,
             preprocessLDLt,
-            decreaseFact,
             Tparam{T}(),
         ),
         kwargs...,

@@ -8,7 +8,6 @@ function TRSpectral(nlpstop::NLPStopping; kwargs...)
             PDataSpectral{T},
             solve_modelTRDiag,
             preprocessSpectral,
-            decreaseFact,
             Tparam{T}(),
         ),
         kwargs...,

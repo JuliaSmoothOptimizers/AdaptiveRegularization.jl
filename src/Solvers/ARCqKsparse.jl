@@ -7,10 +7,9 @@ function ARCqKsparse(nlpstop::NLPStopping; kwargs...)
         TR = TrustRegion(10.0),
         c = Combi(
             HessSparse,
-            PDataK{T},
+            PDataKARC{T},
             solve_modelKARC,
             preprocessKARC,
-            decreaseKARC,
             TparamsKARC{T}(shifts),
         ),
         kwargs...,

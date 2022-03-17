@@ -8,7 +8,6 @@ function ARCLDLt_abs(nlpstop::NLPStopping; kwargs...)
             PDataLDLt{T},
             solve_modelARCDiagAbs,
             preprocessLDLt,
-            decreaseFact,
             Tparam{T}(),
         ),
         kwargs...,

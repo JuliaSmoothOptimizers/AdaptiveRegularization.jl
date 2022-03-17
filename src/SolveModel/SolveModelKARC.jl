@@ -1,4 +1,4 @@
-function solve_modelKARC(nlp_stop, X::PDataK, α::T) where {T}
+function solve_modelKARC(nlp_stop, X::PDataKARC, α::T) where {T}
     # target value should be close to satisfy αλ=||d||
     target = [(abs(α * X.shifts[i] - X.norm_dirs[i])) for i = 1:X.nshifts]
 

@@ -26,10 +26,10 @@ function preprocessKARC(Hop, g, params::Tparams, calls, max_calls) #where T
     positives = findall(solver.converged)
     Ndirs = [norm(dx) for dx in xShift]
 
-    return PDataK(g, -1.0, ζ, 0, positives, xShift, shifts, nshifts, Ndirs, true)
+    return PDataKARC(g, -1.0, ζ, 0, positives, xShift, shifts, nshifts, Ndirs, true)
 end
 
-function decreaseKARC(X::PDataK, α::Float64, TR::TrustRegion)
+function decrease(X::PDataKARC, α::Float64, TR::TrustRegion)
     X.indmin += 1
     p_imin = X.positives[X.indmin]
     α2 = max(X.norm_dirs[p_imin] / X.shifts[p_imin], eps())

@@ -1,5 +1,5 @@
 export PDataIter
-export PDataLDLt, PDataK, PDataST
+export PDataLDLt, PDataKTR, PDataKARC, PDataST
 
 abstract type TPData{T} end  # Ancestor of all PreProcess data
 
@@ -7,7 +7,7 @@ abstract type PDataFact{T} <: TPData{T} end # Variants using matricial factoriza
 
 abstract type PDataIter{T} <: TPData{T} end # Variants using iterative (Krylov) solvers
 
-mutable struct PDataK{T} <: PDataIter{T}
+mutable struct PDataKARC{T} <: PDataIter{T}
     d::Array{T,1}             # (H+λI)\g ; on first call = g
     λ::T                      # "active" value of λ; on first call = 0
     ζ::T                      # Inexact Newton order parameter: stop when ||∇q||<||g||^(1+ζ )
@@ -22,6 +22,20 @@ mutable struct PDataK{T} <: PDataIter{T}
     OK::Bool                  # preprocess success
 end
 
+mutable struct PDataKTR{T} <: PDataIter{T}
+    d::Array{T,1}             # (H+λI)\g ; on first call = g
+    λ::T                      # "active" value of λ; on first call = 0
+    ζ::T                      # Inexact Newton order parameter: stop when ||∇q||<||g||^(1+ζ )
+
+    indmin::Int               # index of best shift value  within "positive". On first call = 0
+
+    positives::Array{Int,1}   # indices of the shift values yielding (H+λI)⪰0
+    xShift::Array{Array{T,1},1}        # solutions for each shifted system
+    shifts::Array{T,1}        # values of the shifts
+    nshifts::Int              # number of shifts
+    norm_dirs::Array{T,1}     # norms of xShifts
+    OK::Bool                  # preprocess success
+end
 
 mutable struct PDataST{T} <: PDataIter{T}
     H::Any             # Hessian representation, most likely as a linear operator or a sparse matrix

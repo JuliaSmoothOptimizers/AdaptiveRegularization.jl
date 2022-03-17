@@ -1,4 +1,4 @@
-export TrustRegion, Combi, decreaseFact, convert_TR, convert_TR!, extract
+export TrustRegion, Combi, convert_TR, convert_TR!, extract
 
 "Exception type raised in case of error."
 mutable struct TrustRegionException <: Exception
@@ -150,32 +150,27 @@ function print_stats(prob, dim, f, gNorm, gnorm2, calls, status, timt)
     )
 end
 
-
-
 # default increase and decrease functions.
 function decreaseBase(α::T, TR::TrustRegion) where {T}
     return α * TR.decrease_factor
+end
+
+function decrease(X::TPData, α::T, TR::TrustRegion) where {T}
+    return decreaseBase(α, TR)
+end
+
+function decrease(X::PDataFact, α::T, TR::TrustRegion) where {T}
+    X.success = false
+    return decreaseBase(α, TR)
 end
 
 function increase(α::T, TR::TrustRegion) where {T}
     return min(α * TR.increase_factor, TR.max_α)
 end
 
-
-function decreaseGen(X::TPData, α::T, TR::TrustRegion) where {T}
-    return decreaseBase(α, TR)
-end
-
-function decreaseFact(X::PDataFact, α::T, TR::TrustRegion) where {T}
-    X.success = false
-    return decreaseBase(α, TR)
-end
-
-
 function increase(X::TPData, α::T, TR::TrustRegion) where {T}
     return increase(α, TR)
 end
-
 
 stop_norm(x) = norm(x, Inf)
 
@@ -184,22 +179,20 @@ stop_norm(x) = norm(x, Inf)
 mutable struct Combi{T, Hess, PData}
     solve_model::Function
     pre_process::Function
-    decrease::Function
     params::Union{Tparams{T},Tparams}
     function Combi(
         ::Type{Hess},
         ::Type{PData},
         solve_model::Function,
         pre_process::Function,
-        decrease::Function,
         params::Union{Tparams{T},Tparams},
     ) where {T, Hess, PData}
-        return new{T, Hess, PData}(solve_model, pre_process, decrease, params)
+        return new{T, Hess, PData}(solve_model, pre_process, params)
     end
 end
 
 function extract(c::Combi)
-    return c.solve_model, c.pre_process, c.decrease, c.params
+    return c.solve_model, c.pre_process, c.params
 end
 
 function convert_TR(T, TR_init::TrustRegion)

@@ -8,7 +8,6 @@ function ARCMA57_Sham_vs_Nwt(nlpstop::NLPStopping; kwargs...)
             PDataMA57{T},
             solve_modelARCDiag,
             preprocessMA57,
-            decreaseFact,
             Tparam{T}(),
         ),
         kwargs...,
