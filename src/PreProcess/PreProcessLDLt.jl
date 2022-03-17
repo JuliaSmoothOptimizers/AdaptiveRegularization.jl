@@ -1,5 +1,4 @@
-export preprocessLDLt
-function preprocessLDLt(PData::PDataLDLt, H, g, n1, n2)
+function preprocess(PData::PDataLDLt, H, g, n1, n2)
     # printstyled("dans preprocessLDLt ⤈ \n", color = :red)
     T = eltype(H)
     # @show T

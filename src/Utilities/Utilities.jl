@@ -84,19 +84,17 @@ stop_norm(x) = norm(x, Inf)
 #
 mutable struct Combi{Hess, PData}
     solve_model::Function
-    pre_process::Function
     function Combi(
         ::Type{Hess},
         ::Type{PData},
         solve_model::Function,
-        pre_process::Function,
     ) where {Hess, PData}
-        return new{Hess, PData}(solve_model, pre_process)
+        return new{Hess, PData}(solve_model)
     end
 end
 
 function extract(c::Combi)
-    return c.solve_model, c.pre_process
+    return c.solve_model
 end
 
 function convert_TR(T, TR_init::TrustRegion)

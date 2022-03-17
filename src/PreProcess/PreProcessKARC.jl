@@ -1,4 +1,4 @@
-function preprocessKARC(PData::PDataKARC, Hop, g, calls, max_calls) #where T
+function preprocess(PData::PDataKARC, Hop, g, calls, max_calls) #where T
     ζ = PData.ζ
     nshifts = PData.nshifts
     shifts = PData.shifts

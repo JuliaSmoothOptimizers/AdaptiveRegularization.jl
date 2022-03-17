@@ -8,7 +8,6 @@ function TRLDLt_HO_vs_Nwt_λ(
     T = eltype(nlpstop.pb.meta.x0)
     return TRARC(
         nlpstop;
-        TR = TrustRegion(T(10.0)),
         c = Combi(
             HessDense,
             PDataLDLt,
@@ -20,7 +19,6 @@ function TRLDLt_HO_vs_Nwt_λ(
                 nwt_res_fact = nwt_res_fact,
                 λfact = λfact,
             ),
-            preprocessLDLt,
         ),
         kwargs...,
     )

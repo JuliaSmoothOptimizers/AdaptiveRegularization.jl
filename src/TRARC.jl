@@ -26,14 +26,13 @@ function TRARC(
         HessDense,
         PDataLDLt,
         solve_modelTRDiag,
-        preprocessLDLt,
     ),
     robust::Bool = true,
     verbose::Bool = false,
     kwargs...,
 ) where {Pb,M,SRC,MStp,LoS,S,T,Hess,ParamData}
     nlp, nlp_at_x = nlp_stop.pb, nlp_stop.current_state
-    solve_model, pre_process = extract(c)
+    solve_model = extract(c)
 
     PData = ParamData(S, T, nlp.meta.nvar; kwargs...)
     workspace = TRARCWorkspace(T, S, Hess, nlp.meta.nvar)
@@ -65,7 +64,7 @@ function TRARC(
     verbose && @info log_row(Any[iter, ft, norm_∇f, 0.0, "First iteration", α])
 
     while !OK
-        PData = pre_process(
+        PData = preprocess(
             PData,
             nlp_at_x.Hx,
             ∇f,

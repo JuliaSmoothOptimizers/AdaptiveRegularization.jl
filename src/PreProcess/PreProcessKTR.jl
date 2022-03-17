@@ -1,5 +1,4 @@
-export preprocessKTR, decreaseKTR
-function preprocessKTR(PData::PDataKTR, Hop, g, calls, max_calls)
+function preprocess(PData::PDataKTR, Hop, g, calls, max_calls)
     ζ = PData.ζ
     nshifts = PData.nshifts
     shifts = PData.shifts

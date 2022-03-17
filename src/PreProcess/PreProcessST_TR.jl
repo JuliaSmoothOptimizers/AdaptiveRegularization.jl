@@ -1,4 +1,4 @@
-function preprocessST(PData::PDataST, H, g, n1, n2)
+function preprocess(PData::PDataST, H, g, n1, n2)
     ζ = PData.ζ
     PData.ζ = ζ
     PData.g = g
