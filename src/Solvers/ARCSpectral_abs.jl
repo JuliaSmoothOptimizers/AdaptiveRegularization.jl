@@ -5,7 +5,7 @@ function ARCSpectral_abs(nlpstop::NLPStopping; kwargs...)
         TR = TrustRegion(10.0),
         c = Combi(
             ARCTR.HessDense,
-            ARCTR.PDataSpectral{T},
+            ARCTR.PDataSpectral,
             ARCTR.solve_modelARCDiagAbs,
             ARCTR.preprocessSpectral,
             ARCTR.Tparam{T}(),

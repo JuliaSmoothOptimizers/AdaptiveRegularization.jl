@@ -1,5 +1,5 @@
 export preprocessLDLt, preprocessLDLt2
-function preprocessLDLt(H, g, params::Tparams, n1, n2)
+function preprocessLDLt(PData::PDataLDLt, H, g, params::Tparams, n1, n2)
     # printstyled("dans preprocessLDLt ⤈ \n", color = :red)
     T = eltype(H)
     # @show T
@@ -86,10 +86,21 @@ function preprocessLDLt(H, g, params::Tparams, n1, n2)
     # @show eltype(λ)
     # @show λ
     # printstyled("avant de sortir de PreProcessLDLt ↑ \n", color = :red)
-    return PDataLDLt(L, D, pp, Δ, Q, g̃, λ, true, true)
+
+    PData.L = L
+    PData.D = D
+    PData.pp = pp
+    PData.Δ = Δ
+    PData.Q = Q
+    PData.g̃ = g̃
+    PData.λ = λ
+    PData.success = true
+    PData.OK = true
+
+    return PData
 end
 
-function preprocessLDLt2(H, g, params::Tparams, n1, n2)
+function preprocessLDLt2(PData::PDataLDLt, H, g, params::Tparams, n1, n2)
     # printstyled("dans preprocessLDLt \n", color = :red)
     T = eltype(H)
     # @show H
@@ -160,7 +171,18 @@ function preprocessLDLt2(H, g, params::Tparams, n1, n2)
     λ = max(-l_m, 0.0)
     # @show λ
     # printstyled("avant de sortir de PreProcessLDLt ↑ \n", color = :red)
-    return PDataLDLt(L, D, pp, Δ, Q, g̃, λ, true, true)
+
+    PData.L = L
+    PData.D = D
+    PData.pp = pp
+    PData.Δ = Δ
+    PData.Q = Q
+    PData.g̃ = g̃
+    PData.λ = λ
+    PData.success = true
+    PData.OK = true
+
+    return PData
 end
 
 function AInv(X::PDataLDLt, d̃::Array{T,1}) where {T}

@@ -1,5 +1,5 @@
 export preprocessKTR, decreaseKTR
-function preprocessKTR(Hop, g, params::Tparams, calls, max_calls)
+function preprocessKTR(PData::PDataKTR, Hop, g, params::Tparams, calls, max_calls)
     ζ = params.ζ
     nshifts = params.nshifts
     shifts = params.shifts
@@ -22,8 +22,20 @@ function preprocessKTR(Hop, g, params::Tparams, calls, max_calls)
         check_curvature = true,
     )
     xShift = solver.x
-    positives = findall(solver.converged)
     Ndirs = [norm(dx) for dx in xShift]
 
-    return PDataKTR(g, -1.0, ζ, 0, positives, xShift, shifts, nshifts, Ndirs, true)
+    PData.d .= g
+    PData.λ = -1.0
+    PData.ζ = ζ
+    PData.indmin = 0
+    PData.positives .= solver.converged
+    for i=1:nshifts
+        PData.xShift[i] .= xShift[i]
+        PData.norm_dirs[i] = norm(xShift[i])
+    end
+    PData.shifts .= shifts
+    PData.nshifts = nshifts
+    PData.OK = true
+
+    return PData # PDataKTR(g, -1.0, ζ, 0, positives, xShift, shifts, nshifts, Ndirs, true)
 end

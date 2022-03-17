@@ -1,4 +1,4 @@
-function preprocessKARC(Hop, g, params::Tparams, calls, max_calls) #where T
+function preprocessKARC(PData::PDataKARC, Hop, g, params::Tparams, calls, max_calls) #where T
     ζ = params.ζ
     nshifts = params.nshifts
     shifts = params.shifts
@@ -23,8 +23,19 @@ function preprocessKARC(Hop, g, params::Tparams, calls, max_calls) #where T
         check_curvature = true,
     )
     xShift = solver.x
-    positives = findall(solver.converged)
-    Ndirs = [norm(dx) for dx in xShift]
 
-    return PDataKARC(g, -1.0, ζ, 0, positives, xShift, shifts, nshifts, Ndirs, true)
+    PData.d .= g
+    PData.λ = -1.0
+    PData.ζ = ζ
+    PData.indmin = 0
+    PData.positives .= solver.converged
+    for i=1:nshifts
+        PData.xShift[i] .= xShift[i]
+        PData.norm_dirs[i] = norm(xShift[i])
+    end
+    PData.shifts .= shifts
+    PData.nshifts = nshifts
+    PData.OK = true
+
+    return PData # PDataKARC(g, -1.0, ζ, 0, positives, xShift, shifts, nshifts, Ndirs, true)
 end

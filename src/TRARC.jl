@@ -24,7 +24,7 @@ function TRARC(
     TR::TrustRegion = TrustRegion(T(10.0)),
     c::Combi{T, Hess, ParamData} = Combi(
         HessDense,
-        PDataLDLt{T},
+        PDataLDLt,
         solve_modelTRDiag,
         preprocessLDLt,
         Tparam{T}(),
@@ -35,6 +35,7 @@ function TRARC(
 ) where {Pb,M,SRC,MStp,LoS,S,T,Hess,ParamData}
     nlp, nlp_at_x = nlp_stop.pb, nlp_stop.current_state
     solve_model, pre_process, params = extract(c)
+    PData = ParamData(S, T, nlp.meta.nvar)
     workspace = TRARCWorkspace(T, S, Hess, nlp.meta.nvar)
     xt, xtnext, d, ∇f, ∇fnext =
         workspace.xt, workspace.xtnext, workspace.d, workspace.∇f, workspace.∇fnext
@@ -65,6 +66,7 @@ function TRARC(
 
     while !OK
         PData = pre_process(
+            PData,
             nlp_at_x.Hx,
             ∇f,
             params,

@@ -7,7 +7,7 @@ function ARCqKdense(nlpstop::NLPStopping; kwargs...)
         TR = TrustRegion(10.0),
         c = Combi(
             HessDense,
-            PDataKARC{T},
+            PDataKARC,
             solve_modelKARC,
             preprocessKARC,
             TparamsKARC{T}(shifts),

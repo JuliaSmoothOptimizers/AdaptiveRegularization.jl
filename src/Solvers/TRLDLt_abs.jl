@@ -5,7 +5,7 @@ function TRLDLt_abs(nlpstop::NLPStopping; kwargs...)
         TR = TrustRegion(10.0),
         c = Combi(
             HessDense,
-            PDataLDLt{T},
+            PDataLDLt,
             solve_modelTRDiagAbs,
             preprocessLDLt,
             Tparam{T}(),

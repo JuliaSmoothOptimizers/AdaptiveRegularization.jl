@@ -14,12 +14,27 @@ mutable struct PDataKARC{T} <: PDataIter{T}
 
     indmin::Int               # index of best shift value  within "positive". On first call = 0
 
-    positives::Array{Int,1}   # indices of the shift values yielding (H+λI)⪰0
+    positives::Array{Bool,1}   # indices of the shift values yielding (H+λI)⪰0
     xShift::Array{Array{T,1},1}        # solutions for each shifted system
     shifts::Array{T,1}        # values of the shifts
     nshifts::Int              # number of shifts
     norm_dirs::Array{T,1}     # norms of xShifts
     OK::Bool                  # preprocess success
+end
+
+function PDataKARC(::Type{S}, ::Type{T}, n; ζ = 0.5, shifts = 10.0 .^ collect(-20.0:1.0:20.0)) where {S, T}
+    d = S(undef, n)
+    λ = zero(T)
+    indmin = 1
+    nshifts = length(shifts)
+    positives = Array{Bool, 1}(undef, nshifts)
+    xShift = Array{S, 1}(undef, nshifts)
+    for i=1:nshifts
+        xShift[i] = S(undef, n)
+    end
+    norm_dirs = S(undef, nshifts)
+    OK = true
+    return PDataKARC(d, λ, ζ, indmin, positives, xShift, shifts, nshifts, norm_dirs, OK)
 end
 
 mutable struct PDataKTR{T} <: PDataIter{T}
@@ -29,12 +44,27 @@ mutable struct PDataKTR{T} <: PDataIter{T}
 
     indmin::Int               # index of best shift value  within "positive". On first call = 0
 
-    positives::Array{Int,1}   # indices of the shift values yielding (H+λI)⪰0
+    positives::Array{Bool,1}   # indices of the shift values yielding (H+λI)⪰0
     xShift::Array{Array{T,1},1}        # solutions for each shifted system
     shifts::Array{T,1}        # values of the shifts
     nshifts::Int              # number of shifts
     norm_dirs::Array{T,1}     # norms of xShifts
     OK::Bool                  # preprocess success
+end
+
+function PDataKTR(::Type{S}, ::Type{T}, n; ζ = 0.5, shifts = [0.0; 10.0 .^ (collect(-20.0:1.0:20.0))]) where {S, T}
+    d = S(undef, n)
+    λ = zero(T)
+    indmin = 1
+    nshifts = length(shifts)
+    positives = Array{Bool, 1}(undef, nshifts)
+    xShift = Array{S, 1}(undef, nshifts)
+    for i=1:nshifts
+        xShift[i] = S(undef, n)
+    end
+    norm_dirs = S(undef, nshifts)
+    OK = true
+    return PDataKTR(d, λ, ζ, indmin, positives, xShift, shifts, nshifts, norm_dirs, OK)
 end
 
 mutable struct PDataST{T} <: PDataIter{T}
@@ -43,6 +73,11 @@ mutable struct PDataST{T} <: PDataIter{T}
     ζ::T        # Inexact Newton order parameter: stop when ||∇q||<||g||^(1+ζ)
 
     OK::Bool    # preprocess success
+end
+
+function PDataST(::Type{S}, ::Type{T}, n; ζ = 0.5) where {S, T}
+    OK = true
+    return PDataST(nothing, nothing, ζ, OK)
 end
 
 mutable struct PDataLDLt{T} <: PDataFact{T}
@@ -65,6 +100,19 @@ mutable struct PDataLDLt{T} <: PDataFact{T}
         new{eltype(L)}(L, D, pp, Δ, Q, g, l, success, OK)
 end
 
+function PDataLDLt(::Type{S}, ::Type{T}, n) where {S, T}
+    L = Array{T, 2}(undef, n, n) # ::Array{T,2}          # could be sparse
+    D = Array{T, 2}(undef, n, n) #::Array{T,2}          # block diagonal 1X1 and 2X2
+    pp = collect(1:n) #::Array{Int,1}        # permutation vector LDL' = H[pp,pp]
+    Δ = Array{T, 1}(undef, n) #::Array{T,1}          # diagonal, eigenvalues of D
+    Q = Array{T, 2}(undef, n, n) #::Array{T,2}          # orthogonal matrix, eigenvectors of D:  should be sparse
+    g̃ = Array{T, 1}(undef, n) #::Array{T,1}           # transformed gradient
+    λ = zero(T) # ::T
+    success = true::Bool                 # previous iteration was successfull
+    OK = true
+    return PDataLDLt(L, D, pp, Δ, Q, g̃, λ, success, OK)
+end
+
 mutable struct PDataSpectral{T} <: PDataFact{T}
     V::Array{T,2}           # orthogonal matrix, eigenvectors of Hessian matrix
     Δ::Array{T,1}           # eigenvalues of Hessian matrix
@@ -75,4 +123,14 @@ mutable struct PDataSpectral{T} <: PDataFact{T}
 
     PDataSpectral() = new{T}()
     PDataSpectral(V, Λ, g, l, success, OK) = new{eltype(V)}(V, Λ, g, l, success, OK)
+end
+
+function PDataSpectral(::Type{S}, ::Type{T}, n) where {S, T}
+    V = Array{T, 2}(undef, n, n) # ::Array{T,2}          # could be sparse
+    Δ = Array{T, 1}(undef, n) #::Array{T,1}          # diagonal, eigenvalues of D
+    g̃ = Array{T, 1}(undef, n) #::Array{T,1}           # transformed gradient
+    λ = zero(T) # ::T
+    success = true::Bool                 # previous iteration was successfull
+    OK = true
+    return PDataSpectral(V, Δ, g̃, λ, success, OK)
 end

@@ -5,7 +5,7 @@ function TRKdense(nlpstop::NLPStopping; kwargs...)
         TR = TrustRegion(10.0),
         c = Combi(
             HessDense,
-            PDataKTR{T},
+            PDataKTR,
             solve_modelKTR,
             preprocessKTR,
             TparamsKTR{T}(),

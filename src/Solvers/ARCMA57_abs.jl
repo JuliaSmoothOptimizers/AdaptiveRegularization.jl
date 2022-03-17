@@ -5,7 +5,7 @@ function ARCMA57_abs(nlpstop::NLPStopping; kwargs...)
         TR = TrustRegion(10.0),
         c = Combi(
             HessSparse,
-            PDataMA57{T},
+            PDataMA57,
             solve_modelARCDiagAbs,
             preprocessMA57,
             Tparam{T}(),

@@ -5,7 +5,7 @@ function TRMA97(nlpstop::NLPStopping; kwargs...)
         TR = TrustRegion(10.0),
         c = Combi(
             HessSparse,
-            PDataMA97{T},
+            PDataMA97,
             solve_modelTRDiag,
             preprocessMA97,
             Tparam{T}(),

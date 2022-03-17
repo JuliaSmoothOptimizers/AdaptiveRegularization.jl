@@ -11,7 +11,7 @@ function TRLDLt_HO_vs_Nwt_λ(
         TR = TrustRegion(T(10.0)),
         c = Combi(
             HessDense,
-            PDataLDLt{T},
+            PDataLDLt,
             (x, y, z) -> solve_modelTRDiag_HO_vs_Nwt_λ(
                 x,
                 y,

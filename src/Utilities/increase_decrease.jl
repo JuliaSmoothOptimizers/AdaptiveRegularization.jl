@@ -14,20 +14,21 @@ end
 
 function decrease(X::PDataKARC, α::Float64, TR::TrustRegion)
     X.indmin += 1
-    p_imin = X.positives[X.indmin]
+    positives = findall(X.positives)
+    p_imin = positives[X.indmin]
     α2 = max(X.norm_dirs[p_imin] / X.shifts[p_imin], eps())
 
     targetα = α * TR.decrease_factor
 
     # fix α to its "ideal" value to satisfy αλ=||d||
     # while ensuring α decreases enough
-    while α2 > targetα && p_imin < length(X.positives)
+    while α2 > targetα && p_imin < length(positives)
         X.indmin += 1
-        p_imin = X.positives[X.indmin]
+        p_imin = positives[X.indmin]
         α2 = max(X.norm_dirs[p_imin] / X.shifts[p_imin], eps())
     end
 
-    if p_imin == length(X.positives)
+    if p_imin == length(positives)
         @warn "PreProcessKARC failure: α2=$α2"
     end
 
@@ -39,20 +40,21 @@ end
 
 function decrease(X::PDataKTR, α::Float64, TR::TrustRegion)
     X.indmin += 1
-    p_imin = X.positives[X.indmin]
+    positives = findall(X.positives)
+    p_imin = positives[X.indmin]
     α2 = X.norm_dirs[p_imin]
 
     # fix α to its "ideal" value to satisfy α=||d||
     # while ensuring α decreases enough
     targetα = α * TR.decrease_factor
 
-    while α2 > targetα && p_imin < length(X.positives)
+    while α2 > targetα && p_imin < length(positives)
         X.indmin += 1
-        p_imin = X.positives[X.indmin]
+        p_imin = positives[X.indmin]
         α2 = X.norm_dirs[p_imin]
     end
 
-    if p_imin == length(X.positives)
+    if p_imin == length(positives)
         @warn "PreProcessKTR failure: α2=$α2"
     end
 

@@ -5,7 +5,7 @@ function ST_TROp(nlpstop::NLPStopping; kwargs...)
         TR = TrustRegion(10.0),
         c = Combi(
             HessOp,
-            PDataST{T},
+            PDataST,
             solve_modelST_TR,
             preprocessST,
             TparamsST{T}(),

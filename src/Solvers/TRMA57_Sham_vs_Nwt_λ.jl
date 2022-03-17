@@ -11,7 +11,7 @@ function TRMA57_Sham_vs_Nwt_λ(
         TR = TrustRegion(10.0),
         c = Combi(
             HessSparse,
-            PDataMA57{T},
+            PDataMA57,
             (x, y, z) -> solve_modelTRDiag_HO_vs_Nwt_λ(
                 x,
                 y,
