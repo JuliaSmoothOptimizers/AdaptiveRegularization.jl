@@ -1,5 +1,4 @@
-export PDataMA57
-export preprocessMA57, AInv
+export PDataMA57, AInv
 
 mutable struct PDataMA57{T} <: PDataFact{T}
     L::SparseMatrixCSC{T,Int64} # sparse L
@@ -23,7 +22,7 @@ mutable struct PDataMA57{T} <: PDataFact{T}
         new{eltype(g̃)}(L, D, pp, s, Δ, Q, g̃, l, success, OK)
 end
 
-function preprocessMA57(H, g, params::Tparams, n1, n2)
+function preprocess(PData::PDataMA57, H, g, n1, n2)
     M = Ma57
     L = SparseMatrixCSC{Float64,Int64}
     D57 = SparseMatrixCSC{Float64,Int64}

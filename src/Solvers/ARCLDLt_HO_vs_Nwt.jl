@@ -10,10 +10,9 @@ function ARCLDLt_HO_vs_Nwt(
 
     return TRARC(
         nlpstop;
-        TR = TrustRegion(T(10.0)),
         c = Combi(
             HessDense,
-            PDataLDLt{T},
+            PDataLDLt,
             (x, y, z) -> solve_modelARCDiag_HO_vs_Nwt(
                 x,
                 y,
@@ -21,8 +20,6 @@ function ARCLDLt_HO_vs_Nwt(
                 λfact = λfact,
                 nwt_res_fact = nwt_res_fact,
             ),
-            preprocessLDLt,
-            Tparam{T}(),
         ),
         kwargs...,
     )

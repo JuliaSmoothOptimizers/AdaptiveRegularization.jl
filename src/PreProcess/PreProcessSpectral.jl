@@ -1,4 +1,4 @@
-function preprocessSpectral(H, g, params::Tparams, n1, n2)
+function preprocess(PData::PDataSpectral, H, g, n1, n2)
     #global V, D, rho, ncomp
 
     # Δ, V = eig(H)
@@ -12,7 +12,14 @@ function preprocessSpectral(H, g, params::Tparams, n1, n2)
     ɛ = 1.0e-10
     λ = max(-l_m, 0.0)
 
-    return PDataSpectral(V, Δ, g̃, λ, true, true)
+    PData.V = V
+    PData.Δ = Δ
+    PData.g̃ = g̃
+    PData.λ = λ
+    PData.success = true
+    PData.OK = true
+
+    return PData
 end
 
 

@@ -4,13 +4,10 @@ function ARCLDLt(nlpstop::NLPStopping; kwargs...)
 
     return TRARC(
         nlpstop;
-        TR = TrustRegion(T(10.0)),
         c = Combi(
             HessDense,
-            PDataLDLt{T},
+            PDataLDLt,
             solve_modelARCDiag,
-            preprocessLDLt,
-            Tparam{T}(),
         ),
         kwargs...,
     )
