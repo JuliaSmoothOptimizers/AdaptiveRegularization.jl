@@ -109,9 +109,3 @@ function AInv(X::PDataMA97, d̃::Array{T,1}) where {T}
 
     return d̂
 end
-
-
-# remove
-function reconstructH(X::PDataMA97)
-    return X.P' * X.L * X.D * X.L' * X.P
-end

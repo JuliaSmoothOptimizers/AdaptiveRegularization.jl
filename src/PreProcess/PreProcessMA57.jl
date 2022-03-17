@@ -1,5 +1,5 @@
 export PDataMA57
-export preprocessMA57, AInv, reconstructH
+export preprocessMA57, AInv
 
 mutable struct PDataMA57{T} <: PDataFact{T}
     L::SparseMatrixCSC{T,Int64} # sparse L
@@ -105,10 +105,4 @@ function AInv(X::PDataMA57, d̃::Array{T,1}) where {T}
     d̂ = X.Q * d̃
     u = X.L' \ d̂
     return u[invperm(X.pp)] .* X.s
-end
-
-
-function reconstructH(X::PDataMA57)
-    A = X.L * X.D * X.L'
-    return A[X.pp.X.pp]
 end

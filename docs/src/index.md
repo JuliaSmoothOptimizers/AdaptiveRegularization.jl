@@ -23,11 +23,11 @@ The **decrease** functions ((X::TPData, α::T, TR::TrustRegion) where {T} -> T) 
 
 **TODO**: 
 -[ ] update for in-place preprocess functions
--[ ] update for in-place `hessian_rep` functions
--[ ] we should probably move decreaseKTR and decreaseKARC here in Utilies.jl. (remove \tau parameter here - check if it improves the benchmark first)
+-[X] update for in-place `hessian_rep` functions
+-[ ] we should probably move decreaseKTR and decreaseKARC here in Utilies.jl
 -[ ] Why is there a LDLt and LDLt2? LDLt2 that depend on a `bunchkaufman` function (from LinearAlgebra?)
 -[ ] we could use multiple-dispatch and have just one function `decrease` and `increase`.
--[ ] remove `reconstructH` as it is nowhere used.
+-[X] remove `reconstructH` as it is nowhere used.
 -[ ] extract parameters in KARC and KTR
 -[ ] reuse KrylovSolver structure
 

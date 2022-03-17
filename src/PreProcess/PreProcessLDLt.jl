@@ -171,9 +171,3 @@ function AInv(X::PDataLDLt, d̃::Array{T,1}) where {T}
     # printstyled("avant la sortie de AInv ⟰ \n", color = :red)
     return u[invperm(X.pp)]
 end
-
-
-function reconstructH(X::PDataLDLt)
-    A = X.L * X.D * X.L'
-    return A[X.pp.X.pp]
-end

@@ -19,7 +19,3 @@ end
 function AInv(X::PDataSpectral, d̃::Array{Float64,1})
     return X.V * d̃
 end
-
-function reconstructH(X::PDataSpectral)
-    return X.V * diagm(X.Δ) * X.V'
-end
