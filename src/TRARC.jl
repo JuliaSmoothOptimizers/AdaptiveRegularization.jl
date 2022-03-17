@@ -1,18 +1,20 @@
 export TRARC
 
-struct TRARCWorkspace
-    xt::Any
-    xtnext::Any
-    d::Any
-    ∇f::Any
-    ∇fnext::Any
-    function TRARCWorkspace(::Type{T}, ::Type{S}, n) where {T,S}
-        return new(
+struct TRARCWorkspace{T, S, Hess}
+    xt::S
+    xtnext::S
+    d::S
+    ∇f::S
+    ∇fnext::S
+    Hstruct::Hess
+    function TRARCWorkspace(::Type{T}, ::Type{S}, ::Type{Hess}, n) where {T, S, Hess}
+        return new{T, S, Hess}(
             S(undef, n), # xt
             S(undef, n), # xtnext
             S(undef, n), # d
             S(undef, n), # ∇f
             S(undef, n), # ∇fnext
+            Hess(T, S, n),
         )
     end
 end
@@ -20,8 +22,8 @@ end
 function TRARC(
     nlp_stop::NLPStopping{Pb,M,SRC,NLPAtX{T,S},MStp,LoS};
     TR::TrustRegion = TrustRegion(T(10.0)),
-    c::Combi = Combi{T}(
-        hessian_dense,
+    c::Combi{T, Hess} = Combi{T, Hess}(
+        HessDense,
         PDataLDLt{T},
         solve_modelTRDiag,
         preprocessLDLt,
@@ -31,10 +33,10 @@ function TRARC(
     robust::Bool = true,
     verbose::Bool = false,
     kwargs...,
-) where {Pb,M,SRC,MStp,LoS,S,T}
+) where {Pb,M,SRC,MStp,LoS,S,T,Hess}
     nlp, nlp_at_x = nlp_stop.pb, nlp_stop.current_state
-    hessian_rep, PData, solve_model, pre_process, decrease, params = extract(c)
-    workspace = TRARCWorkspace(T, S, nlp.meta.nvar)
+    PData, solve_model, pre_process, decrease, params = extract(c)
+    workspace = TRARCWorkspace(T, S, Hess, nlp.meta.nvar)
     xt, xtnext, d, ∇f, ∇fnext =
         workspace.xt, workspace.xtnext, workspace.d, workspace.∇f, workspace.∇fnext
 
@@ -51,7 +53,7 @@ function TRARC(
     nlp_stop.meta.optimality0 = norm_∇f
 
     OK = update_and_start!(nlp_stop, x = xt, fx = ft, gx = ∇f)
-    !OK && Stopping.update!(nlp_at_x, Hx = hessian_rep(nlp, xt), convert = true)
+    !OK && Stopping.update!(nlp_at_x, Hx = hessian!(workspace.Hstruct, nlp, xt), convert = true)
 
     iter = 0 # counter different than stop count
     succ, unsucc, verysucc, unsuccinarow = 0, 0, 0, 0
@@ -135,7 +137,7 @@ function TRARC(
 
         nlp_stop.meta.nb_of_stop = iter
         OK = update_and_stop!(nlp_stop, x = xt, fx = ft, gx = ∇f)
-        success && Stopping.update!(nlp_at_x, Hx = hessian_rep(nlp, xt))
+        success && Stopping.update!(nlp_at_x, Hx = hessian!(workspace.Hstruct, nlp, xt))
     end # while !OK
 
     return nlp_stop

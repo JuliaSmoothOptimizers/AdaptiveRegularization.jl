@@ -4,7 +4,7 @@ function TRMA57(nlpstop::NLPStopping; kwargs...)
         nlpstop;
         TR = TrustRegion(10.0),
         c = Combi(
-            hessian_sparse,
+            HessSparse,
             PDataMA57{T},
             solve_modelTRDiag,
             preprocessMA57,

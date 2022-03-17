@@ -5,7 +5,7 @@ function ARCMA97(nlpstop::NLPStopping; kwargs...)
         nlpstop;
         TR = TrustRegion(10.0),
         c = Combi(
-            hessian_dense,
+            HessDense,
             PDataMA97{T},
             solve_modelARCDiag,
             preprocessMA97,

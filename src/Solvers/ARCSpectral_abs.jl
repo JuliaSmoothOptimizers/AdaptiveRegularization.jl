@@ -4,7 +4,7 @@ function ARCSpectral_abs(nlpstop::NLPStopping; kwargs...)
         nlpstop;
         TR = TrustRegion(10.0),
         c = Combi(
-            ARCTR.hessian_dense,
+            ARCTR.HessDense,
             ARCTR.PDataSpectral{T},
             ARCTR.solve_modelARCDiagAbs,
             ARCTR.preprocessSpectral,

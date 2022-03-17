@@ -181,17 +181,26 @@ stop_norm(x) = norm(x, Inf)
 
 # Valid combinations
 #
-mutable struct Combi{T}
-    hessian_rep::Function
+mutable struct Combi{T, Hess}
     PData::DataType
     solve_model::Function
     pre_process::Function
     decrease::Function
     params::Union{Tparams{T},Tparams}
+    function Combi(
+        ::Type{Hess},
+        PData::DataType,
+        solve_model::Function,
+        pre_process::Function,
+        decrease::Function,
+        params::Union{Tparams{T},Tparams},
+    ) where {T, Hess}
+        return new{T, Hess}(PData, solve_model, pre_process, decrease, params)
+    end
 end
 
 function extract(c::Combi)
-    return c.hessian_rep, c.PData, c.solve_model, c.pre_process, c.decrease, c.params
+    return c.PData, c.solve_model, c.pre_process, c.decrease, c.params
 end
 
 function convert_TR(T, TR_init::TrustRegion)

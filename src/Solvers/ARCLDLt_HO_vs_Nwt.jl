@@ -12,7 +12,7 @@ function ARCLDLt_HO_vs_Nwt(
         nlpstop;
         TR = TrustRegion(T(10.0)),
         c = Combi(
-            hessian_dense,
+            HessDense,
             PDataLDLt{T},
             (x, y, z) -> solve_modelARCDiag_HO_vs_Nwt(
                 x,

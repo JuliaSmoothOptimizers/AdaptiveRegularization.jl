@@ -4,7 +4,7 @@ function ARCMA57_Sham_λ(nlpstop::NLPStopping; λfact::Float64 = 1.0, kwargs...)
         nlpstop;
         TR = TrustRegion(10.0),
         c = Combi(
-            hessian_sparse,
+            HessSparse,
             PDataMA57{T},
             (x, y, z) -> solve_modelARCDiag_HO(
                 x,

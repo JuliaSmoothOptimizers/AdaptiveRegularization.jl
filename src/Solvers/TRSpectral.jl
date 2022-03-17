@@ -4,7 +4,7 @@ function TRSpectral(nlpstop::NLPStopping; kwargs...)
         nlpstop;
         TR = TrustRegion(10.0),
         c = Combi(
-            hessian_dense,
+            HessDense,
             PDataSpectral{T},
             solve_modelTRDiag,
             preprocessSpectral,

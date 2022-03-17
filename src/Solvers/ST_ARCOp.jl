@@ -4,7 +4,7 @@ function ST_ARCOp(nlpstop::NLPStopping; kwargs...)
         nlpstop;
         TR = TrustRegion(10.0),
         c = Combi(
-            hessian_operator,
+            HessOp,
             PDataST{T},
             solve_modelST_ARC,
             preprocessST,

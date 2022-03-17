@@ -4,7 +4,7 @@ function ST_ARCsparse(nlpstop::NLPStopping; kwargs...)
         nlpstop;
         TR = TrustRegion(10.0),
         c = Combi(
-            hessian_sparse,
+            HessSparse,
             PDataST{T},
             solve_modelST_ARC,
             preprocessST,
