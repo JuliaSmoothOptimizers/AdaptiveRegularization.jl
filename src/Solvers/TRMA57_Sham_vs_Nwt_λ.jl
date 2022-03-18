@@ -10,7 +10,7 @@ function TRMA57_Sham_vs_Nwt_λ(
         c = Combi(
             HessSparse,
             PDataMA57,
-            (x, y, z) -> solve_modelTRDiag_HO_vs_Nwt_λ(
+            (H, g, x, y, z) -> solve_modelTRDiag_HO_vs_Nwt_λ(H, g, 
                 x,
                 y,
                 z;

@@ -10,7 +10,7 @@ function TRLDLt_HO_vs_Nwt_λ(
         c = Combi(
             HessDense,
             PDataLDLt,
-            (x, y, z) -> solve_modelTRDiag_HO_vs_Nwt_λ(
+            (H, g, x, y, z) -> solve_modelTRDiag_HO_vs_Nwt_λ(H, g, 
                 x,
                 y,
                 z;

@@ -4,7 +4,7 @@ export solve_modelTRDiag_HO_vs_Nwt_λ
 If the Newton direction is accepted and the high order correction lies within
 a bigger trust region then we use the high order correction.
 """
-function solve_modelTRDiag_HO_vs_Nwt_λ(
+function solve_modelTRDiag_HO_vs_Nwt_λ(H, g, 
     nlp_stop,
     PData::PDataFact,
     δ::T;

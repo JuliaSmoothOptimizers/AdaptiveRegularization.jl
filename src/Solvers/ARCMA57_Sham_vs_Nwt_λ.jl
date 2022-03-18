@@ -9,7 +9,7 @@ function ARCMA57_Sham_vs_Nwt_λ(
         c = Combi(
             HessSparse,
             PDataMA57,
-            (x, y, z) -> solve_modelARCDiag_HO_vs_Nwt(
+            (H, g, x, y, z) -> solve_modelARCDiag_HO_vs_Nwt(H, g, 
                 x,
                 y,
                 z,

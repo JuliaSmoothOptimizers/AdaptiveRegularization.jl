@@ -1,6 +1,6 @@
 export solve_modelTRDiag
 
-function solve_modelTRDiag(nlp_stop, PData::PDataFact, δ::T) where {T}
+function solve_modelTRDiag(H, g, nlp_stop, PData::PDataFact, δ::T) where {T}
     # Solve the TR subproblem once diagonalized into Δ using the norm |Δ|
     # Setup the problem
     # printstyled("On est dans solve_modelTRDiag ⇊ \n", color = :red)

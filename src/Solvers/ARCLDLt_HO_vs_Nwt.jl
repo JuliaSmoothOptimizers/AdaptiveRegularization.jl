@@ -10,7 +10,7 @@ function ARCLDLt_HO_vs_Nwt(
         c = Combi(
             HessDense,
             PDataLDLt,
-            (x, y, z) -> solve_modelARCDiag_HO_vs_Nwt(
+            (H, g, x, y, z) -> solve_modelARCDiag_HO_vs_Nwt(H, g, 
                 x,
                 y,
                 z,

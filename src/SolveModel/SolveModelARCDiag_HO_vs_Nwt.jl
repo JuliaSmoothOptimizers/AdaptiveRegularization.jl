@@ -1,6 +1,6 @@
 export solve_modelARCDiag_HO_vs_Nwt
 
-function solve_modelARCDiag_HO_vs_Nwt(
+function solve_modelARCDiag_HO_vs_Nwt(H, g, 
     nlp_stop,
     PData::PDataFact,
     α::T;
