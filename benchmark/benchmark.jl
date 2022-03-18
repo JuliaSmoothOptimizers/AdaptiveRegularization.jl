@@ -7,9 +7,11 @@ nmax = 10
 problems = readlines("list_problems_$nmax.dat")
 cutest_problems = (CUTEstModel(p) for p in problems)
 
-max_time = 120.0 #20 minutes
+max_time = 3600.0
 max_ev = typemax(Int)
-tol = 1e-5
+max_iter = typemax(Int)
+atol = 1e-5
+rtol = 1e-6
 
 solvers = Dict(
   :ipopt => nlp -> ipopt(
@@ -20,29 +22,29 @@ solvers = Dict(
     compl_inf_tol = Inf,
     acceptable_iter = 0,
     max_cpu_time = max_time,
-    tol = tol,
+    tol = rtol,
   ),
   :lbfgs => nlp -> lbfgs(
     nlp,
     verbose = 0,
-    atol = tol,
-    rtol = tol,
+    atol = atol,
+    rtol = rtol,
     max_time = max_time,
     max_eval = max_ev,
   ),
   :trunk => nlp -> trunk(
     nlp,
     verbose = 0,
-    atol = tol,
-    rtol = tol,
+    atol = atol,
+    rtol = rtol,
     max_time = max_time,
     max_eval = max_ev,
   ),
   :tron => nlp -> tron(
     nlp,
     verbose = 0,
-    atol = tol,
-    rtol = tol,
+    atol = atol,
+    rtol = rtol,
     max_time = max_time,
     max_eval = max_ev,
   ),

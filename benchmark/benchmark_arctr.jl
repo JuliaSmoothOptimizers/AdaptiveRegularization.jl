@@ -7,25 +7,26 @@ nmax = 10
 problems = readlines("list_problems_$nmax.dat")
 cutest_problems = (CUTEstModel(p) for p in problems)
 
-max_time = 300.0 #20 minutes
+max_time = 3600.0
 max_ev = typemax(Int)
 max_iter = typemax(Int)
-tol = 1e-5
+atol = 1e-5
+rtol = 1e-6
 
 solvers = Dict(
   :ARCqKOp => nlp -> ARCqKOp(
     nlp,
     verbose = false,
-    atol = tol,
-    rtol = tol,
+    atol = atol,
+    rtol = rtol,
     max_time = max_time,
     max_iter = max_iter,
   ),
   :ST_TROp => nlp -> ST_TROp(
     nlp,
     verbose = false,
-    atol = tol,
-    rtol = tol,
+    atol = atol,
+    rtol = rtol,
     max_time = max_time,
     max_iter = max_iter,
   ),

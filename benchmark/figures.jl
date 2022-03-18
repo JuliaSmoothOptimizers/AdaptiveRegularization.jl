@@ -1,7 +1,7 @@
 using Pkg; Pkg.activate(".")
 using JLD2, Plots, SolverBenchmark
 
-name = "2022-03-17_ST_TROp_ARCqKOp_cutest_129_10"
+name = "2022-03-18_ST_TROp_ARCqKOp_cutest_277_1000000"
 @load "$name.jld2" stats
 solved(df) = (df.status .== :first_order) .| (df.status .== :unbounded)
 
@@ -27,3 +27,10 @@ open("$name.dat", "w") do io
   print(io, stats[:fps][!, [:name, :nvar, :ncon, :status, :objective, :elapsed_time, :iter, :primal_feas, :dual_feas]])
 end
 =#
+
+nmin = 100
+stats2 = copy(stats)
+stats2[:ST_TROp] = stats[:ST_TROp][stats[:ST_TROp].nvar .> nmin,:]
+stats2[:ARCqKOp] = stats[:ARCqKOp][(stats[:ARCqKOp].nvar .> nmin) .& (stats[:ARCqKOp].name .!= "DMN15332LS"),:]
+p = profile_solvers(stats2, costs, costnames)
+png(p, "$(name)_min_$(nmin + 1)")
