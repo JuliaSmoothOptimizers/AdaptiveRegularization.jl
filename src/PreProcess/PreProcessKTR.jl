@@ -4,7 +4,7 @@ function preprocess(PData::PDataKTR, Hop, g, calls, max_calls)
     shifts = PData.shifts
 
     n = length(g)
-    gNorm2 = norm(g) # BLAS.nrm2(n, g, 1)
+    gNorm2 = norm(g)
     precision = max(1e-12, min(0.5, (gNorm2^ζ)))
 
     nshifts = length(shifts)
@@ -21,9 +21,6 @@ function preprocess(PData::PDataKTR, Hop, g, calls, max_calls)
         check_curvature = true,
     )
 
-    PData.d .= g
-    PData.λ = -1.0
-    PData.ζ = ζ
     PData.indmin = 0
     PData.positives .= solver.converged
     for i=1:nshifts
@@ -32,7 +29,7 @@ function preprocess(PData::PDataKTR, Hop, g, calls, max_calls)
     end
     PData.shifts .= shifts
     PData.nshifts = nshifts
-    PData.OK = true
+    PData.OK = sum(solver.converged) != 0 # at least one system was solved
 
-    return PData # PDataKTR(g, -1.0, ζ, 0, positives, xShift, shifts, nshifts, Ndirs, true)
+    return PData
 end

@@ -1,12 +1,14 @@
-function solve_modelST_TR(nlp_stop, X::PDataST, δ::T; cgtol::T = 0.1) where {T}
+function solve_modelST_TR(H, g, nlp_stop, PData::PDataST, δ::T; cgtol::T = 0.1) where {T}
     # cas particulier Steihaug-Toint
     ϵ = sqrt(eps(T)) # * 100.0
-    n = length(X.g)
-    cgtol = max(ϵ, min(cgtol, 9 * cgtol / 10, 0.01 * norm(X.g)^(1.0 + X.ζ)))
+    n = length(g)
+    cgtol = max(ϵ, min(cgtol, 9 * cgtol / 10, 0.01 * norm(g)^(1.0 + PData.ζ)))
 
-    (d, cg_stats) = cg(
-        X.H,
-        -X.g,
+    solver = PData.solver
+    cg!(
+        solver,
+        H,
+        -g,
         atol = cgtol,
         rtol = ϵ,
         radius = δ,
@@ -14,7 +16,8 @@ function solve_modelST_TR(nlp_stop, X::PDataST, δ::T; cgtol::T = 0.1) where {T}
         verbose = 0,
     )
 
-    λ = 0.0  #  dummy for this variant
+    PData.d .= solver.x
+    PData.OK = solver.stats.solved
 
-    return d, λ
+    return PData.d, PData.λ
 end

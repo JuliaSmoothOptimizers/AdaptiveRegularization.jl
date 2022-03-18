@@ -1,10 +1,10 @@
-function preprocess(PData::PDataKARC, Hop, g, calls, max_calls) #where T
+function preprocess(PData::PDataKARC, Hop, g, calls, max_calls)
     ζ = PData.ζ
     nshifts = PData.nshifts
     shifts = PData.shifts
 
     n = length(g)
-    gNorm2 = norm(g) # BLAS.nrm2(n, g, 1)
+    gNorm2 = norm(g)
     precision = max(1e-12, min(0.5, (gNorm2^ζ)))
     ϵ = 1e-12#sqrt(eps()) # * 100.0
     cgtol = max(ϵ, min(0.09, 0.01 * norm(g)^(1.0 + ζ)))
@@ -23,9 +23,6 @@ function preprocess(PData::PDataKARC, Hop, g, calls, max_calls) #where T
         check_curvature = true,
     )
 
-    PData.d .= g
-    PData.λ = -1.0
-    PData.ζ = ζ
     PData.indmin = 0
     PData.positives .= solver.converged
     for i=1:nshifts
@@ -34,7 +31,7 @@ function preprocess(PData::PDataKARC, Hop, g, calls, max_calls) #where T
     end
     PData.shifts .= shifts
     PData.nshifts = nshifts
-    PData.OK = true
+    PData.OK = sum(solver.converged) != 0 # at least one system was solved
 
-    return PData # PDataKARC(g, -1.0, ζ, 0, positives, xShift, shifts, nshifts, Ndirs, true)
+    return PData
 end

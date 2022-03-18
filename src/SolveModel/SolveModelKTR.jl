@@ -1,5 +1,5 @@
 export solve_modelKTR
-function solve_modelKTR(nlp_stop, X::PDataKTR, α::T) where {T}
+function solve_modelKTR(H, g, nlp_stop, X::PDataKTR, α::T) where {T}
     # target value should be close to satisfy α=||d||
     target = [(abs(α - X.norm_dirs[i])) for i = 1:X.nshifts]
     # pick the closest shift to the target within positive definite H+λI

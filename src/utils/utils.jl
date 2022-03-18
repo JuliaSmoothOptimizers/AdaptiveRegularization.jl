@@ -1,4 +1,4 @@
-export TrustRegion, Combi, convert_TR, convert_TR!, extract
+export TrustRegion, convert_TR, convert_TR!, extract
 
 "Exception type raised in case of error."
 mutable struct TrustRegionException <: Exception
@@ -15,7 +15,6 @@ mutable struct TrustRegion{T}
     increase_factor::T
     decrease_factor::T
     max_unsuccinarow::Int
-    #params :: Tparams
 
     function TrustRegion(
         α₀::T;
@@ -27,7 +26,6 @@ mutable struct TrustRegion{T}
         decrease_factor::T = T(0.1),
         max_unsuccinarow::Int = 30,
     ) where {T}
-        #params :: Tparams = Void)
 
         α₀ > T(0.0) || (α₀ = T(1.0))
         max_α > α₀ || throw(TrustRegionException("Invalid α₀"))
@@ -46,7 +44,7 @@ mutable struct TrustRegion{T}
             increase_factor,
             decrease_factor,
             max_unsuccinarow,
-        )#, params)
+        )
     end
 end
 
@@ -79,23 +77,6 @@ function compute_r(nlp, f, Δf, Δq, slope, d, xnext, gnext, robust)
 end
 
 stop_norm(x) = norm(x, Inf)
-
-# Valid combinations
-#
-mutable struct Combi{Hess, PData}
-    solve_model::Function
-    function Combi(
-        ::Type{Hess},
-        ::Type{PData},
-        solve_model::Function,
-    ) where {Hess, PData}
-        return new{Hess, PData}(solve_model)
-    end
-end
-
-function extract(c::Combi)
-    return c.solve_model
-end
 
 function convert_TR(T, TR_init::TrustRegion)
     max_α_T = T(TR_init.max_α)

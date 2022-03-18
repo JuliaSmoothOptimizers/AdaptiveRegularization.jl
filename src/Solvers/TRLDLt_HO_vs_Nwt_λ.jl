@@ -5,13 +5,12 @@ function TRLDLt_HO_vs_Nwt_λ(
     λfact = 1.0,
     kwargs...,
 )
-    T = eltype(nlpstop.pb.meta.x0)
     return TRARC(
         nlpstop;
         c = Combi(
             HessDense,
             PDataLDLt,
-            (x, y, z) -> solve_modelTRDiag_HO_vs_Nwt_λ(
+            (H, g, x, y, z) -> solve_modelTRDiag_HO_vs_Nwt_λ(H, g, 
                 x,
                 y,
                 z;

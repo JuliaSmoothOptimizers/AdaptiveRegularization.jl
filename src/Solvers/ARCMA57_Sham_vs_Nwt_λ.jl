@@ -4,13 +4,12 @@ function ARCMA57_Sham_vs_Nwt_λ(
     nwt_res_fact = 0.25,
     kwargs...,
 )
-    T = eltype(nlpstop.pb.meta.x0)
     return TRARC(
         nlpstop;
         c = Combi(
             HessSparse,
             PDataMA57,
-            (x, y, z) -> solve_modelARCDiag_HO_vs_Nwt(
+            (H, g, x, y, z) -> solve_modelARCDiag_HO_vs_Nwt(H, g, 
                 x,
                 y,
                 z,

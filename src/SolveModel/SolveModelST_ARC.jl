@@ -1,12 +1,12 @@
-function solve_modelST_ARC(nlp_stop, X::PDataST, δ::T) where {T}
+function solve_modelST_ARC(H, g, nlp_stop, PData::PDataST, δ::T) where {T}
     # Steihaug-Toint adapted to ARC
     ϵ = sqrt(eps(T)) * 100.0
-    n = length(X.g)
-    cgtol = max(ϵ, min(0.7, 0.01 * norm(X.g)^(1.0 + X.ζ)))
+    n = length(g)
+    cgtol = max(ϵ, min(0.7, 0.01 * norm(g)^(1.0 + PData.ζ)))
 
     (d, cg_stats) = cgARC(
-        X.H,
-        -X.g,
+        H,
+        -g,
         atol = cgtol,
         rtol = 0.0,
         regulα = δ,
@@ -14,7 +14,6 @@ function solve_modelST_ARC(nlp_stop, X::PDataST, δ::T) where {T}
         verbose = false,
     )
 
-
-    λ = 0.0  #  dummy for this variant
-    return d, λ
+    PData.d .= d
+    return PData.d, PData.λ
 end

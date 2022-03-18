@@ -5,15 +5,12 @@ function ARCLDLt_HO_vs_Nwt(
     λfact = 100.0,
     kwargs...,
 )
-
-    T = eltype(nlpstop.pb.meta.x0)
-
     return TRARC(
         nlpstop;
         c = Combi(
             HessDense,
             PDataLDLt,
-            (x, y, z) -> solve_modelARCDiag_HO_vs_Nwt(
+            (H, g, x, y, z) -> solve_modelARCDiag_HO_vs_Nwt(H, g, 
                 x,
                 y,
                 z,

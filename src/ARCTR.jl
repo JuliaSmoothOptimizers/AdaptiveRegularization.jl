@@ -10,11 +10,11 @@ using Stopping, StoppingInterface
 # Selective includes.
 include("hessian_rep.jl")
 
-include("./Utilities/show.jl")
-include("./Utilities/pdata_struct.jl")
-include("./Utilities/Utilities.jl")
-include("./Utilities/increase_decrease.jl")
-include("./Utilities/ldlt_symm.jl")
+include("./utils/show.jl")
+include("./utils/pdata_struct.jl")
+include("./utils/utils.jl")
+include("./utils/increase_decrease.jl")
+include("./utils/ldlt_symm.jl")
 
 path = joinpath(dirname(@__FILE__), "SolveModel")
 files = filter(x -> x[(end-2):end] == ".jl", readdir(path))
@@ -59,9 +59,6 @@ files = filter(x -> x[(end-2):end] == ".jl", readdir(path))
 for file in files
     if occursin(r"MA", file)
         continue # Remove MA57 and MA97 solvers for now
-    end
-    if file in ["ARCqKOp05.jl", "ARCqKOp2.jl", "TRLDLt_HO_MP.jl"] #use something else than TRARC
-        continue
     end
     include("Solvers/" * file)
     fun = Symbol(split(file, ".")[1])

@@ -1,5 +1,5 @@
 export solve_modelTRDiagAbs
-function solve_modelTRDiagAbs(nlp_stop, PData::PDataFact, δ::T) where {T}
+function solve_modelTRDiagAbs(H, g, nlp_stop, PData::PDataFact, δ::T) where {T}
     # Solve the TR subproblem once diagonalized into Δ using the norm |Δ|
     # Setup the subproblem to recover identity regularizing matrix
     # Should this be in pre-process so that PData.λ is indeed used as updated?

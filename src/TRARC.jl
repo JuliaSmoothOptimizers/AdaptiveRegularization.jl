@@ -19,20 +19,28 @@ struct TRARCWorkspace{T, S, Hess}
     end
 end
 
+export Combi
+
+mutable struct Combi{Hess, PData}
+    solve_model::Function
+    function Combi(
+        ::Type{Hess},
+        ::Type{PData},
+        solve_model::Function,
+    ) where {Hess, PData}
+        return new{Hess, PData}(solve_model)
+    end
+end
+
 function TRARC(
     nlp_stop::NLPStopping{Pb,M,SRC,NLPAtX{T,S},MStp,LoS};
     TR::TrustRegion = TrustRegion(T(10.0)),
-    c::Combi{Hess, ParamData} = Combi(
-        HessDense,
-        PDataLDLt,
-        solve_modelTRDiag,
-    ),
+    c::Combi{Hess, ParamData} = Combi(HessDense, PDataLDLt, solve_modelTRDiag),
     robust::Bool = true,
     verbose::Bool = false,
     kwargs...,
 ) where {Pb,M,SRC,MStp,LoS,S,T,Hess,ParamData}
     nlp, nlp_at_x = nlp_stop.pb, nlp_stop.current_state
-    solve_model = extract(c)
 
     PData = ParamData(S, T, nlp.meta.nvar; kwargs...)
     workspace = TRARCWorkspace(T, S, Hess, nlp.meta.nvar)
@@ -64,13 +72,8 @@ function TRARC(
     verbose && @info log_row(Any[iter, ft, norm_∇f, 0.0, "First iteration", α])
 
     while !OK
-        PData = preprocess(
-            PData,
-            nlp_at_x.Hx,
-            ∇f,
-            nlp.counters.neval_hprod,
-            nlp_stop.meta.max_cntrs[:neval_hprod],
-        )
+        max_hprod = nlp_stop.meta.max_cntrs[:neval_hprod]
+        PData = preprocess(PData, nlp_at_x.Hx, ∇f, neval_hprod(nlp), max_hprod)
 
         if ~PData.OK
             @warn("Something wrong with PData")
@@ -79,7 +82,7 @@ function TRARC(
 
         success = false
         while !success & (unsuccinarow < max_unsuccinarow)
-            d, λ = solve_model(nlp_stop, PData, α) # Est-ce que le d et λ ne sont pas dans PData ?
+            d, λ = c.solve_model(nlp_at_x.Hx, ∇f, nlp_stop, PData, α) # Est-ce que d et λ ne sont pas dans PData ?
 
             Δq = -(∇f + 0.5 * nlp_at_x.Hx * d) ⋅ d
 

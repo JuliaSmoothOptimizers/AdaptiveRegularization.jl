@@ -73,17 +73,21 @@ function PDataKTR(::Type{S}, ::Type{T}, n; ζ = 0.5, shifts = [0.0; 10.0 .^ (col
     return PDataKTR(d, λ, ζ, indmin, positives, xShift, shifts, nshifts, norm_dirs, OK, solver)
 end
 
-mutable struct PDataST{T} <: PDataIter{T}
-    H::Any             # Hessian representation, most likely as a linear operator or a sparse matrix
-    g::Any             # gradient vector
+mutable struct PDataST{S, T} <: PDataIter{T}
+    d::S
+    λ::T
     ζ::T        # Inexact Newton order parameter: stop when ||∇q||<||g||^(1+ζ)
 
     OK::Bool    # preprocess success
+    solver::CgSolver
 end
 
 function PDataST(::Type{S}, ::Type{T}, n; ζ = 0.5, kwargs...) where {S, T}
+    d = S(undef, n)
+    λ = zero(T)
     OK = true
-    return PDataST(nothing, nothing, ζ, OK)
+    solver = CgSolver(n, n, S)
+    return PDataST(d, λ, ζ, OK, solver)
 end
 
 mutable struct PDataLDLt{T} <: PDataFact{T}
