@@ -17,6 +17,7 @@ The package contains several implementations:
 `AInv` is the function used to solve the linear system, I think.
 
 **TODO**: 
+
 -[X] update for in-place preprocess functions
 -[X] dispatch preprocess function
 -[X] update for in-place `hessian_rep` functions
@@ -25,8 +26,19 @@ The package contains several implementations:
 -[X] Why is there a LDLt and LDLt2? LDLt2 that depend on a `bunchkaufman` function (from LinearAlgebra?)
 -[X] we could use multiple-dispatch and have just one function `decrease` and `increase`.
 -[X] remove `reconstructH` as it is nowhere used.
--[ ] extract parameters in KARC and KTR
 -[X] reuse KrylovSolver structure
+
+-[ ] extract parameters in KARC and KTR
+-[ ] remove `Solvers` folder and replace by a `Dict` and metaprogramming
+-[ ] add docstrings
+-[ ] add short docs listings the possible options
+-[ ] I am suspecting `SolverModelKARC` allocates
+-[ ] Add a subsolver_verbose
+-[ ] Remove `cgARC`
+-[ ] Test high-order
+-[ ] Test MA57 and MA97
+-[ ] Write a README
+-[ ] Test and clean high-order methods
 
 ## Parameter tuning
 
