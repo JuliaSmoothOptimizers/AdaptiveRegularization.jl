@@ -50,6 +50,7 @@ end
 
 include("TRARC.jl")
 
+include("solvers.jl")
 export ALL_solvers
 
 ALL_solvers = Function[]
