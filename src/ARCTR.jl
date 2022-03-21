@@ -62,19 +62,14 @@ for fun in keys(solvers_const)
     ht, pt, sm, ka = ARCTR.solvers_const[fun]
     @eval begin
         function $fun(nlpstop::NLPStopping; kwargs...)
-            kw_list = Dict{Symbol, Any}()
+            kw_list = Dict{Symbol,Any}()
             merge!(kw_list, Dict(kwargs))
             if $ka != ()
                 for t in $ka
                     push!(kw_list, t)
                 end
             end
-            TRARC(nlpstop; 
-                hess_type = $ht,
-                pdata_type = $pt,
-                solve_model = $sm,
-                kw_list...,
-            )
+            TRARC(nlpstop; hess_type = $ht, pdata_type = $pt, solve_model = $sm, kw_list...)
         end
     end
     @eval begin

@@ -1,14 +1,14 @@
 export TRARC
 
-struct TRARCWorkspace{T, S, Hess}
+struct TRARCWorkspace{T,S,Hess}
     xt::S
     xtnext::S
     d::S
     ∇f::S
     ∇fnext::S
     Hstruct::Hess
-    function TRARCWorkspace(::Type{T}, ::Type{S}, ::Type{Hess}, n) where {T, S, Hess}
-        return new{T, S, Hess}(
+    function TRARCWorkspace(::Type{T}, ::Type{S}, ::Type{Hess}, n) where {T,S,Hess}
+        return new{T,S,Hess}(
             S(undef, n), # xt
             S(undef, n), # xtnext
             S(undef, n), # d
@@ -21,14 +21,10 @@ end
 
 export Combi
 
-mutable struct Combi{Hess, PData}
+mutable struct Combi{Hess,PData}
     solve_model::Function
-    function Combi(
-        ::Type{Hess},
-        ::Type{PData},
-        solve_model::Function,
-    ) where {Hess, PData}
-        return new{Hess, PData}(solve_model)
+    function Combi(::Type{Hess}, ::Type{PData}, solve_model::Function) where {Hess,PData}
+        return new{Hess,PData}(solve_model)
     end
 end
 
@@ -62,7 +58,11 @@ function TRARC(
     nlp_stop.meta.optimality0 = norm_∇f
 
     OK = update_and_start!(nlp_stop, x = xt, fx = ft, gx = ∇f)
-    !OK && Stopping.update!(nlp_at_x, Hx = hessian!(workspace.Hstruct, nlp, xt), convert = true)
+    !OK && Stopping.update!(
+        nlp_at_x,
+        Hx = hessian!(workspace.Hstruct, nlp, xt),
+        convert = true,
+    )
 
     iter = 0 # counter different than stop count
     succ, unsucc, verysucc, unsuccinarow = 0, 0, 0, 0

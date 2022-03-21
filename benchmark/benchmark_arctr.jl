@@ -1,4 +1,5 @@
-using Pkg; Pkg.activate("")
+using Pkg;
+Pkg.activate("");
 using CUTEst, Dates, NLPModels, SolverBenchmark
 
 using ARCTR, JSOSolvers, NLPModelsIpopt
@@ -14,22 +15,24 @@ atol = 1e-5
 rtol = 1e-6
 
 solvers = Dict(
-  :ARCqKOp => nlp -> ARCqKOp(
-    nlp,
-    verbose = false,
-    atol = atol,
-    rtol = rtol,
-    max_time = max_time,
-    max_iter = max_iter,
-  ),
-  :ST_TROp => nlp -> ST_TROp(
-    nlp,
-    verbose = false,
-    atol = atol,
-    rtol = rtol,
-    max_time = max_time,
-    max_iter = max_iter,
-  ),
+    :ARCqKOp =>
+        nlp -> ARCqKOp(
+            nlp,
+            verbose = false,
+            atol = atol,
+            rtol = rtol,
+            max_time = max_time,
+            max_iter = max_iter,
+        ),
+    :ST_TROp =>
+        nlp -> ST_TROp(
+            nlp,
+            verbose = false,
+            atol = atol,
+            rtol = rtol,
+            max_time = max_time,
+            max_iter = max_iter,
+        ),
 )
 stats = bmark_solvers(solvers, cutest_problems)
 
