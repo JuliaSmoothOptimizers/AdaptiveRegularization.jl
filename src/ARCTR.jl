@@ -3,7 +3,7 @@ module ARCTR
 # stdlib
 using LinearAlgebra, Logging, Printf, SparseArrays
 # JSO
-using Krylov, LinearOperators, NLPModels, SolverCore, SolverTools
+using HSL, Krylov, LinearOperators, NLPModels, SolverCore, SolverTools
 # Stopping
 using Stopping, StoppingInterface
 
