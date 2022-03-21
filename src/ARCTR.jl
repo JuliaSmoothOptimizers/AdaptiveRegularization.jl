@@ -52,18 +52,31 @@ include("TRARC.jl")
 
 export ALL_solvers
 
-ALL_solvers = Function[]
+ALL_solvers = Symbol[]
 
-path = joinpath(dirname(@__FILE__), "Solvers")
-files = filter(x -> x[(end-2):end] == ".jl", readdir(path))
-for file in files
-    if occursin(r"MA", file)
-        continue # Remove MA57 and MA97 solvers for now
+include("solvers.jl")
+
+for fun in keys(solvers_const)
+    push!(ALL_solvers, fun)
+
+    ht, pt, sm, ka = ARCTR.solvers_const[fun]
+    @eval begin
+        function $fun(nlpstop::NLPStopping; kwargs...)
+            kw_list = Dict{Symbol, Any}()
+            merge!(kw_list, Dict(kwargs))
+            if $ka != ()
+                for t in $ka
+                    push!(kw_list, t)
+                end
+            end
+            TRARC(nlpstop; 
+                hess_type = $ht,
+                pdata_type = $pt,
+                solve_model = $sm,
+                kw_list...,
+            )
+        end
     end
-    include("Solvers/" * file)
-    fun = Symbol(split(file, ".")[1])
-    push!(ALL_solvers, eval(fun))
-
     @eval begin
         function $fun(nlp::AbstractNLPModel; kwargs...)
             nlpstop = NLPStopping(nlp; kwargs...)
