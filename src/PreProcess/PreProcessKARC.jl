@@ -25,7 +25,7 @@ function preprocess(PData::PDataKARC, Hop, g, calls, max_calls)
 
     PData.indmin = 0
     PData.positives .= solver.converged
-    for i=1:nshifts
+    for i = 1:nshifts
         PData.xShift[i] .= solver.x[i]
         PData.norm_dirs[i] = norm(solver.x[i])
     end

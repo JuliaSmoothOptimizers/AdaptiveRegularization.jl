@@ -1,6 +1,8 @@
 export solve_modelARCDiag_HO
 
-function solve_modelARCDiag_HO(H, g, 
+function solve_modelARCDiag_HO(
+    H,
+    g,
     nlp_stop,
     PData::PDataFact,
     α::T;

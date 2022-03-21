@@ -24,20 +24,39 @@ mutable struct PDataKARC{T} <: PDataIter{T}
     solver::CgLanczosShiftSolver
 end
 
-function PDataKARC(::Type{S}, ::Type{T}, n; ζ = 0.5, shifts = 10.0 .^ collect(-20.0:1.0:20.0), kwargs...) where {S, T}
+function PDataKARC(
+    ::Type{S},
+    ::Type{T},
+    n;
+    ζ = 0.5,
+    shifts = 10.0 .^ collect(-20.0:1.0:20.0),
+    kwargs...,
+) where {S,T}
     d = S(undef, n)
     λ = zero(T)
     indmin = 1
     nshifts = length(shifts)
-    positives = Array{Bool, 1}(undef, nshifts)
-    xShift = Array{S, 1}(undef, nshifts)
-    for i=1:nshifts
+    positives = Array{Bool,1}(undef, nshifts)
+    xShift = Array{S,1}(undef, nshifts)
+    for i = 1:nshifts
         xShift[i] = S(undef, n)
     end
     norm_dirs = S(undef, nshifts)
     OK = true
     solver = CgLanczosShiftSolver(n, n, nshifts, S)
-    return PDataKARC(d, λ, ζ, indmin, positives, xShift, shifts, nshifts, norm_dirs, OK, solver)
+    return PDataKARC(
+        d,
+        λ,
+        ζ,
+        indmin,
+        positives,
+        xShift,
+        shifts,
+        nshifts,
+        norm_dirs,
+        OK,
+        solver,
+    )
 end
 
 mutable struct PDataKTR{T} <: PDataIter{T}
@@ -57,23 +76,42 @@ mutable struct PDataKTR{T} <: PDataIter{T}
     solver::CgLanczosShiftSolver
 end
 
-function PDataKTR(::Type{S}, ::Type{T}, n; ζ = 0.5, shifts = [0.0; 10.0 .^ (collect(-20.0:1.0:20.0))], kwargs...) where {S, T}
+function PDataKTR(
+    ::Type{S},
+    ::Type{T},
+    n;
+    ζ = 0.5,
+    shifts = [0.0; 10.0 .^ (collect(-20.0:1.0:20.0))],
+    kwargs...,
+) where {S,T}
     d = S(undef, n)
     λ = zero(T)
     indmin = 1
     nshifts = length(shifts)
-    positives = Array{Bool, 1}(undef, nshifts)
-    xShift = Array{S, 1}(undef, nshifts)
-    for i=1:nshifts
+    positives = Array{Bool,1}(undef, nshifts)
+    xShift = Array{S,1}(undef, nshifts)
+    for i = 1:nshifts
         xShift[i] = S(undef, n)
     end
     norm_dirs = S(undef, nshifts)
     OK = true
     solver = CgLanczosShiftSolver(n, n, nshifts, S)
-    return PDataKTR(d, λ, ζ, indmin, positives, xShift, shifts, nshifts, norm_dirs, OK, solver)
+    return PDataKTR(
+        d,
+        λ,
+        ζ,
+        indmin,
+        positives,
+        xShift,
+        shifts,
+        nshifts,
+        norm_dirs,
+        OK,
+        solver,
+    )
 end
 
-mutable struct PDataST{S, T} <: PDataIter{T}
+mutable struct PDataST{S,T} <: PDataIter{T}
     d::S
     λ::T
     ζ::T        # Inexact Newton order parameter: stop when ||∇q||<||g||^(1+ζ)
@@ -82,7 +120,7 @@ mutable struct PDataST{S, T} <: PDataIter{T}
     solver::CgSolver
 end
 
-function PDataST(::Type{S}, ::Type{T}, n; ζ = 0.5, kwargs...) where {S, T}
+function PDataST(::Type{S}, ::Type{T}, n; ζ = 0.5, kwargs...) where {S,T}
     d = S(undef, n)
     λ = zero(T)
     OK = true
@@ -110,13 +148,13 @@ mutable struct PDataLDLt{T} <: PDataFact{T}
         new{eltype(L)}(L, D, pp, Δ, Q, g, l, success, OK)
 end
 
-function PDataLDLt(::Type{S}, ::Type{T}, n; kwargs...) where {S, T}
-    L = Array{T, 2}(undef, n, n) # ::Array{T,2}          # could be sparse
-    D = Array{T, 2}(undef, n, n) #::Array{T,2}          # block diagonal 1X1 and 2X2
+function PDataLDLt(::Type{S}, ::Type{T}, n; kwargs...) where {S,T}
+    L = Array{T,2}(undef, n, n) # ::Array{T,2}          # could be sparse
+    D = Array{T,2}(undef, n, n) #::Array{T,2}          # block diagonal 1X1 and 2X2
     pp = collect(1:n) #::Array{Int,1}        # permutation vector LDL' = H[pp,pp]
-    Δ = Array{T, 1}(undef, n) #::Array{T,1}          # diagonal, eigenvalues of D
-    Q = Array{T, 2}(undef, n, n) #::Array{T,2}          # orthogonal matrix, eigenvectors of D:  should be sparse
-    g̃ = Array{T, 1}(undef, n) #::Array{T,1}           # transformed gradient
+    Δ = Array{T,1}(undef, n) #::Array{T,1}          # diagonal, eigenvalues of D
+    Q = Array{T,2}(undef, n, n) #::Array{T,2}          # orthogonal matrix, eigenvectors of D:  should be sparse
+    g̃ = Array{T,1}(undef, n) #::Array{T,1}           # transformed gradient
     λ = zero(T) # ::T
     success = true::Bool                 # previous iteration was successfull
     OK = true
@@ -135,10 +173,10 @@ mutable struct PDataSpectral{T} <: PDataFact{T}
     PDataSpectral(V, Λ, g, l, success, OK) = new{eltype(V)}(V, Λ, g, l, success, OK)
 end
 
-function PDataSpectral(::Type{S}, ::Type{T}, n; kwargs...) where {S, T}
-    V = Array{T, 2}(undef, n, n) # ::Array{T,2}          # could be sparse
-    Δ = Array{T, 1}(undef, n) #::Array{T,1}          # diagonal, eigenvalues of D
-    g̃ = Array{T, 1}(undef, n) #::Array{T,1}           # transformed gradient
+function PDataSpectral(::Type{S}, ::Type{T}, n; kwargs...) where {S,T}
+    V = Array{T,2}(undef, n, n) # ::Array{T,2}          # could be sparse
+    Δ = Array{T,1}(undef, n) #::Array{T,1}          # diagonal, eigenvalues of D
+    g̃ = Array{T,1}(undef, n) #::Array{T,1}           # transformed gradient
     λ = zero(T) # ::T
     success = true::Bool                 # previous iteration was successfull
     OK = true
