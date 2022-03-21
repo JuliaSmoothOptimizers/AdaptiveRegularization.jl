@@ -35,7 +35,9 @@ end
 function TRARC(
     nlp_stop::NLPStopping{Pb,M,SRC,NLPAtX{T,S},MStp,LoS};
     TR::TrustRegion = TrustRegion(T(10.0)),
-    c::Combi{Hess, ParamData} = Combi(HessDense, PDataLDLt, solve_modelTRDiag),
+    hess_type::Type{Hess} = HessDense,
+    pdata_type::Type{ParamData} = PDataLDLt,
+    solve_model::Function = solve_modelTRDiag,
     robust::Bool = true,
     verbose::Bool = false,
     kwargs...,
@@ -82,7 +84,7 @@ function TRARC(
 
         success = false
         while !success & (unsuccinarow < max_unsuccinarow)
-            d, λ = c.solve_model(nlp_at_x.Hx, ∇f, nlp_stop, PData, α) # Est-ce que d et λ ne sont pas dans PData ?
+            d, λ = solve_model(nlp_at_x.Hx, ∇f, nlp_stop, PData, α) # Est-ce que d et λ ne sont pas dans PData ?
 
             Δq = -(∇f + 0.5 * nlp_at_x.Hx * d) ⋅ d
 
