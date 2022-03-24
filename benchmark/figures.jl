@@ -4,6 +4,10 @@ using JLD2, Plots, SolverBenchmark
 
 name = "2022-03-20_ST_TROp_ARCqKOp_cutest_277_1000000"
 @load "$name.jld2" stats
+stats1 = copy(stats)
+name = "2022-03-21_trunk_tron_ipopt_lbfgs_cutest_277_1000000"
+@load "$name.jld2" stats
+stats = merge(stats, stats1)
 solved(df) = (df.status .== :first_order) .| (df.status .== :unbounded)
 
 open("$name.dat", "w") do io
@@ -33,15 +37,15 @@ open("$name.dat", "w") do io
 end
 =#
 
-if collect(keys(stats)) == [:ST_TROp, :ARCqKOp]
+nmins = [0, 100, 1000, 10000]
+for nmin in nmins
     # Same figure with minimum number of variables
-    nmin = 100
     stats2 = copy(stats)
-    stats2[:ST_TROp] = stats[:ST_TROp][stats[:ST_TROp].nvar.>nmin, :]
-    stats2[:ARCqKOp] = stats[:ARCqKOp][stats[:ARCqKOp].nvar.>nmin, :]
+    for solver in keys(stats)
+      stats2[solver] = stats[solver][stats[solver].nvar .>= nmin, :]
+    end
 
-    p = profile_solvers(stats2, costs, costnames)
-    png(p, "$(name)_min_$(nmin + 1)")
+    nb_problems = length(stats2[first(keys(stats))][!, :name])
 
     # Figures comparing two results:
     costs_all = [
@@ -59,8 +63,5 @@ if collect(keys(stats)) == [:ST_TROp, :ARCqKOp]
         "obj + grad + hprod",
     ]
     p = profile_solvers(stats2, costs_all, costnames_all)
-    png(p, "$(name)_all_min_$(nmin + 1)")
-    p = profile_solvers(stats, costs_all, costnames_all)
-    png(p, "$(name)_all")
-
+    png(p, "$(name)_all($(nb_problems))_min_$(nmin)")
 end
