@@ -63,12 +63,12 @@ for fun in keys(solvers_const)
     @eval begin
         function $fun(nlpstop::NLPStopping; kwargs...)
             kw_list = Dict{Symbol,Any}()
-            merge!(kw_list, Dict(kwargs))
             if $ka != ()
                 for t in $ka
                     push!(kw_list, t)
                 end
             end
+            merge!(kw_list, Dict(kwargs))
             TRARC(nlpstop; hess_type = $ht, pdata_type = $pt, solve_model = $sm, kw_list...)
         end
     end
