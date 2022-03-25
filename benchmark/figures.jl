@@ -42,7 +42,7 @@ for nmin in nmins
     # Same figure with minimum number of variables
     stats2 = copy(stats)
     for solver in keys(stats)
-      stats2[solver] = stats[solver][stats[solver].nvar .>= nmin, :]
+        stats2[solver] = stats[solver][stats[solver].nvar.>=nmin, :]
     end
 
     nb_problems = length(stats2[first(keys(stats))][!, :name])
