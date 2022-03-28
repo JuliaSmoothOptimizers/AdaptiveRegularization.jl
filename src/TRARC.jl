@@ -19,15 +19,6 @@ struct TRARCWorkspace{T,S,Hess}
     end
 end
 
-export Combi
-
-mutable struct Combi{Hess,PData}
-    solve_model::Function
-    function Combi(::Type{Hess}, ::Type{PData}, solve_model::Function) where {Hess,PData}
-        return new{Hess,PData}(solve_model)
-    end
-end
-
 function TRARC(
     nlp_stop::NLPStopping{Pb,M,SRC,NLPAtX{T,S},MStp,LoS};
     TR::TrustRegion = TrustRegion(T(10.0)),
