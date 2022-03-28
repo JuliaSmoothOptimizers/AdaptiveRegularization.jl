@@ -2,12 +2,14 @@ using Pkg;
 Pkg.activate(".");
 using JLD2, Plots, SolverBenchmark
 
-name = "2022-03-20_ST_TROp_ARCqKOp_cutest_277_1000000"
+name = "2022-03-28_ARCqKOp10204_ARCqKOp10201_ARCqKOp10203_ARCqKOp10202_cutest_187_1000"
 @load "$name.jld2" stats
+#=
 stats1 = copy(stats)
 name = "2022-03-21_trunk_tron_ipopt_lbfgs_cutest_277_1000000"
 @load "$name.jld2" stats
 stats = merge(stats, stats1)
+=#
 solved(df) = (df.status .== :first_order) .| (df.status .== :unbounded)
 
 open("$name.dat", "w") do io

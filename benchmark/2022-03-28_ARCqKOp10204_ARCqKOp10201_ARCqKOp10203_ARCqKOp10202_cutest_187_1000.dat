@@ -1,0 +1,46 @@
+ARCqKOp10204
+176
+11×5 DataFrame
+ Row │ name        nvar   status    elapsed_time  dual_feas
+     │ String      Int64  Symbol    Float64       Float64
+─────┼────────────────────────────────────────────────────────
+   1 │ FBRAIN3LS       6  max_time      360.022     0.0140519
+   2 │ DMN37142LS     66  max_time      360.088    15.5153
+   3 │ NELSONLS        3  unknown        23.6791   92.8178
+   4 │ DMN15332LS     66  max_time      360.128    30.0712
+   5 │ MNISTS5LS     494  max_time      361.277     2.54803
+   6 │ SENSORS       100  max_time      360.001    76.5329
+   7 │ MNISTS0LS     494  max_time      360.731     0.865771
+   8 │ DMN15333LS     99  max_time      360.061    61.0145
+   9 │ PARKCH         15  max_time      370.532    97.7694
+  10 │ DMN15103LS     99  max_time      360.113   824.143
+  11 │ DIAMON3DLS     99  max_time      360.058   826.15
+ARCqKOp10201
+185
+2×5 DataFrame
+ Row │ name      nvar   status    elapsed_time  dual_feas
+     │ String    Int64  Symbol    Float64       Float64
+─────┼─────────────────────────────────────────────────────
+   1 │ NELSONLS      3  unknown       0.466363  154.766
+   2 │ PARKCH       15  max_time    373.621       0.593662
+ARCqKOp10203
+181
+6×5 DataFrame
+ Row │ name        nvar   status    elapsed_time  dual_feas
+     │ String      Int64  Symbol    Float64       Float64
+─────┼───────────────────────────────────────────────────────
+   1 │ NELSONLS        3  unknown        6.08119   93.029
+   2 │ DMN15332LS     66  max_time     360.118     12.1616
+   3 │ MNISTS5LS     494  max_time     362.027      2.50278
+   4 │ MNISTS0LS     494  max_time     360.814      0.905313
+   5 │ DMN15333LS     99  max_time     360.107     24.3531
+   6 │ PARKCH         15  max_time     365.633    109.073
+ARCqKOp10202
+184
+3×5 DataFrame
+ Row │ name       nvar   status    elapsed_time  dual_feas
+     │ String     Int64  Symbol    Float64       Float64
+─────┼─────────────────────────────────────────────────────
+   1 │ NELSONLS       3  unknown        18.7349  93.5824
+   2 │ MNISTS5LS    494  max_time      365.997    0.240516
+   3 │ PARKCH        15  max_time      363.411   78.7301
