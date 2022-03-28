@@ -15,17 +15,7 @@ atol = 1e-5
 rtol = 1e-6
 
 solvers = Dict(
-    :ARCqKOp102005 =>
-        nlp -> ARCqKOp(
-            nlp,
-            verbose = false,
-            atol = atol,
-            rtol = rtol,
-            max_time = max_time,
-            max_iter = max_iter,
-            shifts = 10.0 .^ (collect(-10.0:0.5:20.0)),
-        ),
-    :ARCqKOp10201 =>
+    :ARCqKOp10201z1 =>
         nlp -> ARCqKOp(
             nlp,
             verbose = false,
@@ -34,8 +24,9 @@ solvers = Dict(
             max_time = max_time,
             max_iter = max_iter,
             shifts = 10.0 .^ (collect(-10.0:1.0:20.0)),
+            ζ = 0.25,
         ),
-    :ARCqKOp10202 =>
+    :ARCqKOp10201z1 =>
         nlp -> ARCqKOp(
             nlp,
             verbose = false,
@@ -43,9 +34,10 @@ solvers = Dict(
             rtol = rtol,
             max_time = max_time,
             max_iter = max_iter,
-            shifts = 10.0 .^ (collect(-10.0:2.0:20.0)),
+            shifts = 10.0 .^ (collect(-10.0:1.0:20.0)),
+            ζ = 0.5,
         ),
-    :ARCqKOp10203 =>
+    :ARCqKOp10201z1 =>
         nlp -> ARCqKOp(
             nlp,
             verbose = false,
@@ -53,9 +45,10 @@ solvers = Dict(
             rtol = rtol,
             max_time = max_time,
             max_iter = max_iter,
-            shifts = 10.0 .^ (collect(-10.0:3.0:20.0)),
+            shifts = 10.0 .^ (collect(-10.0:1.0:20.0)),
+            ζ = 0.75,
         ),
-    :ARCqKOp10204 =>
+    :ARCqKOp10201z1 =>
         nlp -> ARCqKOp(
             nlp,
             verbose = false,
@@ -63,7 +56,8 @@ solvers = Dict(
             rtol = rtol,
             max_time = max_time,
             max_iter = max_iter,
-            shifts = 10.0 .^ (collect(-10.0:4.0:20.0)),
+            shifts = 10.0 .^ (collect(-10.0:1.0:20.0)),
+            ζ = 1.0,
         ),
 )
 stats = bmark_solvers(solvers, cutest_problems)
