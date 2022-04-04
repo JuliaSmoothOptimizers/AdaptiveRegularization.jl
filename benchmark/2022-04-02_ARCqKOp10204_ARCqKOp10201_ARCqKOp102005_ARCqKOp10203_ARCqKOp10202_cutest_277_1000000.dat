@@ -1,0 +1,119 @@
+ARCqKOp10204
+253
+24×5 DataFrame
+ Row │ name        nvar    status    elapsed_time  dual_feas
+     │ String      Int64   Symbol    Float64       Float64
+─────┼──────────────────────────────────────────────────────────
+   1 │ CYCLOOCFLS   29996  max_time     3603.73      0.0172772
+   2 │ SBRYBND       5000  max_time     3603.01      2.91631e5
+   3 │ DMN37142LS      66  max_time     3600.11     26.8563
+   4 │ EIGENALS      2550  max_time     3600.35      0.0878377
+   5 │ GENHUMPS      5000  max_time     3600.01     91.7835
+   6 │ NELSONLS         3  unknown        33.5677   93.0783
+   7 │ BA-L49LS     23769  max_time     3613.3       4.33518e6
+   8 │ NONMSQRT      4900  max_time     3600.56      0.152746
+   9 │ FMINSRF2      5625  max_time     3614.09      0.0379155
+  10 │ DMN15332LS      66  max_time     3600.18     39.5505
+  11 │ BA-L73LS     33753  max_time     3616.77      9.09771e6
+  12 │ EIGENCLS      2652  max_time     3600.1      65.9839
+  13 │ MNISTS5LS      494  max_time     3602.23      0.990887
+  14 │ INDEF         5000  max_time     3600.0       1.9936
+  15 │ BA-L21LS     34134  max_time     3600.03      4.83531e7
+  16 │ DMN15333LS      99  max_time     3601.58     17.9386
+  17 │ FLETCBV3      5000  max_time     3600.01      0.750252
+  18 │ FMINSURF      5625  max_time     3630.0       0.0378018
+  19 │ FLETCHBV      5000  max_time     3600.01      7.503e7
+  20 │ BA-L16LS     66462  max_time     4770.95      1.7872e5
+  21 │ PARKCH          15  max_time     3608.41    103.875
+  22 │ NCB20B        5000  max_time     3600.02      9.66815e-5
+  23 │ BA-L52LS    192627  max_time     3774.01      2.86657e7
+  24 │ EIGENBLS      2550  max_time     3600.64      0.00556549
+ARCqKOp10201
+263
+14×5 DataFrame
+ Row │ name        nvar    status    elapsed_time  dual_feas
+     │ String      Int64   Symbol    Float64       Float64
+─────┼───────────────────────────────────────────────────────────
+   1 │ CYCLOOCFLS   29996  max_time    3609.32       0.00801861
+   2 │ SBRYBND       5000  max_time    3602.06     179.347
+   3 │ NELSONLS         3  unknown        0.63221   96.2509
+   4 │ BA-L49LS     23769  max_time    3605.88       2.91575e5
+   5 │ NONMSQRT      4900  max_time    3655.01       2.3466
+   6 │ BA-L73LS     33753  max_time    3600.42       2.09518e10
+   7 │ EIGENCLS      2652  max_time    3616.11       0.0265196
+   8 │ INDEF         5000  max_time    3600.0       13.5171
+   9 │ BA-L21LS     34134  max_time    4739.09       3.19562e7
+  10 │ FLETCBV3      5000  max_time    3600.0        0.356434
+  11 │ FLETCHBV      5000  max_time    3600.0        7.5046e7
+  12 │ BA-L16LS     66462  max_time   13300.9        1.12391e7
+  13 │ BA-L52LS    192627  max_time    3772.51       9.80323e6
+  14 │ EIGENBLS      2550  max_time    3614.42       0.000508935
+ARCqKOp102005
+262
+15×5 DataFrame
+ Row │ name        nvar    status    elapsed_time  dual_feas
+     │ String      Int64   Symbol    Float64       Float64
+─────┼───────────────────────────────────────────────────────────
+   1 │ CYCLOOCFLS   29996  max_time    3632.69       0.00835369
+   2 │ SBRYBND       5000  max_time    3623.38     146.742
+   3 │ NELSONLS         3  unknown        1.05842   95.0335
+   4 │ BA-L49LS     23769  max_time    4118.09       2.66383e6
+   5 │ NONMSQRT      4900  max_time    3667.84      11.5797
+   6 │ JIMACK        3549  max_time    4495.14       8.16687e-5
+   7 │ BA-L73LS     33753  max_time    3602.03       2.06449e8
+   8 │ EIGENCLS      2652  max_time    3669.82       0.068012
+   9 │ INDEF         5000  max_time    3600.0       35.1838
+  10 │ BA-L21LS     34134  max_time    6331.82       9.03655e6
+  11 │ FLETCBV3      5000  max_time    3600.01       0.750327
+  12 │ FLETCHBV      5000  max_time    3600.01       7.5035e7
+  13 │ BA-L16LS     66462  max_time    5872.64       6.21388e7
+  14 │ BA-L52LS    192627  max_time    4193.18       1.36029e7
+  15 │ EIGENBLS      2550  max_time    3613.23       0.000477155
+ARCqKOp10203
+257
+20×5 DataFrame
+ Row │ name        nvar    status    elapsed_time  dual_feas
+     │ String      Int64   Symbol    Float64       Float64
+─────┼────────────────────────────────────────────────────────────
+   1 │ CYCLOOCFLS   29996  max_time      3640.44      0.00683894
+   2 │ SBRYBND       5000  max_time      3606.51   2960.29
+   3 │ GENHUMPS      5000  max_time      3600.01     65.8091
+   4 │ NELSONLS         3  unknown         24.171    90.9073
+   5 │ BA-L49LS     23769  max_time      3603.51      3.60514e6
+   6 │ NONMSQRT      4900  max_time      3619.13      0.0222632
+   7 │ FMINSRF2      5625  max_time      3613.55      0.0377485
+   8 │ JIMACK        3549  max_time      3949.2       0.000257215
+   9 │ BA-L73LS     33753  max_time      3605.16      6.79745e6
+  10 │ EIGENCLS      2652  max_time      3600.42      0.587863
+  11 │ MNISTS5LS      494  max_time      3600.64      0.74702
+  12 │ INDEF         5000  max_time      3600.01      1.99255
+  13 │ BA-L21LS     34134  max_time      4153.78      7.69948e5
+  14 │ FLETCBV3      5000  max_time      3600.01      0.7503
+  15 │ FMINSURF      5625  max_time      3631.76      0.0381048
+  16 │ FLETCHBV      5000  max_time      3600.01      5.82365e7
+  17 │ BA-L16LS     66462  max_time      4287.59      6.00559e7
+  18 │ PARKCH          15  max_time      3607.42      2.32066e6
+  19 │ BA-L52LS    192627  max_time      3735.33      5.99531e7
+  20 │ EIGENBLS      2550  max_time      3601.03      0.071574
+ARCqKOp10202
+261
+16×5 DataFrame
+ Row │ name        nvar    status    elapsed_time  dual_feas
+     │ String      Int64   Symbol    Float64       Float64
+─────┼──────────────────────────────────────────────────────────
+   1 │ CYCLOOCFLS   29996  max_time     3601.65     0.00215077
+   2 │ SBRYBND       5000  max_time     3603.01     5.89743e5
+   3 │ GENHUMPS      5000  max_time     3600.01    33.6552
+   4 │ NELSONLS         3  unknown        50.7605  92.9836
+   5 │ BA-L49LS     23769  max_time     3615.72     3.38289e5
+   6 │ NONMSQRT      4900  max_time     3634.53     0.200994
+   7 │ JIMACK        3549  max_time     4124.9      1.74663e-5
+   8 │ BA-L73LS     33753  max_time     3600.82     1.30562e8
+   9 │ EIGENCLS      2652  max_time     3600.62     0.663162
+  10 │ INDEF         5000  max_time     3600.0      1.22601
+  11 │ BA-L21LS     34134  max_time     3761.02     9.63968e5
+  12 │ FLETCBV3      5000  max_time     3600.0      0.34736
+  13 │ FLETCHBV      5000  max_time     3600.0      6.52863e7
+  14 │ BA-L16LS     66462  max_time     3784.33     3.99702e7
+  15 │ BA-L52LS    192627  max_time     6108.64     2.13878e8
+  16 │ EIGENBLS      2550  max_time     3604.15     0.000278358
