@@ -2,7 +2,7 @@ using Pkg;
 Pkg.activate(".");
 using JLD2, Plots, SolverBenchmark
 
-name = "2022-04-02_ARCqKOp10204_ARCqKOp10201_ARCqKOp102005_ARCqKOp10203_ARCqKOp10202_cutest_277_1000000"
+name = "2022-04-04_ARCqKOp10201z075_ARCqKOp10201z05_ARCqKOp10201z025_ARCqKOp10201z1_cutest_263_10000"
 @load "$name.jld2" stats
 #=
 stats1 = copy(stats)
