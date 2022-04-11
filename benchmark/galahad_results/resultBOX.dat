@@ -1,0 +1,297 @@
+ Use: gal architecture package [-e] [-h] [-r] [-s] [-k] [-m] [-p] [-u] [-o i] [-l secs]
+
+ Problem name: BOX
+
+ Double precision version will be formed
+
+ The objective function uses 1 linear group
+ The objective function uses 40000 nonlinear groups
+ 
+ There are 10000 free variables
+ 
+ 
+ File successfully decoded
+
+ Copyright GALAHAD productions, 2008-2022
+
+ - Use of this code is restricted to those who agree to abide
+ - by the conditions-of-use described in the  README.cou file
+ - distributed with the source of the  GALAHAD  codes or from
+ - the  WWW  at  http://galahad.rl.ac.uk/galahad-www/cou.html
+
+  Problem: BOX (n = 10000): ARC stopping tolerance = 5.0000E-04
+
+        (a=accept r=reject n=-ve curvature h=hard case)
+    It           f       grad     ratio   weight  step   pass 1 pass 2      time
+     0      0.0000E+00 5.00E+01          1.0E+02
+
+ Problem: BOX n =    10000
+
+ # function evaluations  =          1
+ # gradient evaluations  =          1
+ # Hessian evaluations   =          0
+ # major  iterations     =          1
+ # minor (cg) iterations =          0
+
+ Final objective value   =   0.00000000000000E+00
+ Final gradient norm     =   5.0000E+01
+
+ name             X         G 
+ X1          0.0000E+00 -5.0000E-01
+ X2          0.0000E+00 -5.0000E-01
+ .          ........... ...........
+ X9999       0.0000E+00 -5.0000E-01
+ X10000      0.0000E+00 -5.0000E-01
+ Computing preconditioner
+
+ CG iterations required =        2
+
+ step, acutual, predicated reductions =   4.4695E-01  9.0243E+00  6.0480E+00
+
+ Time so far =         0.01 seconds
+        (a=accept r=reject n=-ve curvature h=hard case)
+    It           f       grad     ratio   weight  step   pass 1 pass 2      time
+     1 a   -9.0243E+00 7.82E+01  1.5E+00 1.0E+02 4.5E-01      2      2      0.01
+
+ Problem: BOX n =    10000
+
+ # function evaluations  =          2
+ # gradient evaluations  =          2
+ # Hessian evaluations   =          1
+ # major  iterations     =          2
+ # minor (cg) iterations =          4
+
+ Final objective value   =  -9.02428245726023E+00
+ Final gradient norm     =   7.8158E+01
+
+ name             X         G 
+ X1         -3.9349E-05  3.5192E+01
+ X2          1.8245E-03 -4.8929E-01
+ .          ........... ...........
+ X9999       1.8245E-03 -4.8929E-01
+ X10000     -3.9349E-05  3.5192E+01
+ Computing preconditioner
+
+ CG iterations required =        2
+
+ step, acutual, predicated reductions =   1.3712E+00  2.6557E+01  1.7962E+01
+
+ Time so far =         0.01 seconds
+        (a=accept r=reject n=-ve curvature h=hard case)
+    It           f       grad     ratio   weight  step   pass 1 pass 2      time
+     2 a   -3.5581E+01 2.41E+02  1.5E+00 1.0E+01 1.4E+00      2      2      0.01
+
+ Problem: BOX n =    10000
+
+ # function evaluations  =          3
+ # gradient evaluations  =          3
+ # Hessian evaluations   =          2
+ # major  iterations     =          3
+ # minor (cg) iterations =          8
+
+ Final objective value   =  -3.55811241848617E+01
+ Final gradient norm     =   2.4120E+02
+
+ name             X         G 
+ X1         -5.3762E-04  1.3672E+02
+ X2          7.4012E-03 -4.5882E-01
+ .          ........... ...........
+ X9999       7.4012E-03 -4.5882E-01
+ X10000     -5.3762E-04  1.3672E+02
+ Computing preconditioner
+
+ CG iterations required =        2
+
+ step, acutual, predicated reductions =   4.0663E+00  7.1188E+01  4.8778E+01
+
+ Time so far =         0.02 seconds
+        (a=accept r=reject n=-ve curvature h=hard case)
+    It           f       grad     ratio   weight  step   pass 1 pass 2      time
+     3 a   -1.0677E+02 6.35E+02  1.5E+00 1.0E+00 4.1E+00      2      2      0.02
+
+ Problem: BOX n =    10000
+
+ # function evaluations  =          4
+ # gradient evaluations  =          4
+ # Hessian evaluations   =          3
+ # major  iterations     =          4
+ # minor (cg) iterations =         12
+
+ Final objective value   =  -1.06768694910533E+02
+ Final gradient norm     =   6.3538E+02
+
+ name             X         G 
+ X1         -5.0376E-03  3.6615E+02
+ X2          2.3381E-02 -3.8989E-01
+ .          ........... ...........
+ X9999       2.3381E-02 -3.8989E-01
+ X10000     -5.0376E-03  3.6615E+02
+ Computing preconditioner
+
+ CG iterations required =        2
+
+ step, acutual, predicated reductions =   1.2134E+01  1.8496E+02  1.2551E+02
+
+ Time so far =         0.02 seconds
+        (a=accept r=reject n=-ve curvature h=hard case)
+    It           f       grad     ratio   weight  step   pass 1 pass 2      time
+     4 a   -2.9173E+02 1.14E+03  1.5E+00 1.0E-01 1.2E+01      2      2      0.02
+
+ Problem: BOX n =    10000
+
+ # function evaluations  =          5
+ # gradient evaluations  =          5
+ # Hessian evaluations   =          4
+ # major  iterations     =          5
+ # minor (cg) iterations =         16
+
+ Final objective value   =  -2.91732337232906E+02
+ Final gradient norm     =   1.1359E+03
+
+ name             X         G 
+ X1         -3.2039E-02  6.5561E+02
+ X2          6.4893E-02 -3.0178E-01
+ .          ........... ...........
+ X9999       6.4893E-02 -3.0178E-01
+ X10000     -3.2039E-02  6.5561E+02
+ Computing preconditioner
+
+ CG iterations required =        2
+
+ step, acutual, predicated reductions =   3.7654E+01  5.3367E+02  3.6090E+02
+
+ Time so far =         0.03 seconds
+        (a=accept r=reject n=-ve curvature h=hard case)
+    It           f       grad     ratio   weight  step   pass 1 pass 2      time
+     5 a   -8.2540E+02 1.37E+03  1.5E+00 1.0E-02 3.8E+01      2      2      0.03
+
+ Problem: BOX n =    10000
+
+ # function evaluations  =          6
+ # gradient evaluations  =          6
+ # Hessian evaluations   =          5
+ # major  iterations     =          6
+ # minor (cg) iterations =         20
+
+ Final objective value   =  -8.25404233103749E+02
+ Final gradient norm     =   1.3699E+03
+
+ name             X         G 
+ X1         -1.3699E-01  7.9079E+02
+ X2          1.7673E-01 -2.3947E-01
+ .          ........... ...........
+ X9999       1.7673E-01 -2.3947E-01
+ X10000     -1.3699E-01  7.9079E+02
+ Computing preconditioner
+
+ CG iterations required =        2
+
+ step, acutual, predicated reductions =   1.0219E+02  9.9350E+02  8.7027E+02
+
+ Time so far =         0.03 seconds
+        (a=accept r=reject n=-ve curvature h=hard case)
+    It           f       grad     ratio   weight  step   pass 1 pass 2      time
+     6 a   -1.8189E+03 1.04E+03  1.1E+00 1.0E-03 1.0E+02      2      2      0.03
+
+ Problem: BOX n =    10000
+
+ # function evaluations  =          7
+ # gradient evaluations  =          7
+ # Hessian evaluations   =          6
+ # major  iterations     =          7
+ # minor (cg) iterations =         24
+
+ Final objective value   =  -1.81890761876778E+03
+ Final gradient norm     =   1.0447E+03
+
+ name             X         G 
+ X1         -4.3207E-01  6.0312E+02
+ X2          4.6280E-01  8.0840E-02
+ .          ........... ...........
+ X9999       4.6280E-01  8.0840E-02
+ X10000     -4.3207E-01  6.0312E+02
+ Computing preconditioner
+
+ CG iterations required =        2
+
+ step, acutual, predicated reductions =   1.8943E+01  4.5608E+01  4.4962E+01
+
+ Time so far =         0.04 seconds
+        (a=accept r=reject n=-ve curvature h=hard case)
+    It           f       grad     ratio   weight  step   pass 1 pass 2      time
+     7 a   -1.8645E+03 2.78E+01  1.0E+00 6.6E-04 1.9E+01      2      2      0.04
+
+ Problem: BOX n =    10000
+
+ # function evaluations  =          8
+ # gradient evaluations  =          8
+ # Hessian evaluations   =          7
+ # major  iterations     =          8
+ # minor (cg) iterations =         28
+
+ Final objective value   =  -1.86451516831856E+03
+ Final gradient norm     =   2.7812E+01
+
+ name             X         G 
+ X1         -4.9677E-01  1.6056E+01
+ X2          4.9822E-01  3.3769E-03
+ .          ........... ...........
+ X9999       4.9822E-01  3.3769E-03
+ X10000     -4.9677E-01  1.6056E+01
+ Computing preconditioner
+
+ CG iterations required =        2
+
+ step, acutual, predicated reductions =   3.4526E-01  2.2758E-02  2.2755E-02
+
+ Time so far =         0.04 seconds
+        (a=accept r=reject n=-ve curvature h=hard case)
+    It           f       grad     ratio   weight  step   pass 1 pass 2      time
+     8 a   -1.8645E+03 5.71E-03  1.0E+00 3.7E-04 3.5E-01      2      2      0.04
+
+ Problem: BOX n =    10000
+
+ # function evaluations  =          9
+ # gradient evaluations  =          9
+ # Hessian evaluations   =          8
+ # major  iterations     =          9
+ # minor (cg) iterations =         32
+
+ Final objective value   =  -1.86453792656030E+03
+ Final gradient norm     =   5.7075E-03
+
+ name             X         G 
+ X1         -4.9805E-01  3.2949E-03
+ X2          4.9870E-01  8.2194E-07
+ .          ........... ...........
+ X9999       4.9870E-01  8.2194E-07
+ X10000     -4.9805E-01  3.2949E-03
+ Computing preconditioner
+
+ CG iterations required =        2
+
+ step, acutual, predicated reductions =   5.6350E-05  9.3240E-09  4.9992E-09
+
+ Time so far =         0.05 seconds
+        (a=accept r=reject n=-ve curvature h=hard case)
+    It           f       grad     ratio   weight  step   pass 1 pass 2      time
+     9 a   -1.8645E+03 2.75E-09  1.9E+00 1.6E-04 5.6E-05      2      2      0.05
+
+  Problem: BOX (n = 10000): ARC stopping tolerance = 5.0000E-04
+  Second-order model used
+  Hessian semi-bandwidth (original, re-ordered) = 9999, 9999
+  Diagonal norm used
+  Total time = .05 seconds
+
+ number of threads = 4
+ Solution: 
+                                <------ Bounds ------> 
+      # name          value       Lower       Upper       Dual 
+      1 X1         -4.9805E-01 -1.0000E+20  1.0000E+20 -2.0795E-09
+      2 X2          4.9870E-01 -1.0000E+20  1.0000E+20  1.3656E-14
+      . .           ..........  ..........  ..........  ..........
+   9999 X9999       4.9870E-01 -1.0000E+20  1.0000E+20  1.3656E-14
+  10000 X10000     -4.9805E-01 -1.0000E+20  1.0000E+20  1.7309E-09
+
+name           n  f               du-feas    its     #g      #cg       time stat
+BOX        10000 -1.86453793E+03  2.7E-09      9     10       36 :     0.05    0

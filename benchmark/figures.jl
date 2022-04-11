@@ -2,7 +2,7 @@ using Pkg;
 Pkg.activate(".");
 using JLD2, Plots, SolverBenchmark
 
-name = "2022-04-04_ARCqKOp10201z075_ARCqKOp10201z05_ARCqKOp10201z025_ARCqKOp10201z1_cutest_263_10000"
+name = "2022-04-02_ARCqKOp10204_ARCqKOp10201_ARCqKOp102005_ARCqKOp10203_ARCqKOp10202_cutest_277_1000000"
 @load "$name.jld2" stats
 #=
 stats1 = copy(stats)
@@ -33,11 +33,11 @@ costnames = ["Time", "Evaluations of f"]
 p = profile_solvers(stats, costs, costnames)
 png(p, "$name")
 
-#=
-open("$name.dat", "w") do io
-  print(io, stats[:fps][!, [:name, :nvar, :ncon, :status, :objective, :elapsed_time, :iter, :primal_feas, :dual_feas]])
+for solver in keys(stats)
+    open("$(name)_result_$(solver).dat", "w") do io
+        print(io, stats[solver][!, [:name, :nvar, :ncon, :status, :objective, :elapsed_time, :iter, :primal_feas, :dual_feas, :neval_obj, :neval_grad, :neval_hprod, :neval_hess]])
+    end
 end
-=#
 
 nmins = [0, 100, 1000, 10000]
 for nmin in nmins
