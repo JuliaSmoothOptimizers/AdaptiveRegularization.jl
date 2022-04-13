@@ -35,7 +35,27 @@ png(p, "$name")
 
 for solver in keys(stats)
     open("$(name)_result_$(solver).dat", "w") do io
-        print(io, stats[solver][!, [:name, :nvar, :ncon, :status, :objective, :elapsed_time, :iter, :primal_feas, :dual_feas, :neval_obj, :neval_grad, :neval_hprod, :neval_hess]])
+        print(
+            io,
+            stats[solver][
+                !,
+                [
+                    :name,
+                    :nvar,
+                    :ncon,
+                    :status,
+                    :objective,
+                    :elapsed_time,
+                    :iter,
+                    :primal_feas,
+                    :dual_feas,
+                    :neval_obj,
+                    :neval_grad,
+                    :neval_hprod,
+                    :neval_hess,
+                ],
+            ],
+        )
     end
 end
 
