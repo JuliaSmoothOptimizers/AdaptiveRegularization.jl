@@ -60,9 +60,26 @@ solvers = Dict(
             ζ = 1.0,
         ),
 )
-rmv_problems = ["SBRYBND", "GENHUMPS", "NELSONLS", "NONMSQRT", "FMINSRF2", "JIMACK", "EIGENCLS", "INDEF",
-"FLETCBV3", "FMINSURF", "FLETCHBV", "PARKCH", "EIGENBLS"]
-stats = bmark_solvers(solvers, cutest_problems, skipif= prob -> (prob.meta.name in rmv_problems))
+rmv_problems = [
+    "SBRYBND",
+    "GENHUMPS",
+    "NELSONLS",
+    "NONMSQRT",
+    "FMINSRF2",
+    "JIMACK",
+    "EIGENCLS",
+    "INDEF",
+    "FLETCBV3",
+    "FMINSURF",
+    "FLETCHBV",
+    "PARKCH",
+    "EIGENBLS",
+]
+stats = bmark_solvers(
+    solvers,
+    cutest_problems,
+    skipif = prob -> (prob.meta.name in rmv_problems),
+)
 
 using JLD2
 @save "$(today())_$(prod(String.(keys(solvers)) .* "_"))cutest_$(string(length(problems)))_$(nmax).jld2" stats
