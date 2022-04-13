@@ -21,7 +21,7 @@ StoppingInterface = "53949629-e8ff-437b-b6e7-14da1a85bf25"
 [compat]
 ForwardDiff = "0.10"
 HSL = "0.2"
-Krylov = "0.7"
+Krylov = "0.7, 0.8"
 LinearOperators = "2"
 NLPModels = "0.18"
 SolverCore = "0.2"
