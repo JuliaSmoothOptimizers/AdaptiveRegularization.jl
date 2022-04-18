@@ -141,7 +141,16 @@ mutable struct PDataST{S,T} <: PDataIter{T}
     solver::CgSolver
 end
 
-function PDataST(::Type{S}, ::Type{T}, n; ζ = T(0.5), ξ = T(0.01), maxtol = T(0.01), mintol = T(1.0e-8), kwargs...) where {S,T}
+function PDataST(
+    ::Type{S},
+    ::Type{T},
+    n;
+    ζ = T(0.5),
+    ξ = T(0.01),
+    maxtol = T(0.01),
+    mintol = T(1.0e-8),
+    kwargs...,
+) where {S,T}
     d = S(undef, n)
     λ = zero(T)
     OK = true
