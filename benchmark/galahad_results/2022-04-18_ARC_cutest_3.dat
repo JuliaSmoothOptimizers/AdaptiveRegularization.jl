@@ -1,0 +1,7 @@
+3×8 DataFrame
+ Row │ name     elapsed_time  objective    iter   dual_feas   neval_obj  neval_grad  neval_hprod
+     │ String   Float64       Float64      Int64  Float64     Int64      Int64       Int64
+─────┼───────────────────────────────────────────────────────────────────────────────────────────
+   1 │ ARGLINA          0.93  200.0            7  0.00056766          7           7            6
+   2 │ ARGLINB          1.32    6.23085e8     10  3.7867e11          10          10            9
+   3 │ ARGLINC          1.25    5.90363e8     10  3.631e11           10          10            9

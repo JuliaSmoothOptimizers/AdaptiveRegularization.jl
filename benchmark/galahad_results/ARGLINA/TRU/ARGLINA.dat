@@ -1,0 +1,240 @@
+ Use: gal architecture package [-e] [-h] [-r] [-s] [-k] [-m] [-p] [-u] [-o i] [-l secs]
+
+ Problem name: ARGLINA
+
+ Double precision version will be formed
+
+ The objective function uses 400 linear groups
+ 
+ There are 200 free variables
+ 
+ 
+ File successfully decoded
+
+ Copyright GALAHAD productions, 2008-2022
+
+ - Use of this code is restricted to those who agree to abide
+ - by the conditions-of-use described in the  README.cou file
+ - distributed with the source of the  GALAHAD  codes or from
+ - the  WWW  at  http://galahad.rl.ac.uk/galahad-www/cou.html
+
+  Problem: ARGLINA (n = 200): ARC stopping tolerance = 5.6569E-04
+
+        (a=accept r=reject n=-ve curvature h=hard case)
+    It           f       grad     ratio   weight  step   pass 1 pass 2      time
+     0      1.0000E+03 5.66E+01          1.0E+02
+
+ Problem: ARGLINA n =      200
+
+ # function evaluations  =          1
+ # gradient evaluations  =          1
+ # Hessian evaluations   =          0
+ # major  iterations     =          1
+ # minor (cg) iterations =          0
+
+ Final objective value   =   9.99999999999974E+02
+ Final gradient norm     =   5.6569E+01
+
+ name             X         G 
+ X1          1.0000E+00  4.0000E+00
+ X2          1.0000E+00  4.0000E+00
+ .          ........... ...........
+ X199        1.0000E+00  4.0000E+00
+ X200        1.0000E+00  4.0000E+00
+ Computing preconditioner
+
+ CG iterations required =        1
+
+ step, acutual, predicated reductions =   6.2748E-01  2.4902E+01  1.6667E+01
+
+ Time so far =         0.17 seconds
+        (a=accept r=reject n=-ve curvature h=hard case)
+    It           f       grad     ratio   weight  step   pass 1 pass 2      time
+     1 a    9.7510E+02 5.57E+01  1.5E+00 1.0E+02 6.3E-01      1      1      0.17
+
+ Problem: ARGLINA n =      200
+
+ # function evaluations  =          2
+ # gradient evaluations  =          2
+ # Hessian evaluations   =          1
+ # major  iterations     =          2
+ # minor (cg) iterations =          2
+
+ Final objective value   =   9.75097850785122E+02
+ Final gradient norm     =   5.5681E+01
+
+ name             X         G 
+ X1          9.6863E-01  3.9373E+00
+ X2          9.6863E-01  3.9373E+00
+ .          ........... ...........
+ X199        9.6863E-01  3.9373E+00
+ X200        9.6863E-01  3.9373E+00
+ Computing preconditioner
+
+ CG iterations required =        1
+
+ step, acutual, predicated reductions =   1.9349E+00  7.4309E+01  5.0163E+01
+
+ Time so far =         0.30 seconds
+        (a=accept r=reject n=-ve curvature h=hard case)
+    It           f       grad     ratio   weight  step   pass 1 pass 2      time
+     2 a    9.0079E+02 5.29E+01  1.5E+00 1.0E+01 1.9E+00      1      1      0.30
+
+ Problem: ARGLINA n =      200
+
+ # function evaluations  =          3
+ # gradient evaluations  =          3
+ # Hessian evaluations   =          2
+ # major  iterations     =          3
+ # minor (cg) iterations =          4
+
+ Final objective value   =   9.00788584128123E+02
+ Final gradient norm     =   5.2945E+01
+
+ name             X         G 
+ X1          8.7188E-01  3.7438E+00
+ X2          8.7188E-01  3.7438E+00
+ .          ........... ...........
+ X199        8.7188E-01  3.7438E+00
+ X200        8.7188E-01  3.7438E+00
+ Computing preconditioner
+
+ CG iterations required =        1
+
+ step, acutual, predicated reductions =   5.6390E+00  1.9521E+02  1.3544E+02
+
+ Time so far =         0.43 seconds
+        (a=accept r=reject n=-ve curvature h=hard case)
+    It           f       grad     ratio   weight  step   pass 1 pass 2      time
+     3 a    7.0558E+02 4.50E+01  1.4E+00 1.0E+00 5.6E+00      1      1      0.43
+
+ Problem: ARGLINA n =      200
+
+ # function evaluations  =          4
+ # gradient evaluations  =          4
+ # Hessian evaluations   =          3
+ # major  iterations     =          4
+ # minor (cg) iterations =          6
+
+ Final objective value   =   7.05576035780097E+02
+ Final gradient norm     =   4.4970E+01
+
+ name             X         G 
+ X1          5.8993E-01  3.1799E+00
+ X2          5.8993E-01  3.1799E+00
+ .          ........... ...........
+ X199        5.8993E-01  3.1799E+00
+ X200        5.8993E-01  3.1799E+00
+ Computing preconditioner
+
+ CG iterations required =        1
+
+ step, acutual, predicated reductions =   1.3520E+01  3.3852E+02  2.5614E+02
+
+ Time so far =         0.55 seconds
+        (a=accept r=reject n=-ve curvature h=hard case)
+    It           f       grad     ratio   weight  step   pass 1 pass 2      time
+     4 a    3.6706E+02 2.59E+01  1.3E+00 1.0E-01 1.4E+01      1      1      0.55
+
+ Problem: ARGLINA n =      200
+
+ # function evaluations  =          5
+ # gradient evaluations  =          5
+ # Hessian evaluations   =          4
+ # major  iterations     =          5
+ # minor (cg) iterations =          8
+
+ Final objective value   =   3.67056013131953E+02
+ Final gradient norm     =   2.5850E+01
+
+ name             X         G 
+ X1         -8.6063E-02  1.8279E+00
+ X2         -8.6063E-02  1.8279E+00
+ .          ........... ...........
+ X199       -8.6063E-02  1.8279E+00
+ X200       -8.6063E-02  1.8279E+00
+ Computing preconditioner
+
+ CG iterations required =        1
+
+ step, acutual, predicated reductions =   1.5787E+01  1.6395E+02  1.5084E+02
+
+ Time so far =         0.68 seconds
+        (a=accept r=reject n=-ve curvature h=hard case)
+    It           f       grad     ratio   weight  step   pass 1 pass 2      time
+     5 a    2.0311E+02 3.52E+00  1.1E+00 1.0E-02 1.6E+01      1      1      0.68
+
+ Problem: ARGLINA n =      200
+
+ # function evaluations  =          6
+ # gradient evaluations  =          6
+ # Hessian evaluations   =          5
+ # major  iterations     =          6
+ # minor (cg) iterations =         10
+
+ Final objective value   =   2.03105427713585E+02
+ Final gradient norm     =   3.5244E+00
+
+ name             X         G 
+ X1         -8.7539E-01  2.4922E-01
+ X2         -8.7539E-01  2.4922E-01
+ .          ........... ...........
+ X199       -8.7539E-01  2.4922E-01
+ X200       -8.7539E-01  2.4922E-01
+ Computing preconditioner
+
+ CG iterations required =        1
+
+ step, acutual, predicated reductions =   2.4918E+00  3.1054E+00  3.1051E+00
+
+ Time so far =         0.80 seconds
+        (a=accept r=reject n=-ve curvature h=hard case)
+    It           f       grad     ratio   weight  step   pass 1 pass 2      time
+     6 a    2.0000E+02 5.68E-04  1.0E+00 6.5E-05 2.5E+00      1      1      0.80
+
+ Problem: ARGLINA n =      200
+
+ # function evaluations  =          7
+ # gradient evaluations  =          7
+ # Hessian evaluations   =          6
+ # major  iterations     =          7
+ # minor (cg) iterations =         12
+
+ Final objective value   =   2.00000000080556E+02
+ Final gradient norm     =   5.6766E-04
+
+ name             X         G 
+ X1         -9.9998E-01  4.0140E-05
+ X2         -9.9998E-01  4.0140E-05
+ .          ........... ...........
+ X199       -9.9998E-01  4.0140E-05
+ X200       -9.9998E-01  4.0140E-05
+ Computing preconditioner
+
+ CG iterations required =        1
+
+ step, acutual, predicated reductions =   4.0140E-04  8.0562E-08  8.0569E-08
+
+ Time so far =         0.93 seconds
+        (a=accept r=reject n=-ve curvature h=hard case)
+    It           f       grad     ratio   weight  step   pass 1 pass 2      time
+     7 a    2.0000E+02 2.00E-13  1.0E+00 6.5E-07 4.0E-04      1      1      0.93
+
+  Problem: ARGLINA (n = 200): ARC stopping tolerance = 5.6569E-04
+  Second-order model used
+  Hessian semi-bandwidth (original, re-ordered) = 199, 199
+  Diagonal norm used
+  Total time = .93 seconds
+
+ number of threads = 4
+ Solution: 
+                                <------ Bounds ------> 
+      # name          value       Lower       Upper       Dual 
+      1 X1         -1.0000E+00 -1.0000E+20  1.0000E+20 -2.4807E-16
+      2 X2         -1.0000E+00 -1.0000E+20  1.0000E+20 -1.1362E-15
+      . .           ..........  ..........  ..........  ..........
+    199 X199       -1.0000E+00 -1.0000E+20  1.0000E+20  3.3243E-14
+    200 X200       -1.0000E+00 -1.0000E+20  1.0000E+20  3.3558E-14
+
+name           n  f               du-feas    its     #g      #cg       time stat
+ARGLINA      200  2.00000000E+02  2.0E-13      7      8       14 :     0.93    0
