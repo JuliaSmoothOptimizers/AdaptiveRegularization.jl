@@ -1,11 +1,16 @@
 function preprocess(PData::PDataKTR, Hop, g, calls, max_calls)
-    ζ = PData.ζ
+    ζ, ξ, maxtol, mintol = PData.ζ, PData.ξ, PData.maxtol, PData.mintol
     nshifts = PData.nshifts
     shifts = PData.shifts
 
     n = length(g)
     gNorm2 = norm(g)
-    precision = max(1e-12, min(0.5, (gNorm2^ζ)))
+    # precision = max(1e-12, min(0.5, (gNorm2^ζ)))
+    # Tolerance used in Assumption 2.6b in the paper ( ξ > 0, 0 < ζ ≤ 1 )
+    cgatol = min(maxtol, ξ * gNorm2^(1 + ζ))
+    cgatol = max(mintol, cgatol) # add some feasible limit
+    cgrtol = min(maxtol, ξ * gNorm2^ζ)
+    cgrtol = max(mintol, cgrtol) # add some feasible limit
 
     nshifts = length(shifts)
     solver = PData.solver
@@ -15,8 +20,8 @@ function preprocess(PData::PDataKTR, Hop, g, calls, max_calls)
         -g,
         shifts,
         itmax = min(max_calls - sum(calls), 2 * n),
-        atol = 1.0e-8, # cgtol
-        rtol = precision, # ϵ
+        atol = cgatol,
+        rtol = cgrtol,
         verbose = 0,
         check_curvature = true,
     )
