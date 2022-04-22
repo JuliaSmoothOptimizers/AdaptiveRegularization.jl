@@ -5,18 +5,24 @@ using Printf
 using NLPModels
 using Stopping
 
+using ADNLPModels
+using OptimizationProblems.ADNLPProblems
 
-# test all solvers with the well known Rosenbrock test function
-include("rosenbrock.jl")
+include("testLDLt.jl")
+# include("testMA57.jl")
+# include("testMA97.jl")
 
 global nbsolver = 0
 for solver in ALL_solvers
     global nbsolver += 1
-    nlp = ADNLPModel(extrosnb, [-1.0, -1.0], name = "rosenbrock")
-    nlpatx = NLPAtX([-1.0, -1.0])
-    nlpstop = NLPStopping(nlp, Stopping.unconstrained, nlpatx)
-    println(nbsolver,"  ",solver)
-    final_nlp_at_x, optimal = solver(nlp, nlpstop, verbose = true)
+    nlp = extrosnb(n = 2)
+    nlpstop = NLPStopping(nlp)
+    println(nbsolver, "  ", solver)
+    eval(solver)(nlpstop, verbose = true)
+    final_nlp_at_x, optimal = nlpstop.current_state, nlpstop.meta.optimal
     @test optimal
+    reset!(nlp)
+    stats = eval(solver)(nlp, verbose = false)
+    @test stats.status == :first_order
     reset!(nlp)
 end

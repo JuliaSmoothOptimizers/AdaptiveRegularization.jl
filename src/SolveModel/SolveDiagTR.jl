@@ -6,12 +6,12 @@ function solve_diagTR(λ, Δ, g̃, δ, ϵ; M = [0.0])
 
     if M == [0.0]
         # M = ones(Δ) ;
-        M = fill(T.(1.0), size(Δ)[1]);
+        M = fill(T.(1.0), size(Δ)[1])
     end
     @assert (minimum(M) > 0.0)
     λin = T.(λ)
     d̃ = -(Δ .+ λ * M) .\ g̃
-    d̃d̃ = d̃⋅d̃
+    d̃d̃ = d̃ ⋅ d̃
     normd̃ = sqrt(d̃d̃)
 
     tol1 = sqrt(eps(T))
@@ -21,11 +21,11 @@ function solve_diagTR(λ, Δ, g̃, δ, ϵ; M = [0.0])
     iter_nwt = 0
     while (normd̃ >= (δ + tolerance * normd̃)) && (iter_nwt < 40)
         dotd̃ = (Δ .+ λ * M) .\ (M .* d̃)
-        Δλ = ((normd̃-δ)/δ) * (d̃d̃/(d̃ ⋅ dotd̃))
+        Δλ = ((normd̃ - δ) / δ) * (d̃d̃ / (d̃ ⋅ dotd̃))
         λeps = tol1 / T(100.0)
-        λ =  max(λ + Δλ, λin + λeps)
+        λ = max(λ + Δλ, λin + λeps)
         d̃ = -(Δ .+ λ * M) .\ g̃
-        d̃d̃ = d̃⋅d̃
+        d̃d̃ = d̃ ⋅ d̃
         normd̃ = sqrt(d̃d̃)
         @assert (λ >= 0.0)
         iter_nwt += 1

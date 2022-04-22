@@ -1,4 +1,4 @@
-function solve_modelARCDiag(nlp_stop, PData :: PDataFact, α:: T) where T
+function solve_modelARCDiag(H, g, nlp_stop, PData::PDataFact, α::T) where {T}
     # Solve the ARC subproblem once diagonalized into Δ
     # printstyled("On est dans solve_modelARCDiag ⇊ \n", color = :red)
     # Setup the problem
@@ -9,16 +9,16 @@ function solve_modelARCDiag(nlp_stop, PData :: PDataFact, α:: T) where T
     λ = max(ϵ, PData.λ .+ ϵ)
 
     d̃ = -(PData.Δ .+ λ .* M) .\ PData.g̃
-    normd̃ = sqrt(d̃⋅d̃)
+    normd̃ = sqrt(d̃ ⋅ d̃)
     seuil = normd̃ ./ α
 
     # Solve the subproblem (Δ + λ I) d̃ = -g̃ such that λ = ||d̃||/α
-    d̃,λ = solve_diag(λ, PData.Δ, PData.g̃, seuil, α, ϵ)
+    d̃, λ = solve_diag(λ, PData.Δ, PData.g̃, seuil, α, ϵ)
 
     PData.λ = λ
     # Transform back d̃ into d
 
-    d = AInv(PData,d̃)
+    d = AInv(PData, d̃)
 
-    return d, NaN * rand(length(d)), λ
+    return d, λ
 end

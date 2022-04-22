@@ -1,14 +1,32 @@
-function solve_modelST_TR(nlp_stop, X :: PDataST, δ:: T; cgtol :: T = 0.1) where T
-# cas particulier Steihaug-Toint
-    ϵ = sqrt(eps(T)) # * 100.0
-    n = length(X.g)
-    cgtol = max(ϵ, min(cgtol, 9 * cgtol / 10, 0.01 * norm(X.g)^(1.0 + X.ζ)))
+function solve_modelST_TR(H, g, nlp_stop, PData::PDataST, δ::T; cgtol::T = 0.1) where {T}
+    # cas particulier Steihaug-Toint
+    # ϵ = sqrt(eps(T)) # * 100.0 # old
+    # cgtol = max(ϵ, min(cgtol, 9 * cgtol / 10, 0.01 * norm(g)^(1.0 + PData.ζ))) # old
 
-    (d, cg_stats) = cg(X.H, -X.g, atol = cgtol, rtol = ϵ,
-                     radius = δ,  itmax = max(2 * n, 50),
-                     verbose = false)
+    ζ, ξ, maxtol, mintol = PData.ζ, PData.ξ, PData.maxtol, PData.mintol
+    n = length(g)
+    gNorm2 = norm(g)
+    # precision = max(1e-12, min(0.5, (gNorm2^ζ)))
+    # Tolerance used in Assumption 2.6b in the paper ( ξ > 0, 0 < ζ ≤ 1 )
+    cgatol = min(maxtol, ξ * gNorm2^(1 + ζ))
+    cgatol = max(mintol, cgatol) # add some feasible limit
+    cgrtol = min(maxtol, ξ * gNorm2^ζ)
+    cgrtol = max(mintol, cgrtol) # add some feasible limit
 
-    λ = 0.0  #  dummy for this variant
+    solver = PData.solver
+    cg!(
+        solver,
+        H,
+        -g,
+        atol = cgatol,
+        rtol = cgrtol,
+        radius = δ,
+        itmax = max(2 * n, 50),
+        verbose = 0,
+    )
 
-    return d, NaN * rand(length(d)), λ#, cgtol
+    PData.d .= solver.x
+    PData.OK = solver.stats.solved
+
+    return PData.d, PData.λ
 end

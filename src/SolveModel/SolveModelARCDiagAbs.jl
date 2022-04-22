@@ -1,4 +1,4 @@
-function solve_modelARCDiagAbs(nlp_stop, PData :: PDataFact, α:: T) where T
+function solve_modelARCDiagAbs(H, g, nlp_stop, PData::PDataFact, α::T) where {T}
     #printsyled("on est dans solve_modelARCDiagAbs \n", color = :cyan)
     # Solve the ARC subproblem once diagonalized into Δ using the norm |Δ|
 
@@ -27,23 +27,23 @@ function solve_modelARCDiagAbs(nlp_stop, PData :: PDataFact, α:: T) where T
     #printsyled("λmin = $λmin \n", color = :yellow)
     if PData.success # ensure
         #printsyled("PData.success = $(PData.success) \n", color = :yellow)
-        l_m, = findmin(Δ̄ )
+        l_m, = findmin(Δ̄)
         #printsyled("l_m = $l_m \n", color = :yellow)
         λ = max(-l_m, 0.0)
         #printsyled("λ = $λ \n", color = :yellow)
-        λmin = max(ϵ,  λ + ϵ * (1.0 + λ))
+        λmin = max(ϵ, λ + ϵ * (1.0 + λ))
         #printsyled("λmin = $λmin \n", color = :yellow)
     else
         #printsyled("PData.success = $(PData.success) \n", color = :yellow)
         λmin = PData.λ
     end
-    d̄ = -(Δ .+ λmin*Γ2) .\ ḡ
+    d̄ = -(Δ .+ λmin * Γ2) .\ ḡ
     #printsyled("d̄ = $d̄ \n", color = :yellow)
-    seuil_bar = norm(d̄)/α
+    seuil_bar = norm(d̄) / α
 
     #printsyled("on est a seuil_bar = $seuil_bar \n", color = :yellow)
     # Solve the subproblem (Δ̄ + λ I) d̄ = -ḡ such that λ = ||d̄||/α
-    d̄,λ = solve_diag(λmin, Δ, ḡ, seuil_bar, α, ϵ, M = Γ2)
+    d̄, λ = solve_diag(λmin, Δ, ḡ, seuil_bar, α, ϵ, M = Γ2)
     # Transform back d_s into d
     d̃ = d̄
     #d̃ = Γ .\ d̄
@@ -54,5 +54,5 @@ function solve_modelARCDiagAbs(nlp_stop, PData :: PDataFact, α:: T) where T
 
     PData.λ = λ
 
-    return d, NaN * rand(length(d)), λ
+    return d, λ
 end
