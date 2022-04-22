@@ -48,7 +48,7 @@ end
 # include("autodiff_high_order_model.jl")
 ####################################################################
 
-include("TRARC.jl")
+include("main.jl")
 
 export ALL_solvers
 

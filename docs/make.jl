@@ -17,4 +17,4 @@ makedocs(
     pages = pages,
 )
 
-deploydocs(repo = "github.com/tmigot/ARCTR.jl.git", push_preview = true, devbranch = "main")
+deploydocs(repo = "github.com/vepiteski/ARCTR.jl.git", push_preview = true, devbranch = "main")
