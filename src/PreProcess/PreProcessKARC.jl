@@ -7,7 +7,7 @@ function preprocess(PData::PDataKARC, Hop, g, calls, max_calls)
     gNorm2 = norm(g)
     # precision = max(1e-12, min(0.5, (gNorm2^ζ)))
     # Tolerance used in Assumption 2.6b in the paper ( ξ > 0, 0 < ζ ≤ 1 )
-    cgatol = min(ξ * gNorm2, ξ * gNorm2^(1 + ζ))
+    cgatol = min(maxtol, ξ * gNorm2, ξ * gNorm2^(1 + ζ))
     cgatol = max(mintol, cgatol) # add some feasible limit
     cgrtol = eps(eltype(g))
 
