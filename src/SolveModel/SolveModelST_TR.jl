@@ -8,9 +8,8 @@ function solve_modelST_TR(H, g, nlp_stop, PData::PDataST, δ::T; cgtol::T = 0.1)
     gNorm2 = norm(g)
     # precision = max(1e-12, min(0.5, (gNorm2^ζ)))
     # Tolerance used in Assumption 2.6b in the paper ( ξ > 0, 0 < ζ ≤ 1 )
-    cgatol = min(maxtol, ξ * gNorm2, ξ * gNorm2^(1 + ζ))
-    cgatol = max(mintol, cgatol) # add some feasible limit
-    cgrtol = eps(eltype(g))
+    cgatol = sqrt(eps(eltype(g)))
+    cgrtol = min(ξ, ξ * gNorm2^ζ)
 
     solver = PData.solver
     cg!(
