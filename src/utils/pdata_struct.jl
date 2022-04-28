@@ -14,6 +14,8 @@ mutable struct PDataKARC{T} <: PDataIter{T}
     ξ::T                      # Inexact Newton order parameter: stop when ||∇q|| < ξ * ||g||^(1+ζ)
     maxtol::T                 # Largest tolerance for Inexact Newton
     mintol::T                 # Smallest tolerance for Inexact Newton
+    cgatol
+    cgrtol
 
     indmin::Int               # index of best shift value  within "positive". On first call = 0
 
@@ -35,6 +37,8 @@ function PDataKARC(
     ξ = T(0.01),
     maxtol = T(0.01),
     mintol = (1.0e-8),
+    cgatol = (ζ, ξ, maxtol, mintol, gNorm2) -> max(mintol, min(maxtol, ξ * gNorm2^(1 + ζ))),
+    cgrtol = (ζ, ξ, maxtol, mintol, gNorm2) -> max(mintol, min(maxtol, ξ * gNorm2^ζ)),
     shifts = T.(10.0 .^ collect(-20.0:1.0:20.0)),
     kwargs...,
 ) where {S,T}
@@ -57,6 +61,8 @@ function PDataKARC(
         ξ,
         maxtol,
         mintol,
+        cgatol,
+        cgrtol,
         indmin,
         positives,
         xShift,
@@ -75,6 +81,8 @@ mutable struct PDataKTR{T} <: PDataIter{T}
     ξ::T                      # Inexact Newton order parameter: stop when ||∇q|| < ξ * ||g||^(1+ζ)
     maxtol::T                 # Largest tolerance for Inexact Newton
     mintol::T                 # Smallest tolerance for Inexact Newton
+    cgatol
+    cgrtol
 
     indmin::Int               # index of best shift value  within "positive". On first call = 0
 
@@ -96,6 +104,8 @@ function PDataKTR(
     ξ = T(0.01),
     maxtol = T(0.01),
     mintol = T(1.0e-8),
+    cgatol = (ζ, ξ, maxtol, mintol, gNorm2) -> max(mintol, min(maxtol, ξ * gNorm2^(1 + ζ))),
+    cgrtol = (ζ, ξ, maxtol, mintol, gNorm2) -> max(mintol, min(maxtol, ξ * gNorm2^ζ)),
     shifts = T[0.0; 10.0 .^ (collect(-20.0:1.0:20.0))],
     kwargs...,
 ) where {S,T}
@@ -118,6 +128,8 @@ function PDataKTR(
         ξ,
         maxtol,
         mintol,
+        cgatol,
+        cgrtol,
         indmin,
         positives,
         xShift,
@@ -136,6 +148,8 @@ mutable struct PDataST{S,T} <: PDataIter{T}
     ξ::T                      # Inexact Newton order parameter: stop when ||∇q|| < ξ * ||g||^(1+ζ)
     maxtol::T                 # Largest tolerance for Inexact Newton
     mintol::T                 # Smallest tolerance for Inexact Newton
+    cgatol
+    cgrtol
 
     OK::Bool    # preprocess success
     solver::CgSolver
@@ -149,13 +163,26 @@ function PDataST(
     ξ = T(0.01),
     maxtol = T(0.01),
     mintol = T(1.0e-8),
+    cgatol = (ζ, ξ, maxtol, mintol, gNorm2) -> max(mintol, min(maxtol, ξ * gNorm2^(1 + ζ))),
+    cgrtol = (ζ, ξ, maxtol, mintol, gNorm2) -> max(mintol, min(maxtol, ξ * gNorm2^ζ)),
     kwargs...,
 ) where {S,T}
     d = S(undef, n)
     λ = zero(T)
     OK = true
     solver = CgSolver(n, n, S)
-    return PDataST(d, λ, ζ, ξ, maxtol, mintol, OK, solver)
+    return PDataST(
+        d,
+        λ,
+        ζ,
+        ξ,
+        maxtol,
+        mintol,
+        cgatol,
+        cgrtol,
+        OK,
+        solver,
+    )
 end
 
 mutable struct PDataLDLt{T} <: PDataFact{T}
