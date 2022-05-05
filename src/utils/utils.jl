@@ -76,7 +76,7 @@ function compute_r(nlp, f, Δf, Δq, slope, d, xnext, gnext, robust)
     return r, good_grad, gnext
 end
 
-stop_norm(x) = norm(x, Inf)
+stop_norm(x) = norm(x, 2)
 
 function convert_TR(T, TR_init::TrustRegion)
     max_α_T = T(TR_init.max_α)
