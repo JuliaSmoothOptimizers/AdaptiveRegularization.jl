@@ -25,15 +25,6 @@ for file in files
     include("SolveModel/" * file)
 end
 
-pathHO = joinpath(dirname(@__FILE__), "SolveModel", "high-order-correction")
-files = filter(x -> x[(end-2):end] == ".jl", readdir(pathHO))
-for file in files
-    if file in []
-        continue
-    end
-    include("SolveModel/high-order-correction/" * file)
-end
-
 path = joinpath(dirname(@__FILE__), "PreProcess")
 files = filter(x -> x[(end-2):end] == ".jl", readdir(path))
 for file in files
@@ -42,11 +33,6 @@ for file in files
     end
     include("PreProcess/" * file)
 end
-
-####################################################################
-## Model, temporary, shoudln't be here
-# include("autodiff_high_order_model.jl")
-####################################################################
 
 include("main.jl")
 
