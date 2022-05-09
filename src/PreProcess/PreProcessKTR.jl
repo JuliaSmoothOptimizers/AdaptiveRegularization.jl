@@ -1,4 +1,4 @@
-function preprocess(PData::PDataKTR, Hop, g, calls, max_calls)
+function preprocess(PData::PDataKTR, Hop, g, calls, max_calls, α)
     ζ, ξ, maxtol, mintol = PData.ζ, PData.ξ, PData.maxtol, PData.mintol
     nshifts = PData.nshifts
     shifts = PData.shifts

@@ -1,4 +1,4 @@
-function preprocess(PData::PDataSpectral, H, g, n1, n2)
+function preprocess(PData::PDataSpectral, H, g, n1, n2, α)
     #global V, D, rho, ncomp
 
     # Δ, V = eig(H)
