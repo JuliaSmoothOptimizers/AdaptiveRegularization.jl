@@ -12,9 +12,12 @@ function decrease(X::PDataFact, α::T, TR::TrustRegion) where {T}
     return decreaseBase(α, TR)
 end
 
+# X.indmin is between 1 and length(positives)
+# p_imin is between 1 and nshifts
 function decrease(X::PDataKARC, α::Float64, TR::TrustRegion)
-    X.indmin += 1
     positives = findall(X.positives)
+    X.indmin += 1 # the step wasn't successful so we need to change something
+    
     p_imin = positives[X.indmin]
     α2 = max(X.norm_dirs[p_imin] / X.shifts[p_imin], eps())
 
@@ -22,13 +25,13 @@ function decrease(X::PDataKARC, α::Float64, TR::TrustRegion)
 
     # fix α to its "ideal" value to satisfy αλ=||d||
     # while ensuring α decreases enough
-    while α2 > targetα && p_imin < length(positives)
+    while α2 > targetα && X.indmin < length(positives)
         X.indmin += 1
         p_imin = positives[X.indmin]
         α2 = max(X.norm_dirs[p_imin] / X.shifts[p_imin], eps())
     end
 
-    if p_imin == length(positives)
+    if X.indmin == length(positives) & (α2 > targetα) # p_imin == length(positives)
         @warn "PreProcessKARC failure: α2=$α2"
     end
 
