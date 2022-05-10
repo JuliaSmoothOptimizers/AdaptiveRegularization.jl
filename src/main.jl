@@ -7,14 +7,14 @@ struct TRARCWorkspace{T,S,Hess}
     ∇f::S
     ∇fnext::S
     Hstruct::Hess
-    function TRARCWorkspace(::Type{T}, ::Type{S}, ::Type{Hess}, n) where {T,S,Hess}
+    function TRARCWorkspace(nlp::AbstractNLPModel{T, S}, ::Type{Hess}, n) where {T,S,Hess}
         return new{T,S,Hess}(
             S(undef, n), # xt
             S(undef, n), # xtnext
             S(undef, n), # d
             S(undef, n), # ∇f
             S(undef, n), # ∇fnext
-            Hess(T, S, n),
+            Hess(nlp, n),
         )
     end
 end
@@ -32,7 +32,7 @@ function TRARC(
     nlp, nlp_at_x = nlp_stop.pb, nlp_stop.current_state
 
     PData = ParamData(S, T, nlp.meta.nvar; kwargs...)
-    workspace = TRARCWorkspace(T, S, Hess, nlp.meta.nvar)
+    workspace = TRARCWorkspace(nlp, Hess, nlp.meta.nvar)
     xt, xtnext, d, ∇f, ∇fnext =
         workspace.xt, workspace.xtnext, workspace.d, workspace.∇f, workspace.∇fnext
 

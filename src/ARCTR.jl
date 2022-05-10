@@ -8,9 +8,7 @@ using HSL, Krylov, LinearOperators, NLPModels, SolverCore, SolverTools
 using Stopping, StoppingInterface
 
 # Selective includes.
-include("hessian_rep.jl")
-
-include("./utils/show.jl")
+include("./utils/hessian_rep.jl")
 include("./utils/pdata_struct.jl")
 include("./utils/utils.jl")
 include("./utils/increase_decrease.jl")
