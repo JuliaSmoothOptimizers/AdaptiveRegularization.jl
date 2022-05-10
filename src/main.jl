@@ -66,7 +66,7 @@ function TRARC(
 
     while !OK
         max_hprod = nlp_stop.meta.max_cntrs[:neval_hprod]
-        PData = preprocess(PData, nlp_at_x.Hx, ∇f, neval_hprod(nlp), max_hprod)
+        PData = preprocess(PData, nlp_at_x.Hx, ∇f, neval_hprod(nlp), max_hprod, α)
 
         if ~PData.OK
             @warn("Something wrong with PData")
