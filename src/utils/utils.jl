@@ -77,22 +77,3 @@ function compute_r(nlp, f, Δf, Δq, slope, d, xnext, gnext, robust)
 end
 
 stop_norm(x) = norm(x, 2)
-
-function convert_TR(T, TR_init::TrustRegion)
-    max_α_T = T(TR_init.max_α)
-    acceptance_threshold_T = T(TR_init.acceptance_threshold)
-    increase_threshold_T = T(TR_init.increase_threshold)
-    reduce_threshold_T = T(TR_init.reduce_threshold)
-    increase_threshold_T = T(TR_init.increase_threshold)
-    decrease_factor_T = T(TR_init.decrease_factor)
-
-    TRT = TrustRegion(
-        T(TR_init.α),
-        max_α = max_α_T,
-        acceptance_threshold = acceptance_threshold_T,
-        increase_threshold = increase_threshold_T,
-        decrease_factor = decrease_factor_T,
-    )
-
-    return TRT
-end
