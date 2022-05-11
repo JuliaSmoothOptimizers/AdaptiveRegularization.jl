@@ -11,6 +11,15 @@ function preprocess(PData::PDataKARC, Hop, g, calls, max_calls, α)
     cgrtol = PData.cgrtol(ζ, ξ, maxtol, mintol, gNorm2)
 
     nshifts = length(shifts)
+    cb = (slv, A, b, shifts) -> begin
+        ind = setdiff(1:length(shifts), findall(slv.not_cv))
+        target = [norm(slv.x[i])/shifts[i] - α for i in ind] # the last one should be negative
+        if length(ind) > 1
+        if !isnothing(findfirst(target .> 0))
+            slv.stats.user = true
+        end
+        end
+    end
     solver = PData.solver
     cg_lanczos!(
         solver,
@@ -22,6 +31,7 @@ function preprocess(PData::PDataKARC, Hop, g, calls, max_calls, α)
         rtol = cgrtol,
         verbose = 0,
         check_curvature = true,
+        callback = cb,
     )
 
     PData.indmin = 0
@@ -33,6 +43,8 @@ function preprocess(PData::PDataKARC, Hop, g, calls, max_calls, α)
     PData.shifts .= shifts
     PData.nshifts = nshifts
     PData.OK = sum(solver.converged) != 0 # at least one system was solved
+
+    PData.solver.stats.user = false
 
     return PData
 end
