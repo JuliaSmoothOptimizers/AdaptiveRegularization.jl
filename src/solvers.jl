@@ -1,9 +1,4 @@
 solvers_const = Dict(
-    # :ARCMA57_abs => (HessSparse, PDataMA57, solve_modelARCDiagAbs, ()),
-    # :ARCMA57_Sham_vs_Nwt => (HessSparse, PDataMA57, solve_modelARCDiag, ()),
-    # :ARCMA57 => (HessSparse, PDataMA57, solve_modelARCDiag, ()),
-    # :ARCMA97_abs => (HessDense, PDataMA97, solve_modelARCDiagAbs, ()),
-    # :ARCMA97 => (HessDense, PDataMA97, solve_modelARCDiag, ()),
     :ARCqKdense => (
         HessDense,
         PDataKARC,
@@ -30,10 +25,6 @@ solvers_const = Dict(
     :TRKdense => (HessDense, PDataKTR, solve_modelKTR, ()),
     :TRKOp => (HessOp, PDataKTR, solve_modelKTR, ()),
     :TRKsparse => (HessSparse, PDataKTR, solve_modelKTR, ()),
-    # :TRMA57_abs => (HessSparse, PDataMA57, solve_modelTRDiagAbs, ()),
-    # :TRMA57 => (HessSparse, PDataMA57, solve_modelTRDiag, ()),
-    # :TRMA97_abs => (HessDense, PDataMA97, solve_modelTRDiagAbs, ()),
-    # :TRMA97 => (HessSparse, PDataMA97, solve_modelTRDiag, ()),
     :TRSpectral_abs => (HessDense, PDataSpectral, solve_modelTRDiagAbs, ()),
     :TRSpectral => (HessDense, PDataSpectral, solve_modelTRDiag, ()),
 )

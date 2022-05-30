@@ -3,7 +3,7 @@ module ARCTR
 # stdlib
 using LinearAlgebra, Logging, Printf, SparseArrays
 # JSO
-using HSL, Krylov, LinearOperators, NLPModels, SolverCore, SolverTools
+using Krylov, LinearOperators, NLPModels, SolverCore, SolverTools
 # Stopping
 using Stopping, StoppingInterface
 
@@ -25,9 +25,6 @@ end
 path = joinpath(dirname(@__FILE__), "PreProcess")
 files = filter(x -> x[(end-2):end] == ".jl", readdir(path))
 for file in files
-    if occursin(r"MA", file)
-        continue # Remove MA57 and MA97 solvers for now
-    end
     include("PreProcess/" * file)
 end
 
