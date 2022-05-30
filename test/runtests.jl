@@ -8,7 +8,6 @@ using Stopping
 using ADNLPModels
 using OptimizationProblems.ADNLPProblems
 
-include("testLDLt.jl")
 # include("testMA57.jl")
 # include("testMA97.jl")
 

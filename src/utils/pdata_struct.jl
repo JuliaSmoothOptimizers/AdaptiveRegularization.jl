@@ -1,5 +1,4 @@
-export PDataIter
-export PDataLDLt, PDataKTR, PDataKARC, PDataST
+export PDataIter, PDataKTR, PDataKARC, PDataST
 
 abstract type TPData{T} end  # Ancestor of all PreProcess data
 
@@ -183,39 +182,6 @@ function PDataST(
         OK,
         solver,
     )
-end
-
-mutable struct PDataLDLt{T} <: PDataFact{T}
-    L::Array{T,2}          # could be sparse
-    D::Array{T,2}          # block diagonal 1X1 and 2X2
-    pp::Array{Int,1}        # permutation vector LDL' = H[pp,pp]
-    # P*v = v[pp]
-    # P'*v = v[invperm(pp)]
-    #s::Array{T,1}                  # Scaling matrix S=diagm(s)
-    Δ::Array{T,1}          # diagonal, eigenvalues of D
-    Q::Array{T,2}          # orthogonal matrix, eigenvectors of D:  should be sparse
-    # QΔQ'  =  D
-    g̃::Array{T,1}           # transformed gradient
-    λ::T
-    success::Bool                 # previous iteration was successfull
-    OK::Bool                 # preprocess success
-
-    PDataLDLt() = new{Nothing}()
-    PDataLDLt(L, D, pp, Δ, Q, g, l, success, OK) =
-        new{eltype(L)}(L, D, pp, Δ, Q, g, l, success, OK)
-end
-
-function PDataLDLt(::Type{S}, ::Type{T}, n; kwargs...) where {S,T}
-    L = Array{T,2}(undef, n, n) # ::Array{T,2}          # could be sparse
-    D = Array{T,2}(undef, n, n) #::Array{T,2}          # block diagonal 1X1 and 2X2
-    pp = collect(1:n) #::Array{Int,1}        # permutation vector LDL' = H[pp,pp]
-    Δ = Array{T,1}(undef, n) #::Array{T,1}          # diagonal, eigenvalues of D
-    Q = Array{T,2}(undef, n, n) #::Array{T,2}          # orthogonal matrix, eigenvectors of D:  should be sparse
-    g̃ = Array{T,1}(undef, n) #::Array{T,1}           # transformed gradient
-    λ = zero(T) # ::T
-    success = true::Bool                 # previous iteration was successfull
-    OK = true
-    return PDataLDLt(L, D, pp, Δ, Q, g̃, λ, success, OK)
 end
 
 mutable struct PDataSpectral{T} <: PDataFact{T}

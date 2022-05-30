@@ -12,7 +12,6 @@ include("./utils/hessian_rep.jl")
 include("./utils/pdata_struct.jl")
 include("./utils/utils.jl")
 include("./utils/increase_decrease.jl")
-include("./utils/ldlt_symm.jl")
 
 path = joinpath(dirname(@__FILE__), "SolveModel")
 files = filter(x -> x[(end-2):end] == ".jl", readdir(path))

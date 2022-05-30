@@ -1,6 +1,4 @@
 solvers_const = Dict(
-    :ARCLDLt_abs => (HessDense, PDataLDLt, solve_modelARCDiagAbs, ()),
-    :ARCLDLt => (HessDense, PDataLDLt, solve_modelARCDiag, ()),
     # :ARCMA57_abs => (HessSparse, PDataMA57, solve_modelARCDiagAbs, ()),
     # :ARCMA57_Sham_vs_Nwt => (HessSparse, PDataMA57, solve_modelARCDiag, ()),
     # :ARCMA57 => (HessSparse, PDataMA57, solve_modelARCDiag, ()),
@@ -32,8 +30,6 @@ solvers_const = Dict(
     :TRKdense => (HessDense, PDataKTR, solve_modelKTR, ()),
     :TRKOp => (HessOp, PDataKTR, solve_modelKTR, ()),
     :TRKsparse => (HessSparse, PDataKTR, solve_modelKTR, ()),
-    :TRLDLt_abs => (HessDense, PDataLDLt, solve_modelTRDiagAbs, ()),
-    :TRLDLt => (HessDense, PDataLDLt, solve_modelTRDiag, ()),
     # :TRMA57_abs => (HessSparse, PDataMA57, solve_modelTRDiagAbs, ()),
     # :TRMA57 => (HessSparse, PDataMA57, solve_modelTRDiag, ()),
     # :TRMA97_abs => (HessDense, PDataMA97, solve_modelTRDiagAbs, ()),
