@@ -19,6 +19,8 @@ struct TRARCWorkspace{T,S,Hess}
     end
 end
 
+stop_norm(x) = norm(x, 2)
+
 function TRARC(
     nlp_stop::NLPStopping{Pb,M,SRC,NLPAtX{T,S},MStp,LoS};
     TR::TrustRegion = TrustRegion(T(10.0)),

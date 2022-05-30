@@ -1,15 +1,14 @@
-# default increase and decrease functions.
-function decreaseBase(α::T, TR::TrustRegion) where {T}
+function decrease(X::TPData, α::T, TR::TrustRegion) where {T}
     return α * TR.decrease_factor
 end
 
-function decrease(X::TPData, α::T, TR::TrustRegion) where {T}
-    return decreaseBase(α, TR)
+function increase(::TPData, α::T, TR::TrustRegion) where {T}
+    return min(α * TR.increase_factor, TR.max_α)
 end
 
 function decrease(X::PDataFact, α::T, TR::TrustRegion) where {T}
     X.success = false
-    return decreaseBase(α, TR)
+    return α * TR.decrease_factor
 end
 
 # X.indmin is between 1 and length(positives)
@@ -65,12 +64,4 @@ function decrease(X::PDataKTR, α::Float64, TR::TrustRegion)
     X.λ = X.shifts[p_imin]
 
     return α2
-end
-
-function increase(α::T, TR::TrustRegion) where {T}
-    return min(α * TR.increase_factor, TR.max_α)
-end
-
-function increase(X::TPData, α::T, TR::TrustRegion) where {T}
-    return increase(α, TR)
 end

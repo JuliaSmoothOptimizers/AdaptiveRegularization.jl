@@ -5,7 +5,6 @@ function solve_diagTR(λ, Δ, g̃, δ, ϵ; M = [0.0])
     M = T.(M)
 
     if M == [0.0]
-        # M = ones(Δ) ;
         M = fill(T.(1.0), size(Δ)[1])
     end
     @assert (minimum(M) > 0.0)

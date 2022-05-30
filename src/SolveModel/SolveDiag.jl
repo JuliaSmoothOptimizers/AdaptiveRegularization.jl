@@ -1,10 +1,5 @@
-function solve_diag(λ, Δ, g̃, seuil, α, ϵ; M = [0.0])
-    # printstyled("on est ici ↓ \n", color = :red)
-    T = eltype(α)
-    # @show T
+function solve_diag(λ, Δ, g̃, seuil, α::T, ϵ; M = [0.0]) where {T}
     if M == [0.0]
-        # M = ones(Δ) ;
-        # M = fill(T(1.0), size(Δ))
         M = ones(T, size(Δ))
     end
     λin = λ
@@ -13,8 +8,6 @@ function solve_diag(λ, Δ, g̃, seuil, α, ϵ; M = [0.0])
     normdtry = sqrt(dtry ⋅ dtry)
     seuiltry = normdtry / α
     d̃ = dtry
-
-    #println(" Biss $biss_iter : λ = $λtry  seuil = $seuiltry ")
 
     # secant like heuristic to help Newton process by providing a good starting point
     global iter_bis = 0
@@ -25,7 +18,6 @@ function solve_diag(λ, Δ, g̃, seuil, α, ϵ; M = [0.0])
             normdtry = sqrt(dtry ⋅ dtry)
             seuiltry = normdtry / α
             global iter_bis += 1
-            #println(" λ computation, iter_bis : $iter_bis  λtry  $λtry")
         end
         λ = λtry
         d̃ = dtry
@@ -49,9 +41,5 @@ function solve_diag(λ, Δ, g̃, seuil, α, ϵ; M = [0.0])
         @assert (λ >= 0.0)
         global iter_nwt += 1
     end
-    #println(" λ computation, iter_bis : $iter_bis  iter_nwt : $iter_nwt  λ  $λ")
-    #try assert((g̃ + 0.5*Δ.*d̃)⋅d̃ <= 0.0)  catch  @bp  end
-    #println("*******SolveDiag:  g̃⋅d̃ = $(g̃⋅d̃), 0.5 d̃'Δd̃ = $(0.5*(Δ .* d̃)⋅d̃)")
-
     return d̃, λ
 end
