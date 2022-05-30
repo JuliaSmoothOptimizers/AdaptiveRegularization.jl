@@ -1,4 +1,4 @@
-export TrustRegion, convert_TR, convert_TR!, extract
+export TrustRegion
 
 "Exception type raised in case of error."
 mutable struct TrustRegionException <: Exception
