@@ -1,10 +1,14 @@
-export PDataIter, PDataKTR, PDataKARC, PDataST
+export PDataKTR, PDataKARC, PDataST, PDataSpectral
 
 abstract type TPData{T} end  # Ancestor of all PreProcess data
 
 abstract type PDataFact{T} <: TPData{T} end # Variants using matricial factorization
 
 abstract type PDataIter{T} <: TPData{T} end # Variants using iterative (Krylov) solvers
+
+function preprocess(PData::TPData, H, g, n1, n2, α)
+    return PData
+end
 
 mutable struct PDataKARC{T} <: PDataIter{T}
     d::Array{T,1}             # (H+λI)\g ; on first call = g
