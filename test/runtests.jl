@@ -1,12 +1,11 @@
+# This package
 using ARCTR
-using LinearAlgebra
-using Test
-using Printf
-using NLPModels
+# stdlib
+using LinearAlgebra, SparseArrays, Test
+# JSO
+using ADNLPModels, NLPModels, OptimizationProblems.ADNLPProblems
+# Stopping
 using Stopping
-
-using ADNLPModels
-using OptimizationProblems.ADNLPProblems
 
 global nbsolver = 0
 for solver in ALL_solvers

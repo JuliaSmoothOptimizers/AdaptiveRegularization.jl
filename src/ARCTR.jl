@@ -1,9 +1,9 @@
 module ARCTR
 
 # stdlib
-using LinearAlgebra, Logging, Printf, SparseArrays
+using LinearAlgebra, SparseArrays
 # JSO
-using Krylov, LinearOperators, NLPModels, SolverCore, SolverTools
+using Krylov, NLPModels, SolverCore
 # Stopping
 using Stopping, StoppingInterface
 
@@ -16,9 +16,6 @@ include("./utils/increase_decrease.jl")
 path = joinpath(dirname(@__FILE__), "SolveModel")
 files = filter(x -> x[(end-2):end] == ".jl", readdir(path))
 for file in files
-    if file in ["krylov_aux.jl"]
-        continue
-    end
     include("SolveModel/" * file)
 end
 
