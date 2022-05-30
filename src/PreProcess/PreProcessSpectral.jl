@@ -1,15 +1,11 @@
 function preprocess(PData::PDataSpectral, H, g, n1, n2, α)
-    #global V, D, rho, ncomp
 
-    # Δ, V = eig(H)
     X = eigen(H)
     Δ = X.values
     V = X.vectors
 
-    l_m, = findmin(Δ)
+    l_m = minimum(Δ)
     g̃ = V' * g
-    n_g = norm(g)
-    ɛ = 1.0e-10
     λ = max(-l_m, 0.0)
 
     PData.V = V

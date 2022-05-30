@@ -1,4 +1,4 @@
-export TrustRegion, convert_TR, convert_TR!, extract
+export TrustRegion
 
 "Exception type raised in case of error."
 mutable struct TrustRegionException <: Exception
@@ -49,31 +49,41 @@ mutable struct TrustRegion{T}
 end
 
 
-"""Compute the actual vs. predicted reduction radio ∆f/Δm, where
-Δf = f - f_trial is the actual reduction is an objective/merit/penalty function,
-Δq = q - q_trial is the reduction predicted by the model q of f.
+"""
+    r, good_grad, gnext = compute_r(nlp, f, Δf, Δq, slope, d, xnext, gnext, robust)
+
+
+Arguments:
+- `nlp`: Current model we are trying to solve
+- `f`: current objective value
+- `Δf`: `= f - f_trial` is the actual reduction is an objective/merit/penalty function,
+- `Δq`: `q - q_trial` is the reduction predicted by the model q of f.
+- `slope`: current slope
+- `d`: potential next direction
+- `xnext`: potential next iterate
+- `gnext`: current gradient value, if `good_grad` is true, then this value has been udpated.
+- `robust`: if `true`, try to trap potential cancellation errors
+
+Output:
+- `r`: actual vs. predicted reduction radio `∆f/Δq`
+- `good_grad`
+- `gnext`
+
 We assume that q is being minimized, and therefore that Δq > 0.
 """
-function compute_r(nlp, f, Δf, Δq, slope, d, xnext, gnext, robust)
-    # If ever the next gradient is computed for round off errors reason, signal it.
-    # # printstyled("dans compute r eltype(f) = $(eltype(f)) \n", color = :yellow)
-    # # @show eltype(f)
-    T = eltype(f)
+function compute_r(nlp, f::T, Δf, Δq, slope, d, xnext, gnext, robust) where {T}
     good_grad = false
     if robust & ((Δq < 10000 * eps(T)) | (abs(Δf) < 10000 * eps(T) * abs(f)))
-        # trap potential cancellation errors
         grad!(nlp, xnext, gnext)
         good_grad = true
         slope_next = dot(gnext, d)
 
-        Δf = -(slope_next + slope) / 2.0
+        Δf = -(slope_next + slope) / 2
     end
     r = Δf / Δq
     if isnan(r)
-        r = 0.0
+        r = zero(T)
     end
 
     return r, good_grad, gnext
 end
-
-stop_norm(x) = norm(x, 2)

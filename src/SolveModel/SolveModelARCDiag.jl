@@ -1,7 +1,5 @@
 function solve_modelARCDiag(H, g, nlp_stop, PData::PDataFact, α::T) where {T}
     # Solve the ARC subproblem once diagonalized into Δ
-    # printstyled("On est dans solve_modelARCDiag ⇊ \n", color = :red)
-    # Setup the problem
     M = ones(T, size(PData.Δ))
 
     ϵ1 = sqrt(eps(T)) ./ T(100.0)
@@ -17,7 +15,6 @@ function solve_modelARCDiag(H, g, nlp_stop, PData::PDataFact, α::T) where {T}
 
     PData.λ = λ
     # Transform back d̃ into d
-
     d = AInv(PData, d̃)
 
     return d, λ
