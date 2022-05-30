@@ -5,6 +5,8 @@
 
 Several ARC and TR optimization solvers.
 
+This branch contains the implementation of in the file utils/ldlt\_symm.jl
+
 
 ## Purpose
 This package implement several Trust-Region and ARC methods to solve the unconstrained problem
