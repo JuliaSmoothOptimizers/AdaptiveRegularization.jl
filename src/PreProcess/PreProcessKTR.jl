@@ -20,7 +20,7 @@ function preprocess(PData::PDataKTR, Hop, g, calls, max_calls, α)
         end
     end
     solver = PData.solver
-    cg_lanczos!(
+    cg_lanczos_shift!(
         solver,
         Hop,
         -g,
