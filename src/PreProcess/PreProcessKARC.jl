@@ -12,7 +12,7 @@ function preprocess(PData::PDataKARC, Hop, g, calls, max_calls, α)
 
     nshifts = length(shifts)
     cb = (slv, A, b, shifts) -> begin
-        ind = setdiff(1:length(shifts), findall(slv.not_cv))
+        ind = findall(slv.converged) # setdiff(1:length(shifts), findall(slv.not_cv))
         target = [norm(slv.x[i])/shifts[i] - α for i in ind] # the last one should be negative
         if length(ind) > 1
         if !isnothing(findfirst(target .> 0))
