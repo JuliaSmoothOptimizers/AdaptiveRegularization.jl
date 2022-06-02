@@ -14,7 +14,7 @@ function preprocess(PData::PDataKTR, Hop, g, calls, max_calls, α)
     if slv.converged[1]
       slv.stats.user = norm(slv.x[1]) ≤ α
     else
-      ind = findall(slv.converged) # setdiff(1:length(shifts), findall(slv.not_cv))
+      ind = setdiff(1:length(shifts), findall(slv.not_cv)) # findall(slv.converged)
       target = [norm(slv.x[i]) - α for i in ind] # the last one should be negative
       if length(ind) > 1
         if !isnothing(findfirst(target .> 0))

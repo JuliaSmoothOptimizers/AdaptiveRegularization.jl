@@ -12,18 +12,12 @@ function preprocess(PData::PDataKARC, Hop, g, calls, max_calls, α)
 
     nshifts = length(shifts)
     cb = (slv, A, b, shifts) -> begin
-        ind = findall(slv.converged) 
-        tp = setdiff(setdiff(1:length(shifts), findall(slv.not_cv)), ind) # failed ones
+        ind = setdiff(1:length(shifts), findall(slv.not_cv))
         target = [norm(slv.x[i])/shifts[i] - α for i in ind] # the last one should be negative
-        target_tp = [norm(slv.x[i])/shifts[i] - α for i in tp]
         if length(ind) > 1
             if !isnothing(findfirst(target .> 0))
                 slv.stats.user = true
             end
-        end
-        if (length(ind) >= 1) && (length(tp) > 0) && (target_tp[end] < 0)
-            # we detect small indefinite faster than larger
-            slv.stats.user = true
         end
     end
     solver = PData.solver
