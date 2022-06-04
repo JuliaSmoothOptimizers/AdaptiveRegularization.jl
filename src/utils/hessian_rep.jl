@@ -16,7 +16,7 @@ struct HessSparse{S, Vi}
 end
 
 struct HessSparseCOO{Tv, Ti}
-    H::SparseMatrixCOO{Tv, Ti}
+    H::Symmetric{Tv, SparseMatrixCOO{Tv, Ti}}
 end
 
 function HessSparseCOO(nlp::AbstractNLPModel{T, S}, n) where {T,S}
