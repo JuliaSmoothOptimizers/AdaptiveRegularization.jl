@@ -17,6 +17,12 @@ solvers_const = Dict(
         solve_modelKARC,
         [:shifts => 10.0 .^ (collect(-20.0:1.0:20.0))],
     ),
+    :ARCqKCOO => (
+        HessSparseCOO,
+        PDataKARC,
+        solve_modelKARC,
+        [:shifts => 10.0 .^ (collect(-20.0:1.0:20.0))],
+    ),
     :ARCSpectral_abs => (HessDense, PDataSpectral, solve_modelARCDiagAbs, ()),
     :ARCSpectral => (HessDense, PDataSpectral, solve_modelARCDiag, ()),
     :ST_TRdense => (HessDense, PDataST, solve_modelST_TR, ()),
