@@ -16,7 +16,7 @@ end
 function decrease(X::PDataKARC, α::Float64, TR::TrustRegion)
     positives = findall(X.positives)
     X.indmin += 1 # the step wasn't successful so we need to change something
-    
+
     p_imin = positives[X.indmin]
     α2 = max(X.norm_dirs[p_imin] / X.shifts[p_imin], eps())
 
