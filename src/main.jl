@@ -7,7 +7,7 @@ struct TRARCWorkspace{T,S,Hess}
     ∇f::S
     ∇fnext::S
     Hstruct::Hess
-    function TRARCWorkspace(nlp::AbstractNLPModel{T, S}, ::Type{Hess}, n) where {T,S,Hess}
+    function TRARCWorkspace(nlp::AbstractNLPModel{T,S}, ::Type{Hess}, n) where {T,S,Hess}
         return new{T,S,Hess}(
             S(undef, n), # xt
             S(undef, n), # xtnext

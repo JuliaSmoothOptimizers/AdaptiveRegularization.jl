@@ -1,25 +1,25 @@
 struct HessDense
-    function HessDense(::AbstractNLPModel{T, S}, n) where {T,S}
+    function HessDense(::AbstractNLPModel{T,S}, n) where {T,S}
         return new()
     end
 end
 
-struct HessSparse{S, Vi}
+struct HessSparse{S,Vi}
     rows::Vi
     cols::Vi
     vals::S
-    function HessSparse(nlp::AbstractNLPModel{T, S}, n) where {T,S}
+    function HessSparse(nlp::AbstractNLPModel{T,S}, n) where {T,S}
         rows, cols = hess_structure(nlp)
         vals = S(undef, nlp.meta.nnzh)
-        return new{S, typeof(rows)}(rows, cols, vals)
+        return new{S,typeof(rows)}(rows, cols, vals)
     end
 end
 
-struct HessSparseCOO{Tv, Ti}
-    H::Symmetric{Tv, SparseMatrixCOO{Tv, Ti}}
+struct HessSparseCOO{Tv,Ti}
+    H::Symmetric{Tv,SparseMatrixCOO{Tv,Ti}}
 end
 
-function HessSparseCOO(nlp::AbstractNLPModel{T, S}, n) where {T,S}
+function HessSparseCOO(nlp::AbstractNLPModel{T,S}, n) where {T,S}
     rows, cols = hess_structure(nlp)
     vals = S(undef, nlp.meta.nnzh)
     H = Symmetric(SparseMatrixCOO(n, n, rows, cols, vals), :L)
@@ -28,7 +28,7 @@ end
 
 struct HessOp{S}
     Hv::S
-    function HessOp(::AbstractNLPModel{T, S}, n) where {T,S}
+    function HessOp(::AbstractNLPModel{T,S}, n) where {T,S}
         return new{S}(S(undef, n))
     end
 end

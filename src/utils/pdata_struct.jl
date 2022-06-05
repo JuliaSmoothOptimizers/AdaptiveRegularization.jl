@@ -17,8 +17,8 @@ mutable struct PDataKARC{T} <: PDataIter{T}
     ξ::T                      # Inexact Newton order parameter: stop when ||∇q|| < ξ * ||g||^(1+ζ)
     maxtol::T                 # Largest tolerance for Inexact Newton
     mintol::T                 # Smallest tolerance for Inexact Newton
-    cgatol
-    cgrtol
+    cgatol::Any
+    cgrtol::Any
 
     indmin::Int               # index of best shift value  within "positive". On first call = 0
 
@@ -84,8 +84,8 @@ mutable struct PDataKTR{T} <: PDataIter{T}
     ξ::T                      # Inexact Newton order parameter: stop when ||∇q|| < ξ * ||g||^(1+ζ)
     maxtol::T                 # Largest tolerance for Inexact Newton
     mintol::T                 # Smallest tolerance for Inexact Newton
-    cgatol
-    cgrtol
+    cgatol::Any
+    cgrtol::Any
 
     indmin::Int               # index of best shift value  within "positive". On first call = 0
 
@@ -151,8 +151,8 @@ mutable struct PDataST{S,T} <: PDataIter{T}
     ξ::T                      # Inexact Newton order parameter: stop when ||∇q|| < ξ * ||g||^(1+ζ)
     maxtol::T                 # Largest tolerance for Inexact Newton
     mintol::T                 # Smallest tolerance for Inexact Newton
-    cgatol
-    cgrtol
+    cgatol::Any
+    cgrtol::Any
 
     OK::Bool    # preprocess success
     solver::CgSolver
@@ -174,18 +174,7 @@ function PDataST(
     λ = zero(T)
     OK = true
     solver = CgSolver(n, n, S)
-    return PDataST(
-        d,
-        λ,
-        ζ,
-        ξ,
-        maxtol,
-        mintol,
-        cgatol,
-        cgrtol,
-        OK,
-        solver,
-    )
+    return PDataST(d, λ, ζ, ξ, maxtol, mintol, cgatol, cgrtol, OK, solver)
 end
 
 mutable struct PDataSpectral{T} <: PDataFact{T}
