@@ -4,7 +4,11 @@ function solve_modelKARC(H, g, nlp_stop, X::PDataKARC, α::T) where {T}
     if isnothing(start)
         start = 1
     end
-    positives = start:length(X.positives)
+    positives = if VERSION < v"1.7.0"
+        collect(start:length(X.positives))
+    else
+        start:length(X.positives)
+    end
     target = ((abs(α * X.shifts[i] - X.norm_dirs[i])) for i in positives)
 
     # pick the closest shift to the target within positive definite H+λI
