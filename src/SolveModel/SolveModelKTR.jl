@@ -5,12 +5,13 @@ function solve_modelKTR(H, g, nlp_stop, X::PDataKTR, α::T) where {T}
     if isnothing(start)
         start = 1
     end
-    positives = if VERSION < v"1.7.0"
-        collect(start:length(X.positives))
+    if VERSION < v"1.7.0"
+        positives = collect(start:length(X.positives))
+        target = [(abs(α * X.shifts[i] - X.norm_dirs[i])) for i in positives]
     else
-        start:length(X.positives)
+        positives = start:length(X.positives)
+        target = ((abs(α * X.shifts[i] - X.norm_dirs[i])) for i in positives)
     end
-    target = ((abs(α - X.norm_dirs[i])) for i in positives)
     # pick the closest shift to the target within positive definite H+λI
     # before, check the shift = 0 for direction within the trust region
 
