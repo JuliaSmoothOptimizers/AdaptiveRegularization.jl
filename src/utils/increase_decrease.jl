@@ -6,57 +6,51 @@ function increase(::TPData, α::T, TR::TrustRegion) where {T}
     return min(α * TR.increase_factor, TR.max_α)
 end
 
-# X.indmin is between 1 and length(positives)
-# p_imin is between 1 and nshifts
-function decrease(X::PDataKARC, α::Float64, TR::TrustRegion)
-    positives = findall(X.positives)
+# X.indmin is between 1 and nshifts
+function decrease(X::PDataKARC, α::T, TR::TrustRegion) where {T}
     X.indmin += 1 # the step wasn't successful so we need to change something
-
-    p_imin = positives[X.indmin]
-    α2 = max(X.norm_dirs[p_imin] / X.shifts[p_imin], eps())
+    α2 = max(X.norm_dirs[X.indmin] / X.shifts[X.indmin], eps(T))
 
     targetα = α * TR.decrease_factor
 
     # fix α to its "ideal" value to satisfy αλ=||d||
     # while ensuring α decreases enough
-    while α2 > targetα && X.indmin < length(positives)
+    last = findlast(X.positives)
+    while α2 > targetα && X.indmin < last
         X.indmin += 1
-        p_imin = positives[X.indmin]
-        α2 = max(X.norm_dirs[p_imin] / X.shifts[p_imin], eps())
+        α2 = max(X.norm_dirs[X.indmin] / X.shifts[X.indmin], eps(T))
     end
 
-    if X.indmin == length(positives) & (α2 > targetα) # p_imin == length(positives)
+    if X.indmin == last & (α2 > targetα)
         @warn "PreProcessKARC failure: α2=$α2"
     end
 
-    X.d = X.xShift[p_imin]
-    X.λ = X.shifts[p_imin]
+    X.d .= X.xShift[X.indmin]
+    X.λ = X.shifts[X.indmin]
 
     return α2
 end
 
-function decrease(X::PDataKTR, α::Float64, TR::TrustRegion)
+function decrease(X::PDataKTR, α::T, TR::TrustRegion) where {T}
     X.indmin += 1
-    positives = findall(X.positives)
-    p_imin = positives[X.indmin]
-    α2 = X.norm_dirs[p_imin]
+    α2 = X.norm_dirs[X.indmin]
 
     # fix α to its "ideal" value to satisfy α=||d||
     # while ensuring α decreases enough
     targetα = α * TR.decrease_factor
 
-    while α2 > targetα && p_imin < length(positives)
+    last = findlast(X.positives)
+    while α2 > targetα && X.indmin < last
         X.indmin += 1
-        p_imin = positives[X.indmin]
-        α2 = X.norm_dirs[p_imin]
+        α2 = X.norm_dirs[X.indmin]
     end
 
-    if p_imin == length(positives)
+    if X.indmin == last
         @warn "PreProcessKTR failure: α2=$α2"
     end
 
-    X.d = X.xShift[p_imin]
-    X.λ = X.shifts[p_imin]
+    X.d .= X.xShift[X.indmin]
+    X.λ = X.shifts[X.indmin]
 
     return α2
 end
