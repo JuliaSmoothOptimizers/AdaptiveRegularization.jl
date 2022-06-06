@@ -26,15 +26,26 @@ function TRARC(
     TR::TrustRegion = TrustRegion(T(10.0)),
     hess_type::Type{Hess} = HessDense,
     pdata_type::Type{ParamData} = PDataLDLt,
+    kwargs...,
+) where {Pb,M,SRC,MStp,LoS,S,T,Hess,ParamData}
+    nlp = nlp_stop.pb
+
+    PData = ParamData(S, T, nlp.meta.nvar; kwargs...)
+    workspace = TRARCWorkspace(nlp, Hess, nlp.meta.nvar)
+    return TRARC(nlp_stop, PData, workspace, TR; kwargs...)
+end
+
+function TRARC(
+    nlp_stop::NLPStopping{Pb,M,SRC,NLPAtX{T,S},MStp,LoS},
+    PData::ParamData,
+    workspace::TRARCWorkspace{T,S,Hess},
+    TR::TrustRegion;
     solve_model::Function = solve_modelTRDiag,
     robust::Bool = true,
     verbose::Bool = false,
     kwargs...,
 ) where {Pb,M,SRC,MStp,LoS,S,T,Hess,ParamData}
     nlp, nlp_at_x = nlp_stop.pb, nlp_stop.current_state
-
-    PData = ParamData(S, T, nlp.meta.nvar; kwargs...)
-    workspace = TRARCWorkspace(nlp, Hess, nlp.meta.nvar)
     xt, xtnext, d, ∇f, ∇fnext =
         workspace.xt, workspace.xtnext, workspace.d, workspace.∇f, workspace.∇fnext
 
