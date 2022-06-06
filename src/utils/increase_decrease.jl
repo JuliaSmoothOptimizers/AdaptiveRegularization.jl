@@ -6,11 +6,6 @@ function increase(::TPData, α::T, TR::TrustRegion) where {T}
     return min(α * TR.increase_factor, TR.max_α)
 end
 
-function decrease(X::PDataFact, α::T, TR::TrustRegion) where {T}
-    X.success = false
-    return α * TR.decrease_factor
-end
-
 # X.indmin is between 1 and length(positives)
 # p_imin is between 1 and nshifts
 function decrease(X::PDataKARC, α::Float64, TR::TrustRegion)
