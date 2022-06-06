@@ -18,7 +18,7 @@ mutable struct TrustRegion{T}
 
     function TrustRegion(
         α₀::T;
-        max_α::T = T(1.0) / sqrt(eps(T)),
+        max_α::T = T(1) / sqrt(eps(T)),
         acceptance_threshold::T = T(0.1),
         increase_threshold::T = T(0.75),
         reduce_threshold::T = T(0.1),
@@ -27,11 +27,11 @@ mutable struct TrustRegion{T}
         max_unsuccinarow::Int = 30,
     ) where {T}
 
-        α₀ > T(0.0) || (α₀ = T(1.0))
+        α₀ > T(0) || (α₀ = T(1))
         max_α > α₀ || throw(TrustRegionException("Invalid α₀"))
-        (T(0.0) < acceptance_threshold < increase_threshold < T(1.0)) ||
+        (T(0) < acceptance_threshold < increase_threshold < T(1)) ||
             throw(TrustRegionException("Invalid thresholds"))
-        (T(0.0) < decrease_factor < T(1.0) < increase_factor) ||
+        (T(0) < decrease_factor < T(1) < increase_factor) ||
             throw(TrustRegionException("Invalid decrease/increase factors"))
 
         return new{T}(

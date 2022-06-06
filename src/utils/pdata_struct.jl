@@ -176,25 +176,3 @@ function PDataST(
     solver = CgSolver(n, n, S)
     return PDataST(d, λ, ζ, ξ, maxtol, mintol, cgatol, cgrtol, OK, solver)
 end
-
-mutable struct PDataSpectral{T} <: PDataFact{T}
-    V::Array{T,2}           # orthogonal matrix, eigenvectors of Hessian matrix
-    Δ::Array{T,1}           # eigenvalues of Hessian matrix
-    g̃::Array{T,1}           # transformed gradient
-    λ::T
-    success::Bool           # previous iteration was successfull
-    OK::Bool                # preprocess success
-
-    PDataSpectral() = new{T}()
-    PDataSpectral(V, Λ, g, l, success, OK) = new{eltype(V)}(V, Λ, g, l, success, OK)
-end
-
-function PDataSpectral(::Type{S}, ::Type{T}, n; kwargs...) where {S,T}
-    V = Array{T,2}(undef, n, n) # ::Array{T,2}          # could be sparse
-    Δ = Array{T,1}(undef, n) #::Array{T,1}          # diagonal, eigenvalues of D
-    g̃ = Array{T,1}(undef, n) #::Array{T,1}           # transformed gradient
-    λ = zero(T) # ::T
-    success = true::Bool                 # previous iteration was successfull
-    OK = true
-    return PDataSpectral(V, Δ, g̃, λ, success, OK)
-end
