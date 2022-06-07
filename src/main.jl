@@ -104,7 +104,7 @@ function TRARC(
                 verbose && @info log_row(Any[iter, ft, norm_∇f, λ, "VU", α, norm(d), Δq])
                 unsucc += 1
                 unsuccinarow += 1
-                η = (1 - acceptance_threshold)/10 # ∈ (acceptance_threshold, 1)
+                η = (1 - acceptance_threshold) / 10 # ∈ (acceptance_threshold, 1)
                 qksk = ft + slope + 0.5 * (nlp_at_x.Hx * d) ⋅ d
                 αbad = (1 - η) * slope / ((1 - η) * (ft + slope) + η * qksk - ftnext)
                 α = min(decrease(PData, α, TR), max(TR.large_decrease_factor, αbad) * α)
@@ -129,14 +129,12 @@ function TRARC(
                 verysucc += 1
                 if r > increase_threshold # very sucessful
                     α = increase(PData, α, TR)
-                    verbose &&
-                        @info log_row(Any[iter, ft, norm_∇f, λ, "V", α, norm(d), Δq])
+                    verbose && @info log_row(Any[iter, ft, norm_∇f, λ, "V", α, norm(d), Δq])
                 else # sucessful
                     if r < reduce_threshold
                         α = decrease(PData, α, TR)
                     end
-                    verbose &&
-                        @info log_row(Any[iter, ft, norm_∇f, λ, "S", α, norm(d), Δq])
+                    verbose && @info log_row(Any[iter, ft, norm_∇f, λ, "S", α, norm(d), Δq])
                     succ += 1
                 end
             end
