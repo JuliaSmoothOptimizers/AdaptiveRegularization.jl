@@ -1,4 +1,4 @@
-function solve_modelST_TR(H, g, nlp_stop, PData::PDataST, δ::T; cgtol::T = 0.1) where {T}
+function solve_modelST_TR(H, g, nlp_stop, PData::PDataST, δ::T) where {T}
     # cas particulier Steihaug-Toint
     # ϵ = sqrt(eps(T)) # * 100.0 # old
     # cgtol = max(ϵ, min(cgtol, 9 * cgtol / 10, 0.01 * norm(g)^(1.0 + PData.ζ))) # old
