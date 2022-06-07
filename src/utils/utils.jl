@@ -14,6 +14,7 @@ mutable struct TrustRegion{T}
     reduce_threshold::T
     increase_factor::T
     decrease_factor::T
+    large_decrease_factor::T
     max_unsuccinarow::Int
 
     function TrustRegion(
@@ -24,6 +25,7 @@ mutable struct TrustRegion{T}
         reduce_threshold::T = T(0.1),
         increase_factor::T = T(5.0),
         decrease_factor::T = T(0.1),
+        large_decrease_factor::T = T(0.01),
         max_unsuccinarow::Int = 30,
     ) where {T}
 
@@ -43,6 +45,7 @@ mutable struct TrustRegion{T}
             reduce_threshold,
             increase_factor,
             decrease_factor,
+            large_decrease_factor,
             max_unsuccinarow,
         )
     end
