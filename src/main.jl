@@ -88,17 +88,9 @@ function TRARC(
         while !success & (unsuccinarow < max_unsuccinarow)
             d, λ = solve_model(nlp_at_x.Hx, ∇f, norm_∇f, nlp_stop, PData, α) # Est-ce que d et λ ne sont pas dans PData ?
 
-            Δq = -(∇f + 0.5 * nlp_at_x.Hx * d) ⋅ d
-
-            if Δq < 0.0
-                println("*******   Ascent direction in SolveModel: Δq = $Δq")
-                println(
-                    "  g⋅d = $(∇f⋅d), 0.5 d'Hd = $(0.5*(nlp_at_x.Hx*d)⋅d)  α = $α  λ = $λ",
-                )
-                # cond issue with H?
-                return nlp_stop
-            end
             slope = ∇f ⋅ d
+            Δq = -(∇f + 0.5 * (nlp_at_x.Hx * d)) ⋅ d
+
             xtnext .= xt .+ d
             ftnext = obj(nlp, xtnext)
             Δf = ft - ftnext
@@ -108,7 +100,15 @@ function TRARC(
             r, good_grad, ∇fnext =
                 compute_r(nlp, ft, Δf, Δq, slope, d, xtnext, ∇fnext, robust)
 
-            if r < acceptance_threshold # unsucessful
+            if Δq < 0.0 # very unsucessful
+                verbose && @info log_row(Any[iter, ft, norm_∇f, λ, "VU", α, norm(d), Δq])
+                unsucc += 1
+                unsuccinarow += 1
+                η = (1 - acceptance_threshold)/10 # ∈ (acceptance_threshold, 1)
+                qksk = ft + slope + 0.5 * (nlp_at_x.Hx * d) ⋅ d
+                αbad = (1 - η) * slope / ((1 - η) * (ft + slope) + η * qksk - ftnext)
+                α = min(decrease(PData, α, TR), max(TR.large_decrease_factor, αbad) * α)
+            elseif r < acceptance_threshold # unsucessful
                 verbose && @info log_row(Any[iter, ft, norm_∇f, λ, "U", α, norm(d), Δq])
                 unsucc += 1
                 unsuccinarow += 1
