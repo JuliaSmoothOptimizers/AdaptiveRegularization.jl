@@ -19,8 +19,6 @@ struct TRARCWorkspace{T,S,Hess}
     end
 end
 
-stop_norm(x) = norm(x, 2)
-
 function TRARC(
     nlp_stop::NLPStopping{Pb,M,SRC,NLPAtX{T,S},MStp,LoS};
     TR::TrustRegion = TrustRegion(T(10.0)),
@@ -79,7 +77,7 @@ function TRARC(
 
     while !OK
         max_hprod = nlp_stop.meta.max_cntrs[:neval_hprod]
-        PData = preprocess(PData, nlp_at_x.Hx, ∇f, neval_hprod(nlp), max_hprod, α)
+        PData = preprocess(PData, nlp_at_x.Hx, ∇f, norm_∇f, neval_hprod(nlp), max_hprod, α)
 
         if ~PData.OK
             @warn("Something wrong with PData")
@@ -88,7 +86,7 @@ function TRARC(
 
         success = false
         while !success & (unsuccinarow < max_unsuccinarow)
-            d, λ = solve_model(nlp_at_x.Hx, ∇f, nlp_stop, PData, α) # Est-ce que d et λ ne sont pas dans PData ?
+            d, λ = solve_model(nlp_at_x.Hx, ∇f, norm_∇f, nlp_stop, PData, α) # Est-ce que d et λ ne sont pas dans PData ?
 
             Δq = -(∇f + 0.5 * nlp_at_x.Hx * d) ⋅ d
 
@@ -126,18 +124,19 @@ function TRARC(
                 else
                     grad!(nlp, xt, ∇f)
                 end
+                norm_∇f = norm(∇f)
 
                 verysucc += 1
                 if r > increase_threshold # very sucessful
                     α = increase(PData, α, TR)
                     verbose &&
-                        @info log_row(Any[iter, ft, stop_norm(∇f), λ, "V", α, norm(d), Δq])
+                        @info log_row(Any[iter, ft, norm_∇f, λ, "V", α, norm(d), Δq])
                 else # sucessful
                     if r < reduce_threshold
                         α = decrease(PData, α, TR)
                     end
                     verbose &&
-                        @info log_row(Any[iter, ft, stop_norm(∇f), λ, "S", α, norm(d), Δq])
+                        @info log_row(Any[iter, ft, norm_∇f, λ, "S", α, norm(d), Δq])
                     succ += 1
                 end
             end
