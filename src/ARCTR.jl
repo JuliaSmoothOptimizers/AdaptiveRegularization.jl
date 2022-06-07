@@ -50,12 +50,12 @@ for fun in keys(solvers_const)
         end
     end
     @eval begin
-        function $fun(nlp::AbstractNLPModel; kwargs...)
+        function $fun(nlp::AbstractNLPModel{T,S}; kwargs...) where {T,S}
             # https://github.com/vepiteski/Stopping.jl/blob/4036e996be4e9521bb40725a659a03d23fd70e03/src/Stopping/nlp_admissible_functions.jl#L12
             nlpstop = NLPStopping(
                 nlp;
                 optimality_check = (pb, state) ->
-                    unconstrained_check(pb, state, pnorm = 2.0),
+                    unconstrained_check(pb, state, pnorm = T(2)),
                 kwargs...,
             )
             nlpstop = $fun(nlpstop; kwargs...)
