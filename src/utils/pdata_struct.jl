@@ -6,7 +6,7 @@ abstract type PDataFact{T} <: TPData{T} end # Variants using matricial factoriza
 
 abstract type PDataIter{T} <: TPData{T} end # Variants using iterative (Krylov) solvers
 
-function preprocess(PData::TPData, H, g, n1, n2, α)
+function preprocess(PData::TPData, H, g, gNorm2, n1, n2, α)
     return PData
 end
 

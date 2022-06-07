@@ -1,5 +1,5 @@
 export solve_modelKTR
-function solve_modelKTR(H, g, nlp_stop, X::PDataKTR, α::T) where {T}
+function solve_modelKTR(H, g, gNorm2, nlp_stop, X::PDataKTR, α::T) where {T}
     # target value should be close to satisfy α=||d||
     start = findfirst(X.positives)
     if isnothing(start)
