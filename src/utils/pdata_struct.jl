@@ -1,15 +1,50 @@
-export PDataKTR, PDataKARC, PDataST, PDataSpectral
+export PDataKTR, PDataKARC, PDataST
 
-abstract type TPData{T} end  # Ancestor of all PreProcess data
+abstract type TPData{T} end
 
 abstract type PDataFact{T} <: TPData{T} end # Variants using matricial factorization
 
 abstract type PDataIter{T} <: TPData{T} end # Variants using iterative (Krylov) solvers
 
+"""
+    preprocess(PData::TPData, H, g, gNorm2, n1, n2, α)
+
+Function called in the `TRARC` algorithm every time a new iterate has been accepted.
+# Arguments
+- `PData::TPData`: data structure used for preprocessing.
+- `H`: current Hessian matrix.
+- `g`: current gradient.
+- `gNorm2`: 2-norm of the gradient.
+- `n1`: Current count on the number of Hessian-vector products.
+- `n2`: Maximum number of Hessian-vector products accepted.
+- `α`: current value of the TR/ARC parameter.
+
+It returns `PData`.
+"""
 function preprocess(PData::TPData, H, g, gNorm2, n1, n2, α)
     return PData
 end
 
+"""
+    solve_model(H, g, gNorm2, nlp_stop, PData::TPData, α)
+
+Function called in the `TRARC` algorithm to solve the subproblem.
+# Arguments
+- `PData::TPData`: data structure used for preprocessing.
+- `H`: current Hessian matrix.
+- `g`: current gradient.
+- `gNorm2`: 2-norm of the gradient.
+- `nlp_stop`: Current `NLPStopping` representing the problem.
+- `α`: current value of the TR/ARC parameter.
+
+It returns a couple `(PData.d, PData.λ)`. Current implementations include: `solve_modelKARC`, `solve_modelKTR`, `solve_modelST_TR`.
+"""
+function solve_model(H, g, gNorm2, nlp_stop, X::TPData, α) end
+
+"""
+    PDataKARC(::Type{S}, ::Type{T}, n)
+Return a structure used for the preprocessing of ARCqK methods.
+"""
 mutable struct PDataKARC{T} <: PDataIter{T}
     d::Array{T,1}             # (H+λI)\g ; on first call = g
     λ::T                      # "active" value of λ; on first call = 0
@@ -77,6 +112,10 @@ function PDataKARC(
     )
 end
 
+"""
+    PDataKTR(::Type{S}, ::Type{T}, n)
+Return a structure used for the preprocessing of TRK methods.
+"""
 mutable struct PDataKTR{T} <: PDataIter{T}
     d::Array{T,1}             # (H+λI)\g ; on first call = g
     λ::T                      # "active" value of λ; on first call = 0
@@ -144,6 +183,10 @@ function PDataKTR(
     )
 end
 
+"""
+    PDataST(::Type{S}, ::Type{T}, n)
+Return a structure used for the preprocessing of Steihaug-Toint methods.
+"""
 mutable struct PDataST{S,T} <: PDataIter{T}
     d::S
     λ::T

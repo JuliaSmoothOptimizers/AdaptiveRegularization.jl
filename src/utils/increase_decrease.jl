@@ -1,7 +1,17 @@
+"""
+    decrease(X::TPData, α::T, TR::TrustRegion)
+
+Return a decreased `α`.
+"""
 function decrease(X::TPData, α::T, TR::TrustRegion) where {T}
     return α * TR.decrease_factor
 end
 
+"""
+    increase(X::TPData, α::T, TR::TrustRegion)
+
+Return an increased `α`.
+"""
 function increase(::TPData, α::T, TR::TrustRegion) where {T}
     return min(α * TR.increase_factor, TR.max_α)
 end
