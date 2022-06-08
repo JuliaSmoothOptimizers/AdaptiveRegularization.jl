@@ -1,5 +1,9 @@
-export TRARC
-
+"""
+    TRARCWorkspace(nlp, ::Type{Hess}, n)
+Pre-allocate the memory used during the [`TRARC`](@ref) call for the problem `nlp` of size `n`.
+The possible values for `Hess` are: `HessDense`, `HessSparse`, `HessSparseCOO`, `HessOp`.
+Return a `TRARCWorkspace` structure.
+"""
 struct TRARCWorkspace{T,S,Hess}
     xt::S
     xtnext::S
@@ -22,8 +26,8 @@ end
 function TRARC(
     nlp_stop::NLPStopping{Pb,M,SRC,NLPAtX{T,S},MStp,LoS};
     TR::TrustRegion = TrustRegion(T(10.0)),
-    hess_type::Type{Hess} = HessDense,
-    pdata_type::Type{ParamData} = PDataLDLt,
+    hess_type::Type{Hess} = HessOp,
+    pdata_type::Type{ParamData} = PDataKARC,
     kwargs...,
 ) where {Pb,M,SRC,MStp,LoS,S,T,Hess,ParamData}
     nlp = nlp_stop.pb
@@ -38,7 +42,7 @@ function TRARC(
     PData::ParamData,
     workspace::TRARCWorkspace{T,S,Hess},
     TR::TrustRegion;
-    solve_model::Function = solve_modelTRDiag,
+    solve_model::Function = solve_modelKARC,
     robust::Bool = true,
     verbose::Bool = false,
     kwargs...,
