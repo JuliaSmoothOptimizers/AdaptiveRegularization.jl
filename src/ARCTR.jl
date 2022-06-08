@@ -107,7 +107,11 @@ for fun in keys(solvers_const)
     end
     @eval begin
         function $fun(nlp::AbstractNLPModel{T,S}; kwargs...) where {T,S}
-            nlpstop = NLPStopping(nlp; optimality_check = (pb, state) -> norm(state.gx), kwargs...)
+            nlpstop = NLPStopping(
+                nlp;
+                optimality_check = (pb, state) -> norm(state.gx),
+                kwargs...,
+            )
             nlpstop = $fun(nlpstop; kwargs...)
             return stopping_to_stats(nlpstop)
         end
