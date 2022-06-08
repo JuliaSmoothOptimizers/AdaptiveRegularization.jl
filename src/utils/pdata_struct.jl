@@ -1,4 +1,4 @@
-export PDataKTR, PDataKARC, PDataST
+export PDataTRK, PDataKARC, PDataST
 
 abstract type TPData{T} end
 
@@ -37,7 +37,7 @@ Function called in the `TRARC` algorithm to solve the subproblem.
 - `nlp_stop`: Current `NLPStopping` representing the problem.
 - `α`: current value of the TR/ARC parameter.
 
-It returns a couple `(PData.d, PData.λ)`. Current implementations include: `solve_modelKARC`, `solve_modelKTR`, `solve_modelST_TR`.
+It returns a couple `(PData.d, PData.λ)`. Current implementations include: `solve_modelKARC`, `solve_modelTRK`, `solve_modelST_TR`.
 """
 function solve_model(H, g, gNorm2, nlp_stop, X::TPData, α) end
 
@@ -113,10 +113,10 @@ function PDataKARC(
 end
 
 """
-    PDataKTR(::Type{S}, ::Type{T}, n)
+    PDataTRK(::Type{S}, ::Type{T}, n)
 Return a structure used for the preprocessing of TRK methods.
 """
-mutable struct PDataKTR{T} <: PDataIter{T}
+mutable struct PDataTRK{T} <: PDataIter{T}
     d::Array{T,1}             # (H+λI)\g ; on first call = g
     λ::T                      # "active" value of λ; on first call = 0
     ζ::T                      # Inexact Newton order parameter: stop when ||∇q|| < ξ * ||g||^(1+ζ)
@@ -138,7 +138,7 @@ mutable struct PDataKTR{T} <: PDataIter{T}
     solver::CgLanczosShiftSolver
 end
 
-function PDataKTR(
+function PDataTRK(
     ::Type{S},
     ::Type{T},
     n;
@@ -163,7 +163,7 @@ function PDataKTR(
     norm_dirs = S(undef, nshifts)
     OK = true
     solver = CgLanczosShiftSolver(n, n, nshifts, S)
-    return PDataKTR(
+    return PDataTRK(
         d,
         λ,
         ζ,
