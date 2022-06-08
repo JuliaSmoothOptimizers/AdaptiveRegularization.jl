@@ -1,4 +1,4 @@
-solvers_const = Dict(
+const solvers_const = Dict(
     :ARCqKdense => (
         HessDense,
         PDataKARC,
