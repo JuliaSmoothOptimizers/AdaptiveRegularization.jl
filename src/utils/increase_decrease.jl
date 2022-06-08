@@ -41,7 +41,7 @@ function decrease(X::PDataKARC, α::T, TR::TrustRegion) where {T}
     return α2
 end
 
-function decrease(X::PDataKTR, α::T, TR::TrustRegion) where {T}
+function decrease(X::PDataTRK, α::T, TR::TrustRegion) where {T}
     X.indmin += 1
     α2 = X.norm_dirs[X.indmin]
 
@@ -56,7 +56,7 @@ function decrease(X::PDataKTR, α::T, TR::TrustRegion) where {T}
     end
 
     if X.indmin == last
-        @warn "PreProcessKTR failure: α2=$α2"
+        @warn "PreProcessTRK failure: α2=$α2"
     end
 
     X.d .= X.xShift[X.indmin]

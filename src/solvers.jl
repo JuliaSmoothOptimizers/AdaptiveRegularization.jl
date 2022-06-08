@@ -26,7 +26,7 @@ const solvers_const = Dict(
     :ST_TRdense => (HessDense, PDataST, solve_modelST_TR, ()),
     :ST_TROp => (HessOp, PDataST, solve_modelST_TR, ()),
     :ST_TRsparse => (HessSparse, PDataST, solve_modelST_TR, ()),
-    :TRKdense => (HessDense, PDataKTR, solve_modelKTR, ()),
-    :TRKOp => (HessOp, PDataKTR, solve_modelKTR, ()),
-    :TRKsparse => (HessSparse, PDataKTR, solve_modelKTR, ()),
+    :TRKdense => (HessDense, PDataTRK, solve_modelTRK, ()),
+    :TRKOp => (HessOp, PDataTRK, solve_modelTRK, ()),
+    :TRKsparse => (HessSparse, PDataTRK, solve_modelTRK, ()),
 )
