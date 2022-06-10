@@ -9,7 +9,7 @@ TR = TrustRegion(T(10))
 
 for XData in (
     PDataKARC(S, T, n),
-    PDataKTR(S, T, n),
+    PDataTRK(S, T, n),
     PDataST(S, T, n),
     # PDataSpectral(S, T, n),
 )
@@ -42,7 +42,7 @@ for (Data, solve, limit_solve, limit_preprocess) in (
   # (PDataSpectral(S, T, n), :solve_modelARCDiag),
   # (PDataSpectral(S, T, n), :solve_modelARCDiagAbs),
   (PDataKARC, :solve_modelKARC, 96, 2288),
-  (PDataKTR, :solve_modelKTR, 96, 2336),
+  (PDataTRK, :solve_modelTRK, 96, 2336),
   (PDataST, :solve_modelST_TR, 544, 0),
   #(PDataSpectral, :solve_modelTRDiag, 5408, 279328),
   #(PDataSpectral, :solve_modelTRDiagAbs, 5408, 279328),

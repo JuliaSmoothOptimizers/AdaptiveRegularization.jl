@@ -72,14 +72,14 @@ TRnothing = TrustRegion(10., max_unsuccinarow = 2)
 nlp = stp.pb
 S, T = typeof(x0), eltype(x0)
 PData = NothingPData(S, T, nlp.meta.nvar)
-workspace = ARCTR.TRARCWorkspace(nlp, HessOp, nlp.meta.nvar)
+workspace = ARCTR.TRARCWorkspace(nlp, HessOp)
 
 alloc_ARCTR(stp, PData, workspace, TRnothing, solve_nothing) = @allocated TRARC(stp, PData, workspace, TRnothing,  solve_model = solve_nothing)
 alloc_ARCTR(stp, PData, workspace, TRnothing, solve_nothing)
 alloc_ARCTR(stp, PData, workspace, TRnothing, solve_nothing)
 @show alloc_ARCTR(stp, PData, workspace, TRnothing, solve_nothing) # 11192
 
-workspace = ARCTR.TRARCWorkspace(nlp, HessSparseCOO, nlp.meta.nvar)
+workspace = ARCTR.TRARCWorkspace(nlp, HessSparseCOO)
 
 alloc_ARCTR_COO(stp, PData, workspace, TRnothing, solve_nothing) = @allocated TRARC(stp, PData, workspace, TRnothing,  solve_model = solve_nothing)
 alloc_ARCTR_COO(stp, PData, workspace, TRnothing, solve_nothing) 
