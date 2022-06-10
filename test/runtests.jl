@@ -29,3 +29,6 @@ for solver in ALL_solvers
     @test stats.status == :first_order
     reset!(nlp)
 end
+
+include("allocation_test.jl")
+include("allocation_test_main.jl")
