@@ -1,4 +1,4 @@
-solvers_const = Dict(
+const solvers_const = Dict(
     :ARCqKdense => (
         HessDense,
         PDataKARC,
@@ -17,14 +17,16 @@ solvers_const = Dict(
         solve_modelKARC,
         [:shifts => 10.0 .^ (collect(-20.0:1.0:20.0))],
     ),
-    :ARCSpectral_abs => (HessDense, PDataSpectral, solve_modelARCDiagAbs, ()),
-    :ARCSpectral => (HessDense, PDataSpectral, solve_modelARCDiag, ()),
+    :ARCqKCOO => (
+        HessSparseCOO,
+        PDataKARC,
+        solve_modelKARC,
+        [:shifts => 10.0 .^ (collect(-20.0:1.0:20.0))],
+    ),
     :ST_TRdense => (HessDense, PDataST, solve_modelST_TR, ()),
     :ST_TROp => (HessOp, PDataST, solve_modelST_TR, ()),
     :ST_TRsparse => (HessSparse, PDataST, solve_modelST_TR, ()),
-    :TRKdense => (HessDense, PDataKTR, solve_modelKTR, ()),
-    :TRKOp => (HessOp, PDataKTR, solve_modelKTR, ()),
-    :TRKsparse => (HessSparse, PDataKTR, solve_modelKTR, ()),
-    :TRSpectral_abs => (HessDense, PDataSpectral, solve_modelTRDiagAbs, ()),
-    :TRSpectral => (HessDense, PDataSpectral, solve_modelTRDiag, ()),
+    :TRKdense => (HessDense, PDataTRK, solve_modelTRK, ()),
+    :TRKOp => (HessOp, PDataTRK, solve_modelTRK, ()),
+    :TRKsparse => (HessSparse, PDataTRK, solve_modelTRK, ()),
 )

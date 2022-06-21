@@ -1,15 +1,50 @@
-export PDataKTR, PDataKARC, PDataST, PDataSpectral
+export PDataTRK, PDataKARC, PDataST
 
-abstract type TPData{T} end  # Ancestor of all PreProcess data
+abstract type TPData{T} end
 
 abstract type PDataFact{T} <: TPData{T} end # Variants using matricial factorization
 
 abstract type PDataIter{T} <: TPData{T} end # Variants using iterative (Krylov) solvers
 
-function preprocess(PData::TPData, H, g, n1, n2, α)
+"""
+    preprocess(PData::TPData, H, g, gNorm2, n1, n2, α)
+
+Function called in the `TRARC` algorithm every time a new iterate has been accepted.
+# Arguments
+- `PData::TPData`: data structure used for preprocessing.
+- `H`: current Hessian matrix.
+- `g`: current gradient.
+- `gNorm2`: 2-norm of the gradient.
+- `n1`: Current count on the number of Hessian-vector products.
+- `n2`: Maximum number of Hessian-vector products accepted.
+- `α`: current value of the TR/ARC parameter.
+
+It returns `PData`.
+"""
+function preprocess(PData::TPData, H, g, gNorm2, n1, n2, α)
     return PData
 end
 
+"""
+    solve_model(H, g, gNorm2, nlp_stop, PData::TPData, α)
+
+Function called in the `TRARC` algorithm to solve the subproblem.
+# Arguments
+- `PData::TPData`: data structure used for preprocessing.
+- `H`: current Hessian matrix.
+- `g`: current gradient.
+- `gNorm2`: 2-norm of the gradient.
+- `nlp_stop`: Current `NLPStopping` representing the problem.
+- `α`: current value of the TR/ARC parameter.
+
+It returns a couple `(PData.d, PData.λ)`. Current implementations include: `solve_modelKARC`, `solve_modelTRK`, `solve_modelST_TR`.
+"""
+function solve_model(H, g, gNorm2, nlp_stop, X::TPData, α) end
+
+"""
+    PDataKARC(::Type{S}, ::Type{T}, n)
+Return a structure used for the preprocessing of ARCqK methods.
+"""
 mutable struct PDataKARC{T} <: PDataIter{T}
     d::Array{T,1}             # (H+λI)\g ; on first call = g
     λ::T                      # "active" value of λ; on first call = 0
@@ -17,8 +52,8 @@ mutable struct PDataKARC{T} <: PDataIter{T}
     ξ::T                      # Inexact Newton order parameter: stop when ||∇q|| < ξ * ||g||^(1+ζ)
     maxtol::T                 # Largest tolerance for Inexact Newton
     mintol::T                 # Smallest tolerance for Inexact Newton
-    cgatol
-    cgrtol
+    cgatol::Any
+    cgrtol::Any
 
     indmin::Int               # index of best shift value  within "positive". On first call = 0
 
@@ -39,10 +74,10 @@ function PDataKARC(
     ζ = T(0.5),
     ξ = T(0.01),
     maxtol = T(0.01),
-    mintol = (1.0e-8),
+    mintol = sqrt(eps(T)),
     cgatol = (ζ, ξ, maxtol, mintol, gNorm2) -> max(mintol, min(maxtol, ξ * gNorm2^(1 + ζ))),
     cgrtol = (ζ, ξ, maxtol, mintol, gNorm2) -> max(mintol, min(maxtol, ξ * gNorm2^ζ)),
-    shifts = T.(10.0 .^ collect(-20.0:1.0:20.0)),
+    shifts = 10.0 .^ collect(-20.0:1.0:20.0),
     kwargs...,
 ) where {S,T}
     d = S(undef, n)
@@ -69,7 +104,7 @@ function PDataKARC(
         indmin,
         positives,
         xShift,
-        shifts,
+        T.(shifts),
         nshifts,
         norm_dirs,
         OK,
@@ -77,15 +112,19 @@ function PDataKARC(
     )
 end
 
-mutable struct PDataKTR{T} <: PDataIter{T}
+"""
+    PDataTRK(::Type{S}, ::Type{T}, n)
+Return a structure used for the preprocessing of TRK methods.
+"""
+mutable struct PDataTRK{T} <: PDataIter{T}
     d::Array{T,1}             # (H+λI)\g ; on first call = g
     λ::T                      # "active" value of λ; on first call = 0
     ζ::T                      # Inexact Newton order parameter: stop when ||∇q|| < ξ * ||g||^(1+ζ)
     ξ::T                      # Inexact Newton order parameter: stop when ||∇q|| < ξ * ||g||^(1+ζ)
     maxtol::T                 # Largest tolerance for Inexact Newton
     mintol::T                 # Smallest tolerance for Inexact Newton
-    cgatol
-    cgrtol
+    cgatol::Any
+    cgrtol::Any
 
     indmin::Int               # index of best shift value  within "positive". On first call = 0
 
@@ -99,14 +138,14 @@ mutable struct PDataKTR{T} <: PDataIter{T}
     solver::CgLanczosShiftSolver
 end
 
-function PDataKTR(
+function PDataTRK(
     ::Type{S},
     ::Type{T},
     n;
     ζ = T(0.5),
     ξ = T(0.01),
     maxtol = T(0.01),
-    mintol = T(1.0e-8),
+    mintol = sqrt(eps(T)),
     cgatol = (ζ, ξ, maxtol, mintol, gNorm2) -> max(mintol, min(maxtol, ξ * gNorm2^(1 + ζ))),
     cgrtol = (ζ, ξ, maxtol, mintol, gNorm2) -> max(mintol, min(maxtol, ξ * gNorm2^ζ)),
     shifts = T[0.0; 10.0 .^ (collect(-20.0:1.0:20.0))],
@@ -124,7 +163,7 @@ function PDataKTR(
     norm_dirs = S(undef, nshifts)
     OK = true
     solver = CgLanczosShiftSolver(n, n, nshifts, S)
-    return PDataKTR(
+    return PDataTRK(
         d,
         λ,
         ζ,
@@ -144,6 +183,10 @@ function PDataKTR(
     )
 end
 
+"""
+    PDataST(::Type{S}, ::Type{T}, n)
+Return a structure used for the preprocessing of Steihaug-Toint methods.
+"""
 mutable struct PDataST{S,T} <: PDataIter{T}
     d::S
     λ::T
@@ -151,8 +194,8 @@ mutable struct PDataST{S,T} <: PDataIter{T}
     ξ::T                      # Inexact Newton order parameter: stop when ||∇q|| < ξ * ||g||^(1+ζ)
     maxtol::T                 # Largest tolerance for Inexact Newton
     mintol::T                 # Smallest tolerance for Inexact Newton
-    cgatol
-    cgrtol
+    cgatol::Any
+    cgrtol::Any
 
     OK::Bool    # preprocess success
     solver::CgSolver
@@ -165,7 +208,7 @@ function PDataST(
     ζ = T(0.5),
     ξ = T(0.01),
     maxtol = T(0.01),
-    mintol = T(1.0e-8),
+    mintol = sqrt(eps(T)),
     cgatol = (ζ, ξ, maxtol, mintol, gNorm2) -> max(mintol, min(maxtol, ξ * gNorm2^(1 + ζ))),
     cgrtol = (ζ, ξ, maxtol, mintol, gNorm2) -> max(mintol, min(maxtol, ξ * gNorm2^ζ)),
     kwargs...,
@@ -174,38 +217,5 @@ function PDataST(
     λ = zero(T)
     OK = true
     solver = CgSolver(n, n, S)
-    return PDataST(
-        d,
-        λ,
-        ζ,
-        ξ,
-        maxtol,
-        mintol,
-        cgatol,
-        cgrtol,
-        OK,
-        solver,
-    )
-end
-
-mutable struct PDataSpectral{T} <: PDataFact{T}
-    V::Array{T,2}           # orthogonal matrix, eigenvectors of Hessian matrix
-    Δ::Array{T,1}           # eigenvalues of Hessian matrix
-    g̃::Array{T,1}           # transformed gradient
-    λ::T
-    success::Bool           # previous iteration was successfull
-    OK::Bool                # preprocess success
-
-    PDataSpectral() = new{T}()
-    PDataSpectral(V, Λ, g, l, success, OK) = new{eltype(V)}(V, Λ, g, l, success, OK)
-end
-
-function PDataSpectral(::Type{S}, ::Type{T}, n; kwargs...) where {S,T}
-    V = Array{T,2}(undef, n, n) # ::Array{T,2}          # could be sparse
-    Δ = Array{T,1}(undef, n) #::Array{T,1}          # diagonal, eigenvalues of D
-    g̃ = Array{T,1}(undef, n) #::Array{T,1}           # transformed gradient
-    λ = zero(T) # ::T
-    success = true::Bool                 # previous iteration was successfull
-    OK = true
-    return PDataSpectral(V, Δ, g̃, λ, success, OK)
+    return PDataST(d, λ, ζ, ξ, maxtol, mintol, cgatol, cgrtol, OK, solver)
 end

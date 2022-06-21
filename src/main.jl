@@ -1,5 +1,9 @@
-export TRARC
-
+"""
+    TRARCWorkspace(nlp, ::Type{Hess}, n)
+Pre-allocate the memory used during the [`TRARC`](@ref) call for the problem `nlp` of size `n`.
+The possible values for `Hess` are: `HessDense`, `HessSparse`, `HessSparseCOO`, `HessOp`.
+Return a `TRARCWorkspace` structure.
+"""
 struct TRARCWorkspace{T,S,Hess}
     xt::S
     xtnext::S
@@ -7,7 +11,8 @@ struct TRARCWorkspace{T,S,Hess}
     ∇f::S
     ∇fnext::S
     Hstruct::Hess
-    function TRARCWorkspace(nlp::AbstractNLPModel{T, S}, ::Type{Hess}, n) where {T,S,Hess}
+    function TRARCWorkspace(nlp::AbstractNLPModel{T,S}, ::Type{Hess}) where {T,S,Hess}
+        n = nlp.meta.nvar
         return new{T,S,Hess}(
             S(undef, n), # xt
             S(undef, n), # xtnext
@@ -19,22 +24,31 @@ struct TRARCWorkspace{T,S,Hess}
     end
 end
 
-stop_norm(x) = norm(x, 2)
-
 function TRARC(
     nlp_stop::NLPStopping{Pb,M,SRC,NLPAtX{T,S},MStp,LoS};
     TR::TrustRegion = TrustRegion(T(10.0)),
-    hess_type::Type{Hess} = HessDense,
-    pdata_type::Type{ParamData} = PDataLDLt,
-    solve_model::Function = solve_modelTRDiag,
+    hess_type::Type{Hess} = HessOp,
+    pdata_type::Type{ParamData} = PDataKARC,
+    kwargs...,
+) where {Pb,M,SRC,MStp,LoS,S,T,Hess,ParamData}
+    nlp = nlp_stop.pb
+
+    PData = ParamData(S, T, nlp.meta.nvar; kwargs...)
+    workspace = TRARCWorkspace(nlp, Hess)
+    return TRARC(nlp_stop, PData, workspace, TR; kwargs...)
+end
+
+function TRARC(
+    nlp_stop::NLPStopping{Pb,M,SRC,NLPAtX{T,S},MStp,LoS},
+    PData::ParamData,
+    workspace::TRARCWorkspace{T,S,Hess},
+    TR::TrustRegion;
+    solve_model::Function = solve_modelKARC,
     robust::Bool = true,
     verbose::Bool = false,
     kwargs...,
 ) where {Pb,M,SRC,MStp,LoS,S,T,Hess,ParamData}
     nlp, nlp_at_x = nlp_stop.pb, nlp_stop.current_state
-
-    PData = ParamData(S, T, nlp.meta.nvar; kwargs...)
-    workspace = TRARCWorkspace(nlp, Hess, nlp.meta.nvar)
     xt, xtnext, d, ∇f, ∇fnext =
         workspace.xt, workspace.xtnext, workspace.d, workspace.∇f, workspace.∇fnext
 
@@ -68,7 +82,7 @@ function TRARC(
 
     while !OK
         max_hprod = nlp_stop.meta.max_cntrs[:neval_hprod]
-        PData = preprocess(PData, nlp_at_x.Hx, ∇f, neval_hprod(nlp), max_hprod, α)
+        PData = preprocess(PData, nlp_at_x.Hx, ∇f, norm_∇f, neval_hprod(nlp), max_hprod, α)
 
         if ~PData.OK
             @warn("Something wrong with PData")
@@ -77,19 +91,11 @@ function TRARC(
 
         success = false
         while !success & (unsuccinarow < max_unsuccinarow)
-            d, λ = solve_model(nlp_at_x.Hx, ∇f, nlp_stop, PData, α) # Est-ce que d et λ ne sont pas dans PData ?
+            d, λ = solve_model(nlp_at_x.Hx, ∇f, norm_∇f, nlp_stop, PData, α) # Est-ce que d et λ ne sont pas dans PData ?
 
-            Δq = -(∇f + 0.5 * nlp_at_x.Hx * d) ⋅ d
-
-            if Δq < 0.0
-                println("*******   Ascent direction in SolveModel: Δq = $Δq")
-                println(
-                    "  g⋅d = $(∇f⋅d), 0.5 d'Hd = $(0.5*(nlp_at_x.Hx*d)⋅d)  α = $α  λ = $λ",
-                )
-                # cond issue with H?
-                return nlp_stop
-            end
             slope = ∇f ⋅ d
+            Δq = -(∇f + 0.5 * (nlp_at_x.Hx * d)) ⋅ d
+
             xtnext .= xt .+ d
             ftnext = obj(nlp, xtnext)
             Δf = ft - ftnext
@@ -99,7 +105,15 @@ function TRARC(
             r, good_grad, ∇fnext =
                 compute_r(nlp, ft, Δf, Δq, slope, d, xtnext, ∇fnext, robust)
 
-            if r < acceptance_threshold # unsucessful
+            if Δq < 0.0 # very unsucessful
+                verbose && @info log_row(Any[iter, ft, norm_∇f, λ, "VU", α, norm(d), Δq])
+                unsucc += 1
+                unsuccinarow += 1
+                η = (1 - acceptance_threshold) / 10 # ∈ (acceptance_threshold, 1)
+                qksk = ft + slope + 0.5 * (nlp_at_x.Hx * d) ⋅ d
+                αbad = (1 - η) * slope / ((1 - η) * (ft + slope) + η * qksk - ftnext)
+                α = min(decrease(PData, α, TR), max(TR.large_decrease_factor, αbad) * α)
+            elseif r < acceptance_threshold # unsucessful
                 verbose && @info log_row(Any[iter, ft, norm_∇f, λ, "U", α, norm(d), Δq])
                 unsucc += 1
                 unsuccinarow += 1
@@ -115,18 +129,17 @@ function TRARC(
                 else
                     grad!(nlp, xt, ∇f)
                 end
+                norm_∇f = norm(∇f)
 
                 verysucc += 1
                 if r > increase_threshold # very sucessful
                     α = increase(PData, α, TR)
-                    verbose &&
-                        @info log_row(Any[iter, ft, stop_norm(∇f), λ, "V", α, norm(d), Δq])
+                    verbose && @info log_row(Any[iter, ft, norm_∇f, λ, "V", α, norm(d), Δq])
                 else # sucessful
                     if r < reduce_threshold
                         α = decrease(PData, α, TR)
                     end
-                    verbose &&
-                        @info log_row(Any[iter, ft, stop_norm(∇f), λ, "S", α, norm(d), Δq])
+                    verbose && @info log_row(Any[iter, ft, norm_∇f, λ, "S", α, norm(d), Δq])
                     succ += 1
                 end
             end

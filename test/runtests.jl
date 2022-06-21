@@ -3,9 +3,17 @@ using ARCTR
 # stdlib
 using LinearAlgebra, SparseArrays, Test
 # JSO
-using ADNLPModels, NLPModels, OptimizationProblems.ADNLPProblems
+using ADNLPModels, NLPModels, OptimizationProblems.ADNLPProblems, SolverTest
 # Stopping
 using Stopping
+
+@testset "Testing NLP solvers" begin
+    @testset "$name" for name in keys(ARCTR.solvers_const)
+        solver = eval(name)
+        unconstrained_nlp(solver)
+        multiprecision_nlp(solver, :unc)
+    end
+end
 
 global nbsolver = 0
 for solver in ALL_solvers

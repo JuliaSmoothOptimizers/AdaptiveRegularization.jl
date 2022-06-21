@@ -1,10 +1,28 @@
 export TrustRegion
 
+# Already exists in SolverTools.jl
 "Exception type raised in case of error."
 mutable struct TrustRegionException <: Exception
     msg::String
 end
 
+"""
+    TrustRegion(α₀::T;kwargs...)
+
+Select the main parameters used in the `TRARC` algorithm with `α₀` as initial TR/ARC parameter.
+The keyword arguments are:
+- `max_α::T`: Maximum value for `α`. Default `T(1) / sqrt(eps(T))`.
+- `acceptance_threshold::T`: Ratio over which the step is successful. Default `T(0.1)`.
+- `increase_threshold::T`: Ratio over which we increase `α`. Default `T(0.75)`.
+- `reduce_threshold::T`: Ratio under which we decrease `α`. Default `T(0.1)`.
+- `increase_factor::T`: Factor of increase of `α`. Default `T(5.0)`.
+- `decrease_factor::T`: Factor of decrease of `α`. Default `T(0.1)`.
+- `max_unsuccinarow::Int`: Limit on the number of successive unsucessful iterations. Default `30`.
+
+Returns a `TrustRegion` structure.
+
+This can be compared to https://github.com/JuliaSmoothOptimizers/SolverTools.jl/blob/main/src/trust-region/basic-trust-region.jl
+"""
 mutable struct TrustRegion{T}
     α₀::T
     α::T
@@ -14,24 +32,26 @@ mutable struct TrustRegion{T}
     reduce_threshold::T
     increase_factor::T
     decrease_factor::T
+    large_decrease_factor::T
     max_unsuccinarow::Int
 
     function TrustRegion(
         α₀::T;
-        max_α::T = T(1.0) / sqrt(eps(T)),
+        max_α::T = T(1) / sqrt(eps(T)),
         acceptance_threshold::T = T(0.1),
         increase_threshold::T = T(0.75),
         reduce_threshold::T = T(0.1),
         increase_factor::T = T(5.0),
         decrease_factor::T = T(0.1),
+        large_decrease_factor::T = T(0.01),
         max_unsuccinarow::Int = 30,
     ) where {T}
 
-        α₀ > T(0.0) || (α₀ = T(1.0))
+        α₀ > T(0) || (α₀ = T(1))
         max_α > α₀ || throw(TrustRegionException("Invalid α₀"))
-        (T(0.0) < acceptance_threshold < increase_threshold < T(1.0)) ||
+        (T(0) < acceptance_threshold < increase_threshold < T(1)) ||
             throw(TrustRegionException("Invalid thresholds"))
-        (T(0.0) < decrease_factor < T(1.0) < increase_factor) ||
+        (T(0) < decrease_factor < T(1) < increase_factor) ||
             throw(TrustRegionException("Invalid decrease/increase factors"))
 
         return new{T}(
@@ -43,6 +63,7 @@ mutable struct TrustRegion{T}
             reduce_threshold,
             increase_factor,
             decrease_factor,
+            large_decrease_factor,
             max_unsuccinarow,
         )
     end
@@ -50,8 +71,9 @@ end
 
 
 """
-    r, good_grad, gnext = compute_r(nlp, f, Δf, Δq, slope, d, xnext, gnext, robust)
+    compute_r(nlp, f, Δf, Δq, slope, d, xnext, gnext, robust)
 
+Compute the actual vs predicted reduction ratio `∆f/Δq`.
 
 Arguments:
 - `nlp`: Current model we are trying to solve
@@ -65,11 +87,11 @@ Arguments:
 - `robust`: if `true`, try to trap potential cancellation errors
 
 Output:
-- `r`: actual vs. predicted reduction radio `∆f/Δq`
-- `good_grad`
-- `gnext`
+- `r`: reduction ratio `∆f/Δq`
+- `good_grad`: `true` if `gnext` has been recomputed
+- `gnext`: gradient.
 
-We assume that q is being minimized, and therefore that Δq > 0.
+We assume that `q`` is being minimized, and therefore that `Δq > 0`.
 """
 function compute_r(nlp, f::T, Δf, Δq, slope, d, xnext, gnext, robust) where {T}
     good_grad = false
