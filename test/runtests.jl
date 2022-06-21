@@ -30,5 +30,7 @@ for solver in ALL_solvers
     reset!(nlp)
 end
 
-include("allocation_test.jl")
-include("allocation_test_main.jl")
+if VERSION < v"1.7.0"
+    include("allocation_test.jl")
+    include("allocation_test_main.jl")
+end
