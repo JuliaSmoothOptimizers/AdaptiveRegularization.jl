@@ -9,8 +9,18 @@ function preprocess(PData::PDataKARC, Hop, g, gNorm2, calls, max_calls, α)
     rtol = PData.cgrtol(ζ, ξ, maxtol, mintol, gNorm2)
 
     nshifts = length(shifts)
+    cb = (slv) -> begin
+        ind = setdiff(1:length(shifts), findall(slv.not_cv))
+        if length(ind) > 1
+            target = (norm(slv.x[i])/shifts[i] - α > 0 for i in ind) # the last one should be negative
+            if !isnothing(findfirst(target))
+                return true
+            end
+        end
+        return false
+    end
     solver = PData.solver
-    cg_lanczos!(
+    cg_lanczos_shift!(
         solver,
         Hop,
         g,
@@ -20,6 +30,7 @@ function preprocess(PData::PDataKARC, Hop, g, gNorm2, calls, max_calls, α)
         rtol = rtol,
         verbose = 0,
         check_curvature = true,
+        callback = cb,
     )
 
     PData.indmin = 0
