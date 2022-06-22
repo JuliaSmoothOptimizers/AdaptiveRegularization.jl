@@ -13,16 +13,16 @@ for XData in (
     PDataST(S, T, n),
     # PDataSpectral(S, T, n),
 )
-  @testset "Allocation test in ARCTR.decrease for $(typeof(XData))" begin
-    alloc_decrease() = @allocated ARCTR.decrease(XData, α, TR)
-    alloc_decrease()
-    @test alloc_decrease() <= 16
-  end
-  @testset "Allocation test in ARCTR.decrease for $(typeof(XData))" begin
-    alloc_increase() = @allocated ARCTR.increase(XData, α, TR)
-    alloc_increase()
-    @test (@allocated alloc_increase()) <= 16
-  end
+    @testset "Allocation test in ARCTR.decrease for $(typeof(XData))" begin
+        alloc_decrease() = @allocated ARCTR.decrease(XData, α, TR)
+        alloc_decrease()
+        @test alloc_decrease() <= 16
+    end
+    @testset "Allocation test in ARCTR.decrease for $(typeof(XData))" begin
+        alloc_increase() = @allocated ARCTR.increase(XData, α, TR)
+        alloc_increase()
+        @test (@allocated alloc_increase()) <= 16
+    end
 end
 
 using ADNLPModels, NLPModels, OptimizationProblems, Stopping
@@ -47,20 +47,21 @@ for (Data, solve, limit_solve, limit_preprocess) in (
   #(PDataSpectral, :solve_modelTRDiag, 5408, 279328),
   #(PDataSpectral, :solve_modelTRDiagAbs, 5408, 279328),
 )
-  @testset "Allocation test in preprocess with $(Data)" begin
-    XData = Data(S, T, n)
-    alloc_preprocess(XData, H, g, ng, calls, max_calls, α) = @allocated ARCTR.preprocess(XData, H, g, ng, calls, max_calls, α)
-    alloc_preprocess(XData, H, g, ng, calls, max_calls, α)
-    @test alloc_preprocess(XData, H, g, ng, calls, max_calls, α) <= limit_preprocess
-    @show alloc_preprocess(XData, H, g, ng, calls, max_calls, α)
-  end
+    @testset "Allocation test in preprocess with $(Data)" begin
+        XData = Data(S, T, n)
+        alloc_preprocess(XData, H, g, ng, calls, max_calls, α) =
+            @allocated ARCTR.preprocess(XData, H, g, ng, calls, max_calls, α)
+        alloc_preprocess(XData, H, g, ng, calls, max_calls, α)
+        @test alloc_preprocess(XData, H, g, ng, calls, max_calls, α) <= limit_preprocess
+        @show alloc_preprocess(XData, H, g, ng, calls, max_calls, α)
+    end
 
-  @testset "Allocation test in $solve with $(Data)" begin
-    XData = Data(S, T, n)
-    alloc_solve_model(H, g, ng, stp, XData, α) = @allocated ARCTR.eval(solve)(H, g, ng, stp, XData, α)
-    alloc_solve_model(H, g, ng, stp, XData, α)
-    @test alloc_solve_model(H, g, ng, stp, XData, α) <= limit_solve
-    @show alloc_solve_model(H, g, ng, stp, XData, α)
-  end
+    @testset "Allocation test in $solve with $(Data)" begin
+        XData = Data(S, T, n)
+        alloc_solve_model(H, g, ng, stp, XData, α) =
+            @allocated ARCTR.eval(solve)(H, g, ng, stp, XData, α)
+        alloc_solve_model(H, g, ng, stp, XData, α)
+        @test alloc_solve_model(H, g, ng, stp, XData, α) <= limit_solve
+        @show alloc_solve_model(H, g, ng, stp, XData, α)
+    end
 end
-
