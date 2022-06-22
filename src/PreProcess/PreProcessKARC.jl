@@ -13,7 +13,7 @@ function preprocess(PData::PDataKARC, Hop, g, gNorm2, calls, max_calls, α)
         ind = setdiff(1:length(shifts), findall(slv.not_cv))
         if length(ind) > 1
             for i in ind
-                if (norm(slv.x[i])/shifts[i] - α > 0)
+                if (norm(slv.x[i]) / shifts[i] - α > 0)
                     return true
                 end
             end
