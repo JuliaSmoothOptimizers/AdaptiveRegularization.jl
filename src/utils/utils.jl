@@ -93,10 +93,11 @@ Output:
 
 We assume that `q`` is being minimized, and therefore that `Δq > 0`.
 """
-function compute_r(nlp, f::T, Δf, Δq, slope, d, xnext, gnext, robust) where {T}
+function compute_r(nlp, f::T, Δf, Δq, slope, d, xnext, workspace, robust) where {T}
+    gnext = workspace.∇fnext
     good_grad = false
     if robust & ((Δq < 10000 * eps(T)) | (abs(Δf) < 10000 * eps(T) * abs(f)))
-        grad!(nlp, xnext, gnext)
+        gnext = grad!(nlp, xnext, workspace)
         good_grad = true
         slope_next = dot(gnext, d)
 
