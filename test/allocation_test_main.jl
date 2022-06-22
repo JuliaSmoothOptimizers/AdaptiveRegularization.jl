@@ -6,7 +6,7 @@ mutable struct EmptyNLPModel{T,S} <: AbstractNLPModel{T,S}
 end
 
 NLPModels.obj(::EmptyNLPModel{T,S}, x) where {T,S} = one(T)
-function NLPModels.grad!(::EmptyNLPModel{T,S}, x, gx) where {T,S}
+function NLPModels.grad!(::EmptyNLPModel{T,S}, x, gx::S) where {T,S}
     gx .= one(T)
     return gx
 end
@@ -63,7 +63,7 @@ x0 = rand(n)
 nlp = EmptyNLPModel{eltype(x0),typeof(x0)}(NLPModelMeta(n), Counters())
 
 for (Workspace, limit) in (
-    (HessDense, 286576),
+    (HessDense, 286624),
     (HessSparse, 84016),
     (HessSparseCOO, 0), # independent of `n`
     (HessOp, 1344), # independent of `n`
