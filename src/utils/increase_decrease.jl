@@ -26,12 +26,12 @@ function decrease(X::PDataKARC, α::T, TR::TrustRegion) where {T}
     # fix α to its "ideal" value to satisfy αλ=||d||
     # while ensuring α decreases enough
     last = findlast(X.positives)
-    while α2 > targetα && X.indmin < last
+    while !isnothing(last) && α2 > targetα && X.indmin < last
         X.indmin += 1
         α2 = max(X.norm_dirs[X.indmin] / X.shifts[X.indmin], eps(T))
     end
 
-    if isnothing(last) | (X.indmin == last & (α2 > targetα))
+    if isnothing(last) || (X.indmin == last & (α2 > targetα))
         @warn "PreProcessKARC failure: α2=$α2"
     end
 
@@ -50,12 +50,12 @@ function decrease(X::PDataTRK, α::T, TR::TrustRegion) where {T}
     targetα = α * TR.decrease_factor
 
     last = findlast(X.positives)
-    while α2 > targetα && X.indmin < last
+    while !isnothing(last) && α2 > targetα && X.indmin < last
         X.indmin += 1
         α2 = X.norm_dirs[X.indmin]
     end
 
-    if X.indmin == last
+    if isnothing(last) || (X.indmin == last)
         @warn "PreProcessTRK failure: α2=$α2"
     end
 
