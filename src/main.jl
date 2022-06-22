@@ -11,6 +11,7 @@ struct TRARCWorkspace{T,S,Hess}
     ∇f::S
     ∇fnext::S
     Hstruct::Hess
+    Fx::S
     function TRARCWorkspace(nlp::AbstractNLPModel{T,S}, ::Type{Hess}) where {T,S,Hess}
         n = nlp.meta.nvar
         return new{T,S,Hess}(
@@ -20,6 +21,19 @@ struct TRARCWorkspace{T,S,Hess}
             S(undef, n), # ∇f
             S(undef, n), # ∇fnext
             Hess(nlp, n),
+            S(undef, 0),
+        )
+    end
+    function TRARCWorkspace(nlp::AbstractNLSModel{T,S}, ::Type{Hess}) where {T,S,Hess}
+        n = nlp.meta.nvar
+        return new{T,S,Hess}(
+            S(undef, n), # xt
+            S(undef, n), # xtnext
+            S(undef, n), # d
+            S(undef, n), # ∇f
+            S(undef, n), # ∇fnext
+            Hess(nlp, n),
+            S(undef, nlp.nls_meta.nequ),
         )
     end
 end
@@ -35,6 +49,26 @@ end
 
 function NLPModels.grad!(nlp::AbstractNLPModel, x, workspace::TRARCWorkspace)
     return grad!(nlp, x, workspace.∇f)
+end
+
+function NLPModels.objgrad!(nls::AbstractNLSModel, x, workspace::TRARCWorkspace)
+    increment!(nls, :neval_obj)
+    increment!(nls, :neval_grad)
+    Fx = residual!(nls, x, workspace.Fx)
+    ∇f = jtprod_residual!(nls, x, Fx, workspace.∇f)
+    return dot(Fx, Fx) / 2, ∇f
+end
+
+function NLPModels.obj(nls::AbstractNLSModel, x, workspace::TRARCWorkspace)
+    increment!(nls, :neval_obj)
+    Fx = residual!(nls, x, workspace.Fx)
+    return dot(Fx, Fx) / 2
+end
+
+function NLPModels.grad!(nls::AbstractNLSModel, x, workspace::TRARCWorkspace)
+    increment!(nls, :neval_grad)
+    Fx = workspace.Fx
+    return jtprod_residual!(nls, x, Fx, workspace.∇f)
 end
 
 function TRARC(
