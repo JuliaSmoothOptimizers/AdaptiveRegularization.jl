@@ -24,6 +24,19 @@ struct TRARCWorkspace{T,S,Hess}
     end
 end
 
+# Redefined NLP Model API to use workspace
+function NLPModels.objgrad!(nlp::AbstractNLPModel, x, workspace::TRARCWorkspace)
+    return objgrad!(nlp, x, workspace.∇f)
+end
+
+function NLPModels.obj(nlp::AbstractNLPModel, x, workspace::TRARCWorkspace)
+    return obj(nlp, x)
+end
+
+function NLPModels.grad!(nlp::AbstractNLPModel, x, workspace::TRARCWorkspace)
+    return grad!(nlp, x, workspace.∇f)
+end
+
 function TRARC(
     nlp_stop::NLPStopping{Pb,M,SRC,NLPAtX{T,S},MStp,LoS};
     TR::TrustRegion = TrustRegion(T(10.0)),
@@ -59,7 +72,7 @@ function TRARC(
     reduce_threshold = TR.reduce_threshold
 
     xt .= nlp_at_x.x
-    ft, ∇f = objgrad!(nlp, xt, ∇f)
+    ft, ∇f = objgrad!(nlp, xt, workspace)
     ftnext = ft
     norm_∇f = norm(∇f)
     nlp_stop.meta.optimality0 = norm_∇f
@@ -97,13 +110,13 @@ function TRARC(
             Δq = -(∇f + 0.5 * (nlp_at_x.Hx * d)) ⋅ d
 
             xtnext .= xt .+ d
-            ftnext = obj(nlp, xtnext)
+            ftnext = obj(nlp, xtnext, workspace)
             Δf = ft - ftnext
 
             iter += 1
 
             r, good_grad, ∇fnext =
-                compute_r(nlp, ft, Δf, Δq, slope, d, xtnext, ∇fnext, robust)
+                compute_r(nlp, ft, Δf, Δq, slope, d, xtnext, workspace, robust)
 
             if Δq < 0.0 # very unsucessful
                 verbose && @info log_row(Any[iter, ft, norm_∇f, λ, "VU", α, norm(d), Δq])
@@ -127,7 +140,7 @@ function TRARC(
                 if good_grad
                     ∇f .= ∇fnext
                 else
-                    grad!(nlp, xt, ∇f)
+                    ∇f = grad!(nlp, xt, workspace)
                 end
                 norm_∇f = norm(∇f)
 
