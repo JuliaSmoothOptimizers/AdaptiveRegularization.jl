@@ -17,9 +17,10 @@ function preprocess(PData::PDataTRK, Hop, g, gNorm2, calls, max_calls, α)
         else
             ind = setdiff(1:length(shifts), findall(slv.not_cv)) # findall(slv.converged)
             if length(ind) > 1
-                target = (norm(slv.x[i]) - α > 0 for i in ind) # the last one should be negative
-                if !isnothing(findfirst(target))
-                    return true
+                for i in ind
+                    if (norm(slv.x[i]) - α > 0)
+                        return true
+                    end
                 end
             end
         end
