@@ -10,7 +10,7 @@ function preprocess(PData::PDataTRK, Hop, g, gNorm2, calls, max_calls, α)
 
     nshifts = length(shifts)
     solver = PData.solver
-    
+
     cb = (slv) -> begin
         if slv.converged[1]
             return norm(slv.x[1]) ≤ α
