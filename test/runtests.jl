@@ -15,6 +15,14 @@ using Stopping
     end
 end
 
+@testset "Testing NLS solvers" begin
+    @testset "$name" for name in keys(ARCTR.solvers_const)
+        solver = eval(name)
+        unconstrained_nls(solver)
+        multiprecision_nls(solver, :unc)
+    end
+end
+
 global nbsolver = 0
 for solver in ALL_solvers
     global nbsolver += 1
