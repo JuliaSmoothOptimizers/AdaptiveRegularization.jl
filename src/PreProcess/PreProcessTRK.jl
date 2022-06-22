@@ -10,7 +10,23 @@ function preprocess(PData::PDataTRK, Hop, g, gNorm2, calls, max_calls, α)
 
     nshifts = length(shifts)
     solver = PData.solver
-    cg_lanczos!(
+    
+    cb = (slv) -> begin
+        if slv.converged[1]
+            return norm(slv.x[1]) ≤ α
+        else
+            ind = setdiff(1:length(shifts), findall(slv.not_cv)) # findall(slv.converged)
+            if length(ind) > 1
+                for i in ind
+                    if (norm(slv.x[i]) - α > 0)
+                        return true
+                    end
+                end
+            end
+        end
+        return false
+    end
+    cg_lanczos_shift!(
         solver,
         Hop,
         g,
@@ -20,6 +36,7 @@ function preprocess(PData::PDataTRK, Hop, g, gNorm2, calls, max_calls, α)
         rtol = cgrtol,
         verbose = 0,
         check_curvature = true,
+        callback = cb,
     )
 
     PData.indmin = 0
