@@ -31,7 +31,7 @@ function decrease(X::PDataKARC, α::T, TR::TrustRegion) where {T}
         α2 = max(X.norm_dirs[X.indmin] / X.shifts[X.indmin], eps(T))
     end
 
-    if isnothing(last) || (X.indmin == last & (α2 > targetα))
+    if X.indmin == last & (α2 > targetα)
         @warn "PreProcessKARC failure: α2=$α2"
     end
 
@@ -55,7 +55,7 @@ function decrease(X::PDataTRK, α::T, TR::TrustRegion) where {T}
         α2 = X.norm_dirs[X.indmin]
     end
 
-    if isnothing(last) || (X.indmin == last)
+    if X.indmin == last
         @warn "PreProcessTRK failure: α2=$α2"
     end
 
