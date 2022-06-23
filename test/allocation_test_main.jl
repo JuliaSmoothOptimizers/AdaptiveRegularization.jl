@@ -53,7 +53,7 @@ function NothingPData(::Type{S}, ::Type{T}, n; kwargs...) where {T,S}
     return NothingPData{T}(true, rand(T, n), one(T))
 end
 
-function solve_nothing(H, g, ng, nlp_stop, X::NothingPData, α::T) where {T}
+function solve_nothing(X::NothingPData, H, g, ng, calls, max_calls, α::T) where {T}
     X.d .= g
     X.λ = zero(T)
     return X.d, X.λ

@@ -51,6 +51,7 @@ function NLPModels.grad!(nlp::AbstractNLPModel, x, workspace::TRARCWorkspace)
     return grad!(nlp, x, workspace.∇f)
 end
 
+
 function NLPModels.objgrad!(nls::AbstractNLSModel, x, workspace::TRARCWorkspace)
     increment!(nls, :neval_obj)
     increment!(nls, :neval_grad)
@@ -69,6 +70,22 @@ function NLPModels.grad!(nls::AbstractNLSModel, x, workspace::TRARCWorkspace)
     increment!(nls, :neval_grad)
     Fx = workspace.Fx
     return jtprod_residual!(nls, x, Fx, workspace.∇f)
+
+function preprocess(stp::NLPStopping, PData::TPData, workspace::TRARCWorkspace, ∇f, norm_∇f, α)
+    max_hprod = stp.meta.max_cntrs[:neval_hprod]
+    Hx = stp.current_state.Hx
+    PData = preprocess(PData, Hx, ∇f, norm_∇f, neval_hprod(stp.pb), max_hprod, α)
+    return PData
+end
+
+function compute_direction(stp::NLPStopping, PData::TPData, workspace::TRARCWorkspace, ∇f, norm_∇f, α, solve_model)
+    max_hprod = stp.meta.max_cntrs[:neval_hprod]
+    Hx = stp.current_state.Hx
+    return solve_model(PData, Hx, ∇f, norm_∇f, neval_hprod(stp.pb), max_hprod, α)
+end
+
+function hessian!(workspace::TRARCWorkspace, nlp, x)
+    return hessian!(workspace.Hstruct, nlp, x)
 end
 
 function TRARC(
@@ -99,7 +116,7 @@ function TRARC(
     xt, xtnext, d, ∇f, ∇fnext =
         workspace.xt, workspace.xtnext, workspace.d, workspace.∇f, workspace.∇fnext
 
-    α = TR.α₀  # initial Trust Region size
+    α = TR.α₀
     max_unsuccinarow = TR.max_unsuccinarow
     acceptance_threshold = TR.acceptance_threshold
     increase_threshold = TR.increase_threshold
@@ -114,7 +131,7 @@ function TRARC(
     OK = update_and_start!(nlp_stop, x = xt, fx = ft, gx = ∇f)
     !OK && Stopping.update!(
         nlp_at_x,
-        Hx = hessian!(workspace.Hstruct, nlp, xt),
+        Hx = hessian!(workspace, nlp, xt),
         convert = true,
     )
 
@@ -128,8 +145,7 @@ function TRARC(
     verbose && @info log_row(Any[iter, ft, norm_∇f, 0.0, "First iteration", α])
 
     while !OK
-        max_hprod = nlp_stop.meta.max_cntrs[:neval_hprod]
-        PData = preprocess(PData, nlp_at_x.Hx, ∇f, norm_∇f, neval_hprod(nlp), max_hprod, α)
+        PData = preprocess(nlp_stop, PData, workspace, ∇f, norm_∇f, α)
 
         if ~PData.OK
             @warn("Something wrong with PData")
@@ -138,7 +154,7 @@ function TRARC(
 
         success = false
         while !success & (unsuccinarow < max_unsuccinarow)
-            d, λ = solve_model(nlp_at_x.Hx, ∇f, norm_∇f, nlp_stop, PData, α) # Est-ce que d et λ ne sont pas dans PData ?
+            d, λ = compute_direction(nlp_stop, PData, workspace, ∇f, norm_∇f, α, solve_model)
 
             slope = ∇f ⋅ d
             Δq = -(∇f + 0.5 * (nlp_at_x.Hx * d)) ⋅ d
@@ -194,7 +210,7 @@ function TRARC(
 
         nlp_stop.meta.nb_of_stop = iter
         OK = update_and_stop!(nlp_stop, x = xt, fx = ft, gx = ∇f)
-        success && Stopping.update!(nlp_at_x, Hx = hessian!(workspace.Hstruct, nlp, xt))
+        success && Stopping.update!(nlp_at_x, Hx = hessian!(workspace, nlp, xt))
     end # while !OK
 
     return nlp_stop

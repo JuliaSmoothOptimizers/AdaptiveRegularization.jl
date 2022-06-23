@@ -27,11 +27,12 @@ end
 
 include("main.jl")
 
-export ALL_solvers
-
-ALL_solvers = Symbol[]
-
 include("solvers.jl")
+
+export ALL_solvers, NLS_solvers
+
+ALL_solvers = keys(solvers_const)
+NLS_solvers = keys(solvers_nls_const)
 
 export TRARC
 
@@ -89,10 +90,9 @@ function TRARC(nlp::AbstractNLPModel{T,S}; kwargs...) where {T,S}
     return stopping_to_stats(nlpstop)
 end
 
-for fun in keys(solvers_const)
-    push!(ALL_solvers, fun)
+for fun in union(keys(solvers_const), keys(solvers_nls_const))
 
-    ht, pt, sm, ka = ARCTR.solvers_const[fun]
+    ht, pt, sm, ka = merge(solvers_const, solvers_nls_const)[fun]
     @eval begin
         function $fun(nlpstop::NLPStopping; kwargs...)
             kw_list = Dict{Symbol,Any}()
