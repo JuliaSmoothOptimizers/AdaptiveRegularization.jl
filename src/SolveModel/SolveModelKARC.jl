@@ -1,4 +1,4 @@
-function solve_modelKARC(H, g, gNorm2, nlp_stop, X::PDataKARC, α::T) where {T}
+function solve_modelKARC(X::PDataKARC, H, g, gNorm2, calls, max_calls, α::T) where {T}
     # target value should be close to satisfy αλ=||d||
     start = findfirst(X.positives)
     if isnothing(start)
