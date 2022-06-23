@@ -18,7 +18,7 @@ function solve_modelST_TR(PData::PDataST, H, g, gNorm2, calls, max_calls, δ::T)
         atol = cgatol,
         rtol = cgrtol,
         radius = δ,
-        itmax = max(2 * n, 50),
+        itmax = min(max_calls - sum(calls), max(2 * n, 50)),
         verbose = 0,
     )
 
