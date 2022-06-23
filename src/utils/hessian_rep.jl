@@ -49,7 +49,19 @@ struct HessOp{S}
     end
 end
 
-export HessDense, HessSparse, HessSparseCOO, HessOp
+"""
+    HessGaussNewtonOp(::AbstractNLSModel{T,S}, n)
+Return a structure used for the evaluation of the Hessian matrix as an operator.
+"""
+struct HessGaussNewtonOp{S}
+    Jv::S
+    Jtv::S
+    function HessGaussNewtonOp(nls::AbstractNLSModel{T,S}, n) where {T,S}
+        return new{S}(S(undef, nls.nls_meta.nequ), S(undef, n))
+    end
+end
+
+export HessDense, HessSparse, HessSparseCOO, HessOp, HessGaussNewtonOp
 
 """
     hessian!(workspace::HessDense, nlp, x)
@@ -65,6 +77,11 @@ end
 
 function hessian!(workspace::HessOp, nlp, x)
     return hess_op!(nlp, x, workspace.Hv)
+end
+
+function hessian!(workspace::HessGaussNewtonOp, nlp, x)
+    Jx = jac_op_residual!(nlp, x, workspace.Jv, workspace.Jtv)
+    return Jx' * Jx
 end
 
 function hessian!(workspace::HessSparse, nlp, x)
