@@ -10,8 +10,8 @@ ARCTR.ALL_solvers
 
 To make your own variant we need to implement:
 - A new data structure `<: PData{T}` for some real number type `T`.
-- A `preprocess(PData::TPData, H, g, gNorm2, n1, n2, α)` function called before each trust-region iteration.
-- A `solve_model(H, g, gNorm2, nlp_stop, PData::PDataST, δ::T)` function used to solve the algorithm subproblem.
+- A `preprocess(PData::TPData, H, g, gNorm2, α)` function called before each trust-region iteration.
+- A `solve_model(PData::PDataST, H, g, gNorm2, n1, n2, δ::T)` function used to solve the algorithm subproblem.
 
 In the rest of this tutorial, we implement a Steihaug-Toint trust-region method using `cg_lanczos` from [`Krylov.jl`](https://github.com/JuliaSmoothOptimizers/Krylov.jl) to solve the linear subproblem with trust-region constraint.
 
@@ -63,7 +63,7 @@ end
 ```
 We now solve the subproblem.
 ```@example 1
-function solve_modelST_TR(H, g, gNorm2, nlp_stop, PData::PDataST, δ::T) where {T}
+function solve_modelST_TR(PData::PDataST, H, g, gNorm2, calls, max_calls, δ::T) where {T}
     ζ, ξ, maxtol, mintol = PData.ζ, PData.ξ, PData.maxtol, PData.mintol
     n = length(g)
     # precision = max(1e-12, min(0.5, (gNorm2^ζ)))
@@ -79,7 +79,7 @@ function solve_modelST_TR(H, g, gNorm2, nlp_stop, PData::PDataST, δ::T) where {
         atol = cgatol,
         rtol = cgrtol,
         radius = δ,
-        itmax = max(2 * n, 50),
+        itmax = min(max_calls - sum(calls), max(2 * n, 50)),
         verbose = 0,
     )
 
