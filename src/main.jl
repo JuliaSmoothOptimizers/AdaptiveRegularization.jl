@@ -72,27 +72,58 @@ function NLPModels.grad!(nls::AbstractNLSModel, x, workspace::TRARCWorkspace)
     return jtprod_residual!(nls, x, Fx, workspace.∇f)
 end
 
-function preprocess(stp::NLPStopping, PData::TPData, workspace::TRARCWorkspace, ∇f, norm_∇f, α)
+function preprocess(
+    stp::NLPStopping,
+    PData::TPData,
+    workspace::TRARCWorkspace,
+    ∇f,
+    norm_∇f,
+    α,
+)
     max_hprod = stp.meta.max_cntrs[:neval_hprod]
     Hx = stp.current_state.Hx
     PData = preprocess(PData, Hx, ∇f, norm_∇f, neval_hprod(stp.pb), max_hprod, α)
     return PData
 end
 
-function compute_direction(stp::NLPStopping, PData::TPData, workspace::TRARCWorkspace, ∇f, norm_∇f, α, solve_model)
+function compute_direction(
+    stp::NLPStopping,
+    PData::TPData,
+    workspace::TRARCWorkspace,
+    ∇f,
+    norm_∇f,
+    α,
+    solve_model,
+)
     max_hprod = stp.meta.max_cntrs[:neval_hprod]
     Hx = stp.current_state.Hx
     return solve_model(PData, Hx, ∇f, norm_∇f, neval_hprod(stp.pb), max_hprod, α)
 end
 
-function compute_direction(stp::NLPStopping, PData::PDataIterLS, workspace::TRARCWorkspace, ∇f, norm_∇f, α, solve_model)
+function compute_direction(
+    stp::NLPStopping,
+    PData::PDataIterLS,
+    workspace::TRARCWorkspace,
+    ∇f,
+    norm_∇f,
+    α,
+    solve_model,
+)
     max_prod = stp.meta.max_cntrs[:neval_jprod_residual]
     Jx = jac_op_residual(stp.pb, workspace.xt)
     Fx = workspace.Fx
     return solve_model(PData, Jx, Fx, norm_∇f, neval_jprod_residual(stp.pb), max_prod, α)
 end
 
-function compute_direction(stp::NLPStopping, PData::PDataIterLS, workspace::TRARCWorkspace{T,S,Hess}, ∇f, norm_∇f, α, solve_model) where {T,S,Hess <: HessGaussNewtonOp}
+function compute_direction(
+    stp::NLPStopping,
+    PData::PDataIterLS,
+    workspace::TRARCWorkspace{T,S,Hess},
+    ∇f,
+    norm_∇f,
+    α,
+    solve_model,
+) where {T,S,Hess<:HessGaussNewtonOp}
     max_prod = stp.meta.max_cntrs[:neval_jprod_residual]
     Jx = jac_op_residual!(stp.pb, workspace.xt, workspace.Hstruct.Jv, workspace.Hstruct.Jtv)
     Fx = workspace.Fx
@@ -148,11 +179,7 @@ function TRARC(
     nlp_stop.meta.optimality0 = norm_∇f
 
     OK = update_and_start!(nlp_stop, x = xt, fx = ft, gx = ∇f)
-    !OK && Stopping.update!(
-        nlp_at_x,
-        Hx = hessian!(workspace, nlp, xt),
-        convert = true,
-    )
+    !OK && Stopping.update!(nlp_at_x, Hx = hessian!(workspace, nlp, xt), convert = true)
 
     iter = 0 # counter different than stop count
     succ, unsucc, verysucc, unsuccinarow = 0, 0, 0, 0
@@ -173,7 +200,8 @@ function TRARC(
 
         success = false
         while !success & (unsuccinarow < max_unsuccinarow)
-            d, λ = compute_direction(nlp_stop, PData, workspace, ∇f, norm_∇f, α, solve_model)
+            d, λ =
+                compute_direction(nlp_stop, PData, workspace, ∇f, norm_∇f, α, solve_model)
 
             slope = ∇f ⋅ d
             Δq = -(∇f + 0.5 * (nlp_at_x.Hx * d)) ⋅ d
