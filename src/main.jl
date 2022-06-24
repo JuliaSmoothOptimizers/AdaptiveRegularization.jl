@@ -70,6 +70,7 @@ function NLPModels.grad!(nls::AbstractNLSModel, x, workspace::TRARCWorkspace)
     increment!(nls, :neval_grad)
     Fx = workspace.Fx
     return jtprod_residual!(nls, x, Fx, workspace.∇f)
+end
 
 function preprocess(stp::NLPStopping, PData::TPData, workspace::TRARCWorkspace, ∇f, norm_∇f, α)
     max_hprod = stp.meta.max_cntrs[:neval_hprod]
@@ -82,6 +83,20 @@ function compute_direction(stp::NLPStopping, PData::TPData, workspace::TRARCWork
     max_hprod = stp.meta.max_cntrs[:neval_hprod]
     Hx = stp.current_state.Hx
     return solve_model(PData, Hx, ∇f, norm_∇f, neval_hprod(stp.pb), max_hprod, α)
+end
+
+function compute_direction(stp::NLPStopping, PData::PDataIterLS, workspace::TRARCWorkspace, ∇f, norm_∇f, α, solve_model)
+    max_prod = stp.meta.max_cntrs[:neval_jprod_residual]
+    Jx = jac_op_residual(stp.pb, workspace.xt)
+    Fx = workspace.Fx
+    return solve_model(PData, Jx, Fx, norm_∇f, neval_jprod_residual(stp.pb), max_prod, α)
+end
+
+function compute_direction(stp::NLPStopping, PData::PDataIterLS, workspace::TRARCWorkspace{T,S,Hess}, ∇f, norm_∇f, α, solve_model) where {T,S,Hess <: HessGaussNewtonOp}
+    max_prod = stp.meta.max_cntrs[:neval_jprod_residual]
+    Jx = jac_op_residual!(stp.pb, workspace.xt, workspace.Hstruct.Jv, workspace.Hstruct.Jtv)
+    Fx = workspace.Fx
+    return solve_model(PData, Jx, Fx, norm_∇f, neval_jprod_residual(stp.pb), max_prod, α)
 end
 
 function hessian!(workspace::TRARCWorkspace, nlp, x)
@@ -97,7 +112,11 @@ function TRARC(
 ) where {Pb,M,SRC,MStp,LoS,S,T,Hess,ParamData}
     nlp = nlp_stop.pb
 
-    PData = ParamData(S, T, nlp.meta.nvar; kwargs...)
+    if ParamData == PDataNLSST
+        PData = PDataNLSST(S, T, nlp.meta.nvar, nlp.nls_meta.nequ; kwargs...)
+    else
+        PData = ParamData(S, T, nlp.meta.nvar; kwargs...)
+    end
     workspace = TRARCWorkspace(nlp, Hess)
     return TRARC(nlp_stop, PData, workspace, TR; kwargs...)
 end
@@ -173,7 +192,7 @@ function TRARC(
                 unsucc += 1
                 unsuccinarow += 1
                 η = (1 - acceptance_threshold) / 10 # ∈ (acceptance_threshold, 1)
-                qksk = ft + slope + 0.5 * (nlp_at_x.Hx * d) ⋅ d
+                qksk = ft + slope + ((nlp_at_x.Hx * d) ⋅ d) / 2
                 αbad = (1 - η) * slope / ((1 - η) * (ft + slope) + η * qksk - ftnext)
                 α = min(decrease(PData, α, TR), max(TR.large_decrease_factor, αbad) * α)
             elseif r < acceptance_threshold # unsucessful
