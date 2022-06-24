@@ -11,7 +11,7 @@ using Stopping
     @testset "$name" for name in ALL_solvers
         solver = eval(name)
         unconstrained_nlp(solver)
-        multiprecision_nlp(solver, :unc)
+        multiprecision_nlp(solver, :unc, precisions = (Float32, Float64))
     end
 end
 
@@ -19,7 +19,7 @@ end
     @testset "$name" for name in union(ALL_solvers, NLS_solvers)
         solver = eval(name)
         unconstrained_nls(solver)
-        multiprecision_nls(solver, :unc)
+        multiprecision_nls(solver, :unc, precisions = (Float32, Float64))
     end
 end
 
