@@ -56,10 +56,9 @@ However, interfaces to low-level languages have limitations that pure Julia impl
 Even though, it has a superior worst-case complexity behavior, to the best of our knowledge, there is no available maintained open-source implementation of ARC methods.
 
 `ARCTR.jl` can solve large-scale problems and can be benchmarked easily against other JSO-compliant solvers using `SolverBenchmark.jl` [@orban-siqueira-solverbenchmark-2020].
-We include below performance profiles [@dolan2002benchmarking] of `ARCTR.jl` against `trunk` implemented in `JSOSolvers.jl` and `Ipopt` on all 277 unconstrained problems from CUTEst [@cutest] with up to 192,627 variables.
-<!--
-Ipopt solved 72 problems (88%) successfully, which is one more than DCI. Without explaining performance profiles in full detail, the plot on the left shows that Ipopt is the fastest on 20 of the problems (28%), while DCI is the fastest on 51 of the problems (72%) among the 71 problems solved by both solvers. The plot on the right shows that Ipopt used fewer evaluations of objective and constraint functions on 50 of the problems (70%), DCI used fewer evaluations on 17 of the problems (24%), and there was a tie in the number of evaluations on 4 problems (6%).
--->
+We include below performance profiles [@dolan2002benchmarking] of `ARCTR.jl` against `Ipopt` on 119 unconstrained problems from CUTEst [@cutest] between 100 and 192,627 variables.
+Ipopt solved 97 problems (76%) successfully, which is four less than ARCqK.
+Without explaining performance profiles in full detail, the plot on the left shows that Ipopt is the fastest on 43 of the problems (40%), while ARCqK is the fastest on 58 of the problems (50%) among the 71 problems solved by both solvers. The plot on the right shows that Ipopt used fewer evaluations of gradient functions on 40 of the problems (40%), ARCqK used fewer evaluations on 51 of the problems (60%).
 Overall, this performance profile is very encouraging for such a young implementation.
 This implementation is in particular interesting for numerical optimization as it shows improved behavior compared to trust-region methods of adaptive regularization with cubics.
 
@@ -74,7 +73,7 @@ include("figures.jl") # make the figure
 ```
 -->
 
-![](2022-06-22_trunk_ARCqKOp_ipopt_cutest_177_300.png){ width=100% }
+![](2022-06-24_trunk_ARCqKOp_ipopt_cutest_277_1000000.png){ width=100% }
 
 # Acknowledgements
 
