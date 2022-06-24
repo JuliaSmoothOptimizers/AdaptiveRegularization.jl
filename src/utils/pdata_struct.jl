@@ -6,6 +6,8 @@ abstract type PDataFact{T} <: TPData{T} end # Variants using matricial factoriza
 
 abstract type PDataIter{T} <: TPData{T} end # Variants using iterative (Krylov) solvers
 
+abstract type PDataIterLS{T} <: TPData{T} end # Variants using iterative (Krylov) solvers for least-square subproblem
+
 """
     preprocess(PData::TPData, H, g, gNorm2, n1, n2, α)
 
@@ -219,4 +221,42 @@ function PDataST(
     OK = true
     solver = CgSolver(n, n, S)
     return PDataST(d, λ, ζ, ξ, maxtol, mintol, cgatol, cgrtol, OK, solver)
+end
+
+"""
+    PDataNLSST(::Type{S}, ::Type{T}, n)
+Return a structure used for the preprocessing of Steihaug-Toint methods for Gauss-Newton approximation of nonlinear least squares.
+"""
+mutable struct PDataNLSST{S,T} <: PDataIterLS{T}
+    d::S
+    λ::T
+    ζ::T                      # Inexact Newton order parameter: stop when ||∇q|| < ξ * ||g||^(1+ζ)
+    ξ::T                      # Inexact Newton order parameter: stop when ||∇q|| < ξ * ||g||^(1+ζ)
+    maxtol::T                 # Largest tolerance for Inexact Newton
+    mintol::T                 # Smallest tolerance for Inexact Newton
+    cgatol::Any
+    cgrtol::Any
+
+    OK::Bool    # preprocess success
+    solver::Union{CglsSolver,LsqrSolver}
+end
+
+function PDataNLSST(
+    ::Type{S},
+    ::Type{T},
+    n,
+    m;
+    ζ = T(0.5),
+    ξ = T(0.01),
+    maxtol = T(0.01),
+    mintol = sqrt(eps(T)),
+    cgatol = (ζ, ξ, maxtol, mintol, gNorm2) -> max(mintol, min(maxtol, ξ * gNorm2^(1 + ζ))),
+    cgrtol = (ζ, ξ, maxtol, mintol, gNorm2) -> max(mintol, min(maxtol, ξ * gNorm2^ζ)),
+    kwargs...,
+) where {S,T}
+    d = S(undef, n)
+    λ = zero(T)
+    OK = true
+    solver = CglsSolver(m, n, S)
+    return PDataNLSST(d, λ, ζ, ξ, maxtol, mintol, cgatol, cgrtol, OK, solver)
 end
