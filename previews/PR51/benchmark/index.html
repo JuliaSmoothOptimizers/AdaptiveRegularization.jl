@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Tutorial · ARCTR.jl</title><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.044/juliamono.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.11/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../">ARCTR.jl</a></span></div><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">Introduction</a></li><li class="is-active"><a class="tocitem" href>Tutorial</a><ul class="internal"><li><a class="tocitem" href="#CUTEst-benchmark"><span>CUTEst benchmark</span></a></li></ul></li><li><a class="tocitem" href="../doityourself/">Do it yourself</a></li><li><a class="tocitem" href="../reference/">Reference</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Tutorial</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Tutorial</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/vepiteski/ARCTR.jl/blob/main/docs/src/benchmark.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Benchmarks"><a class="docs-heading-anchor" href="#Benchmarks">Benchmarks</a><a id="Benchmarks-1"></a><a class="docs-heading-anchor-permalink" href="#Benchmarks" title="Permalink"></a></h1><h2 id="CUTEst-benchmark"><a class="docs-heading-anchor" href="#CUTEst-benchmark">CUTEst benchmark</a><a id="CUTEst-benchmark-1"></a><a class="docs-heading-anchor-permalink" href="#CUTEst-benchmark" title="Permalink"></a></h2><p>With a JSO-compliant solver, such as DCI, we can run the solver on a set of problems, explore the results, and compare to other JSO-compliant solvers using specialized benchmark tools.  We are following here the tutorial in <a href="https://juliasmoothoptimizers.github.io/SolverBenchmark.jl/v0.3/tutorial/">SolverBenchmark.jl</a> to run benchmarks on JSO-compliant solvers.</p><pre><code class="language-julia hljs">using CUTEst</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">┌ Info: using problem repository
+└   ENV[&quot;MASTSIF&quot;] = &quot;/home/runner/.julia/artifacts/a7ea0d0aaf29a39ca0fe75588fc077cdd5b5ed54/optrove-sif-99c5b38e7d03&quot;</code></pre><p>To test the implementation of DCI, we use the package <a href="https://github.com/JuliaSmoothOptimizers/CUTEst.jl">CUTEst.jl</a>, which implements <code>CUTEstModel</code> an instance of <code>AbstractNLPModel</code>. </p><pre><code class="language-julia hljs">using SolverBenchmark</code></pre><p>Let us select unconstrained problems from CUTEst with a maximum of 300 variables.</p><pre><code class="language-julia hljs">nmax = 300
+pnames = CUTEst.select(contype = &quot;unc&quot;, max_var = nmax)
+
+cutest_problems = (CUTEstModel(p) for p in pnames)
+
+length(cutest_problems) # number of problems</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">181</code></pre><p>We compare here ARCTR with <code>trunk</code> from <a href="https://github.com/JuliaSmoothOptimizers/JSOSolvers.jl/"><code>JSOSolvers.jl</code></a> on a subset of CUTEst problems.</p><pre><code class="language- hljs">using ARCTR, JSOSolvers
+
+#Same time limit for all the solvers
+max_time = 1200. #20 minutes
+atol, rtol = 1e-5, 1e-6
+
+solvers = Dict(
+  :trunk =&gt; nlp -&gt; trunk(
+    nlp,
+    max_time = max_time,
+    max_iter = typemax(Int64),
+    max_eval = typemax(Int64),
+    atol = atol,
+    rtol = rtol,
+  ),
+  :ARCqK =&gt; nlp -&gt; ARCqKOp(
+    nlp,
+    max_time = max_time,
+    max_iter = typemax(Int64),
+    max_eval = typemax(Int64),
+    atol = atol,
+    rtol = rtol,
+  ),
+)
+
+stats = bmark_solvers(solvers, cutest_problems)</code></pre><p>The function <code>bmark_solvers</code> return a <code>Dict</code> of <code>DataFrames</code> with detailed information on the execution. This output can be saved in a data file.</p><pre><code class="language- hljs">using JLD2
+@save &quot;trunk_arcqk_$(string(length(pnames))).jld2&quot; stats</code></pre><p>The result of the benchmark can be explored via tables,</p><pre><code class="language- hljs">pretty_stats(stats[:arcqk])</code></pre><p>or it can also be used to make performance profiles.</p><pre><code class="language- hljs">using Plots
+gr()
+
+legend = Dict(
+  :neval_obj =&gt; &quot;number of f evals&quot;, 
+  :neval_cons =&gt; &quot;number of c evals&quot;, 
+  :neval_grad =&gt; &quot;number of ∇f evals&quot;, 
+  :neval_jac =&gt; &quot;number of ∇c evals&quot;, 
+  :neval_jprod =&gt; &quot;number of ∇c*v evals&quot;, 
+  :neval_jtprod  =&gt; &quot;number of ∇cᵀ*v evals&quot;, 
+  :neval_hess  =&gt; &quot;number of ∇²f evals&quot;, 
+  :elapsed_time =&gt; &quot;elapsed time&quot;
+)
+perf_title(col) = &quot;Performance profile on CUTEst w.r.t. $(string(legend[col]))&quot;
+
+styles = [:solid,:dash,:dot,:dashdot] #[:auto, :solid, :dash, :dot, :dashdot, :dashdotdot]
+
+function print_pp_column(col::Symbol, stats)
+  
+  ϵ = minimum(minimum(filter(x -&gt; x &gt; 0, df[!, col])) for df in values(stats))
+  first_order(df) = df.status .== :first_order
+  unbounded(df) = df.status .== :unbounded
+  solved(df) = first_order(df) .| unbounded(df)
+  cost(df) = (max.(df[!, col], ϵ) + .!solved(df) .* Inf)
+
+  p = performance_profile(
+    stats, 
+    cost, 
+    title=perf_title(col), 
+    legend=:bottomright, 
+    linestyles=styles
+  )
+end
+
+print_pp_column(:elapsed_time, stats) # with respect to time</code></pre><pre><code class="language- hljs">print_pp_column(:neval_jac, stats) # with respect to number of jacobian evaluations</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../">« Introduction</a><a class="docs-footer-nextpage" href="../doityourself/">Do it yourself »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.19 on <span class="colophon-date" title="Friday 24 June 2022 15:01">Friday 24 June 2022</span>. Using Julia version 1.7.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
