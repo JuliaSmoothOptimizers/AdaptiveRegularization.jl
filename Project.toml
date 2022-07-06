@@ -16,10 +16,10 @@ StoppingInterface = "53949629-e8ff-437b-b6e7-14da1a85bf25"
 [compat]
 Krylov = "^0.8.2"
 NLPModels = "0.18"
-SparseMatricesCOO = "0.1"
 SolverCore = "0.2"
+SparseMatricesCOO = "0.1"
 Stopping = "0.4"
-StoppingInterface = "0.1"
+StoppingInterface = "0.1, 0.2"
 julia = "^1.6"
 
 [extras]
