@@ -13,7 +13,7 @@ function preprocess(PData::PDataLSKARC, Jx, Fx, gNorm2, calls, max_calls, α)
         ind = setdiff(1:length(shifts), findall(.!slv.converged))
         if length(ind) > 1
             for i in ind
-                if (norm(slv.x[i]) / shifts[i] - α > 0)
+                if (norm(slv.x[i]) / shifts[i] - α > 0) # for lsqr: sqrt(slv.xNorm²[i])
                     return true
                 end
             end
@@ -37,7 +37,7 @@ function preprocess(PData::PDataLSKARC, Jx, Fx, gNorm2, calls, max_calls, α)
     PData.positives .= solver.converged
     for i = 1:nshifts
         @. PData.xShift[i] = -solver.x[i]
-        PData.norm_dirs[i] = norm(solver.x[i]) # Get it from cg_lanczos?
+        PData.norm_dirs[i] = norm(solver.x[i])
     end
     PData.shifts .= shifts
     PData.nshifts = nshifts
