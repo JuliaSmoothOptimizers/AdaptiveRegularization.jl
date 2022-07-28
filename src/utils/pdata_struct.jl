@@ -252,11 +252,16 @@ function PDataNLSST(
     mintol = sqrt(eps(T)),
     cgatol = (ζ, ξ, maxtol, mintol, gNorm2) -> max(mintol, min(maxtol, ξ * gNorm2^(1 + ζ))),
     cgrtol = (ζ, ξ, maxtol, mintol, gNorm2) -> max(mintol, min(maxtol, ξ * gNorm2^ζ)),
+    solver_method = :cgls,
     kwargs...,
 ) where {S,T}
     d = S(undef, n)
     λ = zero(T)
     OK = true
-    solver = CglsSolver(m, n, S)
+    solver = if solver_method == :cgls
+        CglsSolver(m, n, S)
+    else
+        LsqrSolver(m, n, S)
+    end
     return PDataNLSST(d, λ, ζ, ξ, maxtol, mintol, cgatol, cgrtol, OK, solver)
 end
