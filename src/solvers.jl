@@ -39,6 +39,7 @@ const solvers_nls_const = Dict(
         [:shifts => 10.0 .^ (collect(-10.0:0.5:20.0))],
     ),
     :ST_TROpGN => (HessGaussNewtonOp, PDataST, solve_modelST_TR, ()),
-    :ST_TROpGNLS => (HessGaussNewtonOp, PDataNLSST, solve_modelNLSST_TR, ()),
+    :ST_TROpGNLSCgls => (HessGaussNewtonOp, PDataNLSST, solve_modelNLSST_TR, [:solver_method => :cgls]),
+    :ST_TROpGNLSLsqr => (HessGaussNewtonOp, PDataNLSST, solve_modelNLSST_TR, [:solver_method => :lsqr]),
     :ST_TROpLS => (HessOp, PDataNLSST, solve_modelNLSST_TR, ()),
 )
