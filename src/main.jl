@@ -83,6 +83,21 @@ function preprocess(stp::NLPStopping, PData::TPData, workspace::TRARCWorkspace, 
   return PData
 end
 
+function preprocess(
+  stp::NLPStopping,
+  PData::PDataIterLS,
+  workspace::TRARCWorkspace{T,S,Hess},
+  ∇f,
+  norm_∇f,
+  α,
+) where {T,S,Hess<:HessGaussNewtonOp}
+  max_hprod = stp.meta.max_cntrs[:neval_jprod_residual]
+  Fx = workspace.Fx
+  Jx = jac_op_residual!(stp.pb, workspace.xt, workspace.Hstruct.Jv, workspace.Hstruct.Jtv)
+  PData = ARCTR.preprocess(PData, Jx, Fx, norm_∇f, neval_jprod_residual(stp.pb), max_hprod, α)
+  return PData
+end
+
 function compute_direction(
   stp::NLPStopping,
   PData::TPData,
@@ -132,21 +147,21 @@ function hessian!(workspace::TRARCWorkspace, nlp, x)
 end
 
 function TRARC(
-  nlp_stop::NLPStopping{Pb, M, SRC, NLPAtX{Score, T, S}, MStp, LoS};
-  TR::TrustRegion = TrustRegion(T(10.0)),
-  hess_type::Type{Hess} = HessOp,
-  pdata_type::Type{ParamData} = PDataKARC,
-  kwargs...,
-) where {Pb, M, SRC, MStp, LoS, Score, S, T, Hess, ParamData}
-  nlp = nlp_stop.pb
+    nlp_stop::NLPStopping{Pb,M,SRC,NLPAtX{Score,T,S},MStp,LoS};
+    TR::TrustRegion = TrustRegion(T(10.0)),
+    hess_type::Type{Hess} = HessOp,
+    pdata_type::Type{ParamData} = PDataKARC,
+    kwargs...,
+) where {Pb,M,SRC,MStp,LoS,Score,S,T,Hess,ParamData}
+    nlp = nlp_stop.pb
 
-  if ParamData == PDataNLSST
-    PData = PDataNLSST(S, T, nlp.meta.nvar, nlp.nls_meta.nequ; kwargs...)
-  else
-    PData = ParamData(S, T, nlp.meta.nvar; kwargs...)
-  end
-  workspace = TRARCWorkspace(nlp, Hess)
-  return TRARC(nlp_stop, PData, workspace, TR; kwargs...)
+    if ParamData in (PDataNLSST, PDataLSKARC)
+        PData = ParamData(S, T, nlp.meta.nvar, nlp.nls_meta.nequ; kwargs...)
+    else
+        PData = ParamData(S, T, nlp.meta.nvar; kwargs...)
+    end
+    workspace = TRARCWorkspace(nlp, Hess)
+    return TRARC(nlp_stop, PData, workspace, TR; kwargs...)
 end
 
 """

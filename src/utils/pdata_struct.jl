@@ -119,7 +119,7 @@ end
     PDataLSKARC(::Type{S}, ::Type{T}, n)
 Return a structure used for the preprocessing of ARCqK methods.
 """
-mutable struct PDataLSKARC{T} <: PDataIter{T}
+mutable struct PDataLSKARC{T} <: PDataIterLS{T}
     d::Array{T,1}             # (H+λI)\g ; on first call = g
     λ::T                      # "active" value of λ; on first call = 0
     ζ::T                      # Inexact Newton order parameter: stop when ||∇q|| < ξ * ||g||^(1+ζ)
@@ -144,7 +144,8 @@ end
 function PDataLSKARC(
     ::Type{S},
     ::Type{T},
-    n;
+    n,
+    m;
     ζ = T(0.5),
     ξ = T(0.01),
     maxtol = T(0.01),
@@ -167,9 +168,9 @@ function PDataLSKARC(
     norm_dirs = S(undef, nshifts)
     OK = true
     solver = if solver_method == :cgls
-        CglsLanczosShiftSolver(n, n, nshifts, S)
+        CglsLanczosShiftSolver(m, n, nshifts, S)
     else
-        LsqrShiftSolver(n, n, nshifts, S)
+        LsqrShiftSolver(m, n, nshifts, S)
     end
     return PDataLSKARC(
         d,
