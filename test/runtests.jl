@@ -8,10 +8,18 @@ using ADNLPModels, NLPModels, OptimizationProblems.ADNLPProblems, SolverTest
 using Stopping
 
 @testset "Testing NLP solvers" begin
-    @testset "$name" for name in keys(ARCTR.solvers_const)
+    @testset "$name" for name in ALL_solvers
         solver = eval(name)
         unconstrained_nlp(solver)
-        multiprecision_nlp(solver, :unc)
+        multiprecision_nlp(solver, :unc, precisions = (Float32, Float64))
+    end
+end
+
+@testset "Testing NLS solvers" begin
+    @testset "$name" for name in union(ALL_solvers, NLS_solvers)
+        solver = eval(name)
+        unconstrained_nls(solver)
+        multiprecision_nls(solver, :unc, precisions = (Float32, Float64))
     end
 end
 
@@ -28,4 +36,9 @@ for solver in ALL_solvers
     stats = eval(solver)(nlp, verbose = false)
     @test stats.status == :first_order
     reset!(nlp)
+end
+
+if VERSION >= v"1.7.0"
+    include("allocation_test.jl")
+    include("allocation_test_main.jl")
 end

@@ -1,4 +1,4 @@
-function solve_modelTRK(H, g, gNorm2, nlp_stop, X::PDataTRK, α::T) where {T}
+function solve_modelTRK(X::PDataTRK, H, g, gNorm2, calls, max_calls, α::T) where {T}
     # target value should be close to satisfy α=||d||
     start = findfirst(X.positives)
     if isnothing(start)
