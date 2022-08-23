@@ -15,10 +15,9 @@ function preprocess(PData::PDataTRK, Hop, g, gNorm2, calls, max_calls, α)
         if slv.converged[1]
             return norm(slv.x[1]) ≤ α
         else
-            ind = setdiff(1:length(shifts), findall(slv.not_cv)) # findall(slv.converged)
             if length(ind) > 1
-                for i in ind
-                    if (norm(slv.x[i]) - α > 0)
+                for i in 1:length(shifts)
+                    if !slv.not_cv[i] && (norm(slv.x[i]) - α > 0)
                         return true
                     end
                 end
