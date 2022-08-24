@@ -66,7 +66,7 @@ for (Workspace, limit) in (
     (HessDense, 286624),
     (HessSparse, 84016),
     (HessSparseCOO, 0), # independent of `n`
-    (HessOp, 1344), # independent of `n`
+    (HessOp, 2304), # independent of `n`
 )
     who = Workspace(nlp, n)
     alloc_hessian(who, nlp, x0) = @allocated ARCTR.hessian!(who, nlp, x0)
