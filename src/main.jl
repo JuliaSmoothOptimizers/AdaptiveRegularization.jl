@@ -15,26 +15,28 @@ struct TRARCWorkspace{T,S,Hess}
     Fx::S
     function TRARCWorkspace(nlp::AbstractNLPModel{T,S}, ::Type{Hess}) where {T,S,Hess}
         n = nlp.meta.nvar
-        return new{T,S,Hess}(
+        Hstruct, Htype = init(Hess, nlp, n)
+        return new{T,S,Htype}(
             S(undef, n), # xt
             S(undef, n), # xtnext
             S(undef, n), # d
             S(undef, n), # ∇f
             S(undef, n), # ∇fnext
-            Hess(nlp, n),
+            Hstruct,
             S(undef, n), # H * d
             S(undef, 0),
         )
     end
     function TRARCWorkspace(nlp::AbstractNLSModel{T,S}, ::Type{Hess}) where {T,S,Hess}
         n = nlp.meta.nvar
-        return new{T,S,Hess}(
+        Hstruct, Htype = init(Hess, nlp, n)
+        return new{T,S,Htype}(
             S(undef, n), # xt
             S(undef, n), # xtnext
             S(undef, n), # d
             S(undef, n), # ∇f
             S(undef, n), # ∇fnext
-            Hess(nlp, n),
+            Hstruct,
             S(undef, n), # H * d
             S(undef, nlp.nls_meta.nequ),
         )
@@ -193,8 +195,9 @@ function TRARC(
     norm_∇f = norm(∇f)
     nlp_stop.meta.optimality0 = norm_∇f
 
-    OK = update_and_start!(nlp_stop, x = xt, fx = ft, gx = ∇f)
-    !OK && Stopping.update!(nlp_at_x, Hx = hessian!(workspace, nlp, xt), convert = true)
+    Stopping._smart_update!(nlp_at_x, x = xt, fx = ft, gx = ∇f)
+    OK = start!(nlp_stop)
+    !OK && Stopping._smart_update!(nlp_at_x, Hx = hessian!(workspace, nlp, xt))
 
     iter = 0 # counter different than stop count
     succ, unsucc, verysucc, unsuccinarow = 0, 0, 0, 0
@@ -271,8 +274,9 @@ function TRARC(
         end # while !success
 
         nlp_stop.meta.nb_of_stop = iter
-        OK = update_and_stop!(nlp_stop, x = xt, fx = ft, gx = ∇f)
-        success && Stopping.update!(nlp_at_x, Hx = hessian!(workspace, nlp, xt))
+        Stopping._smart_update!(nlp_at_x, x = xt, fx = ft, gx = ∇f)
+        OK = stop!(nlp_stop)
+        success && Stopping._smart_update!(nlp_at_x, Hx = hessian!(workspace, nlp, xt))
     end # while !OK
 
     return nlp_stop

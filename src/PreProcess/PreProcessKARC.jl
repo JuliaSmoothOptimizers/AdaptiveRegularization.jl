@@ -34,7 +34,7 @@ function preprocess(PData::PDataKARC, Hop, g, gNorm2, calls, max_calls, α)
     PData.indmin = 0
     PData.positives .= solver.converged
     for i = 1:nshifts
-        @. PData.xShift[i] = -solver.x[i]
+        PData.xShift[i] .= .-solver.x[i]
         PData.norm_dirs[i] = norm(solver.x[i]) # Get it from cg_lanczos?
     end
     PData.shifts .= shifts

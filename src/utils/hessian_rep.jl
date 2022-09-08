@@ -64,6 +64,16 @@ end
 export HessDense, HessSparse, HessSparseCOO, HessOp, HessGaussNewtonOp
 
 """
+    init(::Type{Hess}, nlp::AbstractNLPModel{T,S}, n)
+
+Return the hessian structure `Hess` and its composite type.
+"""
+function init(::Type{Hess}, nlp::AbstractNLPModel{T,S}, n) where {Hess,T,S}
+    Hstruct = Hess(nlp, n)
+    return Hstruct, typeof(Hstruct)
+end
+
+"""
     hessian!(workspace::HessDense, nlp, x)
 
 Return the Hessian matrix of `nlp` at `x` in-place with memory update of `workspace`.
