@@ -163,10 +163,10 @@ end
 Update `Δq = -(∇f + 0.5 * (Hx * d)) ⋅ d` in-place.
 """
 function compute_Δq(workspace, Hx, d, ∇f) # -(∇f + 0.5 * (nlp_at_x.Hx * d)) ⋅ d
-  mul!(workspace.Hd, Hx, d)
-  workspace.Hd .*= 0.5
-  workspace.Hd .+= ∇f
-  return -dot(workspace.Hd, d)
+    mul!(workspace.Hd, Hx, d)
+    workspace.Hd .*= 0.5
+    workspace.Hd .+= ∇f
+    return -dot(workspace.Hd, d)
 end
 
 function TRARC(
