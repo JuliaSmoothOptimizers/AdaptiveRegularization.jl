@@ -11,6 +11,7 @@ struct TRARCWorkspace{T,S,Hess}
     ∇f::S
     ∇fnext::S
     Hstruct::Hess
+    Hd::S
     Fx::S
     function TRARCWorkspace(nlp::AbstractNLPModel{T,S}, ::Type{Hess}) where {T,S,Hess}
         n = nlp.meta.nvar
@@ -21,6 +22,7 @@ struct TRARCWorkspace{T,S,Hess}
             S(undef, n), # ∇f
             S(undef, n), # ∇fnext
             Hess(nlp, n),
+            S(undef, n), # H * d
             S(undef, 0),
         )
     end
@@ -33,6 +35,7 @@ struct TRARCWorkspace{T,S,Hess}
             S(undef, n), # ∇f
             S(undef, n), # ∇fnext
             Hess(nlp, n),
+            S(undef, n), # H * d
             S(undef, nlp.nls_meta.nequ),
         )
     end
@@ -152,6 +155,18 @@ function TRARC(
     return TRARC(nlp_stop, PData, workspace, TR; kwargs...)
 end
 
+"""
+    compute_Δq(Hx, d, ∇f)
+
+Update `Δq = -(∇f + 0.5 * (Hx * d)) ⋅ d` in-place.
+"""
+function compute_Δq(workspace, Hx, d, ∇f) # -(∇f + 0.5 * (nlp_at_x.Hx * d)) ⋅ d
+  mul!(workspace.Hd, Hx, d)
+  workspace.Hd .*= 0.5
+  workspace.Hd .+= ∇f
+  return -dot(workspace.Hd, d)
+end
+
 function TRARC(
     nlp_stop::NLPStopping{Pb,M,SRC,NLPAtX{T,S},MStp,LoS},
     PData::ParamData,
@@ -204,7 +219,7 @@ function TRARC(
                 compute_direction(nlp_stop, PData, workspace, ∇f, norm_∇f, α, solve_model)
 
             slope = ∇f ⋅ d
-            Δq = -(∇f + 0.5 * (nlp_at_x.Hx * d)) ⋅ d
+            Δq = compute_Δq(workspace, nlp_at_x.Hx, d, ∇f) # -(∇f + 0.5 * (nlp_at_x.Hx * d)) ⋅ d
 
             xtnext .= xt .+ d
             ftnext = obj(nlp, xtnext, workspace)
