@@ -86,7 +86,7 @@ function preprocess(
     α,
 )
     max_hprod = stp.meta.max_cntrs[:neval_hprod]
-    Hx = stp.current_state.Hx
+    Hx = workspace.Hstruct.H
     PData = preprocess(PData, Hx, ∇f, norm_∇f, neval_hprod(stp.pb), max_hprod, α)
     return PData
 end
@@ -101,7 +101,7 @@ function compute_direction(
     solve_model,
 )
     max_hprod = stp.meta.max_cntrs[:neval_hprod]
-    Hx = stp.current_state.Hx
+    Hx = workspace.Hstruct.H
     return solve_model(PData, Hx, ∇f, norm_∇f, neval_hprod(stp.pb), max_hprod, α)
 end
 
@@ -162,11 +162,11 @@ end
 
 Update `Δq = -(∇f + 0.5 * (Hx * d)) ⋅ d` in-place.
 """
-function compute_Δq(workspace, Hx, d, ∇f) # -(∇f + 0.5 * (nlp_at_x.Hx * d)) ⋅ d
-    mul!(workspace.Hd, Hx, d)
-    workspace.Hd .*= 0.5
-    workspace.Hd .+= ∇f
-    return -dot(workspace.Hd, d)
+function compute_Δq(workspace, Hx, d, ∇f)
+  mul!(workspace.Hd, Hx, d)
+  workspace.Hd .*= 0.5
+  workspace.Hd .+= ∇f
+  return -dot(workspace.Hd, d)
 end
 
 function TRARC(
@@ -180,8 +180,8 @@ function TRARC(
     kwargs...,
 ) where {Pb,M,SRC,MStp,LoS,S,T,Hess,ParamData}
     nlp, nlp_at_x = nlp_stop.pb, nlp_stop.current_state
-    xt, xtnext, d, ∇f, ∇fnext =
-        workspace.xt, workspace.xtnext, workspace.d, workspace.∇f, workspace.∇fnext
+    xt, xtnext, ∇f, ∇fnext = workspace.xt, workspace.xtnext, workspace.∇f, workspace.∇fnext
+    d, Hx = workspace.d, workspace.Hstruct.H
 
     α = TR.α₀
     max_unsuccinarow = TR.max_unsuccinarow
@@ -197,7 +197,8 @@ function TRARC(
 
     Stopping._smart_update!(nlp_at_x, x = xt, fx = ft, gx = ∇f)
     OK = start!(nlp_stop)
-    !OK && Stopping._smart_update!(nlp_at_x, Hx = hessian!(workspace, nlp, xt))
+    Hx = hessian!(workspace, nlp, xt)
+    !OK && Stopping._smart_update!(nlp_at_x, Hx = Hx)
 
     iter = 0 # counter different than stop count
     succ, unsucc, verysucc, unsuccinarow = 0, 0, 0, 0
@@ -222,7 +223,7 @@ function TRARC(
                 compute_direction(nlp_stop, PData, workspace, ∇f, norm_∇f, α, solve_model)
 
             slope = ∇f ⋅ d
-            Δq = compute_Δq(workspace, nlp_at_x.Hx, d, ∇f) # -(∇f + 0.5 * (nlp_at_x.Hx * d)) ⋅ d
+            Δq = compute_Δq(workspace, Hx, d, ∇f)
 
             xtnext .= xt .+ d
             ftnext = obj(nlp, xtnext, workspace)
@@ -238,7 +239,8 @@ function TRARC(
                 unsucc += 1
                 unsuccinarow += 1
                 η = (1 - acceptance_threshold) / 10 # ∈ (acceptance_threshold, 1)
-                qksk = ft + slope + ((nlp_at_x.Hx * d) ⋅ d) / 2
+                mul!(workspace.Hd, Hx, d)
+                qksk = ft + slope + (workspace.Hd ⋅ d) / 2
                 αbad = (1 - η) * slope / ((1 - η) * (ft + slope) + η * qksk - ftnext)
                 α = min(decrease(PData, α, TR), max(TR.large_decrease_factor, αbad) * α)
             elseif r < acceptance_threshold # unsucessful
@@ -276,7 +278,8 @@ function TRARC(
         nlp_stop.meta.nb_of_stop = iter
         Stopping._smart_update!(nlp_at_x, x = xt, fx = ft, gx = ∇f)
         OK = stop!(nlp_stop)
-        success && Stopping._smart_update!(nlp_at_x, Hx = hessian!(workspace, nlp, xt))
+        Hx = hessian!(workspace, nlp, xt)
+        success && Stopping._smart_update!(nlp_at_x, Hx = Hx)
     end # while !OK
 
     return nlp_stop
