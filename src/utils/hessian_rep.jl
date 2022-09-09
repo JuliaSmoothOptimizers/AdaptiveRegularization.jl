@@ -2,9 +2,11 @@
     HessDense(::AbstractNLPModel{T,S}, n)
 Return a structure used for the evaluation of dense Hessian matrix.
 """
-struct HessDense
+struct HessDense{T}
+    H::Matrix{T}
     function HessDense(::AbstractNLPModel{T,S}, n) where {T,S}
-        return new()
+        H = Matrix{Float64}(undef, n, n)
+        return new{T}(H)
     end
 end
 
@@ -12,14 +14,16 @@ end
     HessSparse(::AbstractNLPModel{T,S}, n)
 Return a structure used for the evaluation of sparse Hessian matrix.
 """
-struct HessSparse{S,Vi}
+struct HessSparse{T,S,Vi,It<:Integer}
     rows::Vi
     cols::Vi
     vals::S
+    H::Symmetric{T, SparseMatrixCSC{T, It}}
     function HessSparse(nlp::AbstractNLPModel{T,S}, n) where {T,S}
         rows, cols = hess_structure(nlp)
         vals = S(undef, nlp.meta.nnzh)
-        return new{S,typeof(rows)}(rows, cols, vals)
+        H = Symmetric(spzeros(T, n, n), :L)
+        return new{T,S,typeof(rows),eltype(rows)}(rows, cols, vals, H)
     end
 end
 
@@ -42,10 +46,12 @@ end
     HessOp(::AbstractNLPModel{T,S}, n)
 Return a structure used for the evaluation of the Hessian matrix as an operator.
 """
-struct HessOp{S}
+mutable struct HessOp{S}
     Hv::S
+    H
     function HessOp(::AbstractNLPModel{T,S}, n) where {T,S}
-        return new{S}(S(undef, n))
+        H = LinearOperator{T}(n, n, true, true, v -> v, v -> v, v -> v)
+        return new{S}(S(undef, n), H)
     end
 end
 
@@ -53,11 +59,13 @@ end
     HessGaussNewtonOp(::AbstractNLSModel{T,S}, n)
 Return a structure used for the evaluation of the Hessian matrix as an operator.
 """
-struct HessGaussNewtonOp{S}
+mutable struct HessGaussNewtonOp{S}
     Jv::S
     Jtv::S
+    H
     function HessGaussNewtonOp(nls::AbstractNLSModel{T,S}, n) where {T,S}
-        return new{S}(S(undef, nls.nls_meta.nequ), S(undef, n))
+        Jx = LinearOperator{T}(nls.nls_meta.nequ, n, false, false, v -> v, v -> v, v -> v)
+        return new{S}(S(undef, nls.nls_meta.nequ), S(undef, n), Jx' * Jx)
     end
 end
 
@@ -81,23 +89,26 @@ Return the Hessian matrix of `nlp` at `x` in-place with memory update of `worksp
 function hessian! end
 
 function hessian!(workspace::HessDense, nlp, x)
-    H = Matrix(hess(nlp, x))
-    return H
+    workspace.H .= Matrix(hess(nlp, x))
+    return workspace.H
 end
 
 function hessian!(workspace::HessOp, nlp, x)
-    return hess_op!(nlp, x, workspace.Hv)
+    workspace.H = hess_op!(nlp, x, workspace.Hv)
+    return workspace.H
 end
 
 function hessian!(workspace::HessGaussNewtonOp, nlp, x)
     Jx = jac_op_residual!(nlp, x, workspace.Jv, workspace.Jtv)
-    return Jx' * Jx
+    workspace.H = Jx' * Jx
+    return workspace.H
 end
 
 function hessian!(workspace::HessSparse, nlp, x)
     hess_coord!(nlp, x, workspace.vals)
     n = nlp.meta.nvar
-    return Symmetric(sparse(workspace.rows, workspace.cols, workspace.vals, n, n), :L)
+    workspace.H .= Symmetric(sparse(workspace.rows, workspace.cols, workspace.vals, n, n), :L)
+    return workspace.H
 end
 
 function hessian!(workspace::HessSparseCOO, nlp, x)
