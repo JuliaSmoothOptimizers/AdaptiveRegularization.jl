@@ -48,26 +48,26 @@ function solve_model(X::TPData, H, g, gNorm2, n1, n2, α) end
     PDataKARC(::Type{S}, ::Type{T}, n)
 Return a structure used for the preprocessing of ARCqK methods.
 """
-mutable struct PDataKARC{T} <: PDataIter{T}
-    d::Array{T,1}             # (H+λI)\g ; on first call = g
+mutable struct PDataKARC{S,T,Fatol,Frtol} <: PDataIter{T}
+    d::S            # (H+λI)\g ; on first call = g
     λ::T                      # "active" value of λ; on first call = 0
     ζ::T                      # Inexact Newton order parameter: stop when ||∇q|| < ξ * ||g||^(1+ζ)
     ξ::T                      # Inexact Newton order parameter: stop when ||∇q|| < ξ * ||g||^(1+ζ)
     maxtol::T                 # Largest tolerance for Inexact Newton
     mintol::T                 # Smallest tolerance for Inexact Newton
-    cgatol::Any
-    cgrtol::Any
+    cgatol::Fatol
+    cgrtol::Frtol
 
     indmin::Int               # index of best shift value  within "positive". On first call = 0
 
     positives::Array{Bool,1}   # indices of the shift values yielding (H+λI)⪰0
-    xShift::Array{Array{T,1},1}        # solutions for each shifted system
+    xShift::Array{S,1}        # solutions for each shifted system
     shifts::Array{T,1}        # values of the shifts
     nshifts::Int              # number of shifts
     norm_dirs::Array{T,1}     # norms of xShifts
     OK::Bool                  # preprocess success
 
-    solver::CgLanczosShiftSolver
+    solver::CgLanczosShiftSolver{T,T,S}
 end
 
 function PDataKARC(
@@ -119,26 +119,26 @@ end
     PDataTRK(::Type{S}, ::Type{T}, n)
 Return a structure used for the preprocessing of TRK methods.
 """
-mutable struct PDataTRK{T} <: PDataIter{T}
-    d::Array{T,1}             # (H+λI)\g ; on first call = g
+mutable struct PDataTRK{S,T,Fatol,Frtol} <: PDataIter{T}
+    d::S            # (H+λI)\g ; on first call = g
     λ::T                      # "active" value of λ; on first call = 0
     ζ::T                      # Inexact Newton order parameter: stop when ||∇q|| < ξ * ||g||^(1+ζ)
     ξ::T                      # Inexact Newton order parameter: stop when ||∇q|| < ξ * ||g||^(1+ζ)
     maxtol::T                 # Largest tolerance for Inexact Newton
     mintol::T                 # Smallest tolerance for Inexact Newton
-    cgatol::Any
-    cgrtol::Any
+    cgatol::Fatol
+    cgrtol::Frtol
 
     indmin::Int               # index of best shift value  within "positive". On first call = 0
 
     positives::Array{Bool,1}   # indices of the shift values yielding (H+λI)⪰0
-    xShift::Array{Array{T,1},1}        # solutions for each shifted system
+    xShift::Array{S,1}        # solutions for each shifted system
     shifts::Array{T,1}        # values of the shifts
     nshifts::Int              # number of shifts
     norm_dirs::Array{T,1}     # norms of xShifts
     OK::Bool                  # preprocess success
 
-    solver::CgLanczosShiftSolver
+    solver::CgLanczosShiftSolver{T,T,S}
 end
 
 function PDataTRK(
@@ -190,18 +190,18 @@ end
     PDataST(::Type{S}, ::Type{T}, n)
 Return a structure used for the preprocessing of Steihaug-Toint methods.
 """
-mutable struct PDataST{S,T} <: PDataIter{T}
+mutable struct PDataST{S,T,Fatol,Frtol} <: PDataIter{T}
     d::S
     λ::T
     ζ::T                      # Inexact Newton order parameter: stop when ||∇q|| < ξ * ||g||^(1+ζ)
     ξ::T                      # Inexact Newton order parameter: stop when ||∇q|| < ξ * ||g||^(1+ζ)
     maxtol::T                 # Largest tolerance for Inexact Newton
     mintol::T                 # Smallest tolerance for Inexact Newton
-    cgatol::Any
-    cgrtol::Any
+    cgatol::Fatol
+    cgrtol::Frtol
 
     OK::Bool    # preprocess success
-    solver::CgSolver
+    solver::CgSolver{T,T,S}
 end
 
 function PDataST(
@@ -227,18 +227,18 @@ end
     PDataNLSST(::Type{S}, ::Type{T}, n)
 Return a structure used for the preprocessing of Steihaug-Toint methods for Gauss-Newton approximation of nonlinear least squares.
 """
-mutable struct PDataNLSST{S,T} <: PDataIterLS{T}
+mutable struct PDataNLSST{S,T,Fatol,Frtol} <: PDataIterLS{T}
     d::S
     λ::T
     ζ::T                      # Inexact Newton order parameter: stop when ||∇q|| < ξ * ||g||^(1+ζ)
     ξ::T                      # Inexact Newton order parameter: stop when ||∇q|| < ξ * ||g||^(1+ζ)
     maxtol::T                 # Largest tolerance for Inexact Newton
     mintol::T                 # Smallest tolerance for Inexact Newton
-    cgatol::Any
-    cgrtol::Any
+    cgatol::Fatol
+    cgrtol::Frtol
 
     OK::Bool    # preprocess success
-    solver::Union{CglsSolver,LsqrSolver}
+    solver::Union{CglsSolver{T,T,S},LsqrSolver{T,T,S}}
 end
 
 function PDataNLSST(
