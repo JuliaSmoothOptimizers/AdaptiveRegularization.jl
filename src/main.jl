@@ -140,12 +140,12 @@ function hessian!(workspace::TRARCWorkspace, nlp, x)
 end
 
 function TRARC(
-    nlp_stop::NLPStopping{Pb,M,SRC,NLPAtX{T,S},MStp,LoS};
+    nlp_stop::NLPStopping{Pb,M,SRC,NLPAtX{Score,T,S},MStp,LoS};
     TR::TrustRegion = TrustRegion(T(10.0)),
     hess_type::Type{Hess} = HessOp,
     pdata_type::Type{ParamData} = PDataKARC,
     kwargs...,
-) where {Pb,M,SRC,MStp,LoS,S,T,Hess,ParamData}
+) where {Pb,M,SRC,MStp,LoS,Score,S,T,Hess,ParamData}
     nlp = nlp_stop.pb
 
     if ParamData == PDataNLSST
@@ -170,7 +170,7 @@ function compute_Δq(workspace, Hx, d, ∇f)
 end
 
 function TRARC(
-    nlp_stop::NLPStopping{Pb,M,SRC,NLPAtX{T,S},MStp,LoS},
+    nlp_stop::NLPStopping{Pb,M,SRC,NLPAtX{Score,T,S},MStp,LoS},
     PData::ParamData,
     workspace::TRARCWorkspace{T,S,Hess},
     TR::TrustRegion;
@@ -178,7 +178,7 @@ function TRARC(
     robust::Bool = true,
     verbose::Bool = false,
     kwargs...,
-) where {Pb,M,SRC,MStp,LoS,S,T,Hess,ParamData}
+) where {Pb,M,SRC,MStp,LoS,Score,S,T,Hess,ParamData}
     nlp, nlp_at_x = nlp_stop.pb, nlp_stop.current_state
     xt, xtnext, ∇f, ∇fnext = workspace.xt, workspace.xtnext, workspace.∇f, workspace.∇fnext
     d, Hx = workspace.d, workspace.Hstruct.H
@@ -195,10 +195,11 @@ function TRARC(
     norm_∇f = norm(∇f)
     nlp_stop.meta.optimality0 = norm_∇f
 
-    Stopping._smart_update!(nlp_at_x, x = xt, fx = ft, gx = ∇f)
+    set_x!(nlp_at_x, xt)
+    set_fx!(nlp_at_x, ft)
+    set_gx!(nlp_at_x, ∇f)
     OK = start!(nlp_stop)
     Hx = hessian!(workspace, nlp, xt)
-    !OK && Stopping._smart_update!(nlp_at_x, Hx = Hx)
 
     iter = 0 # counter different than stop count
     succ, unsucc, verysucc, unsuccinarow = 0, 0, 0, 0
@@ -276,10 +277,11 @@ function TRARC(
         end # while !success
 
         nlp_stop.meta.nb_of_stop = iter
-        Stopping._smart_update!(nlp_at_x, x = xt, fx = ft, gx = ∇f)
+        set_x!(nlp_at_x, xt)
+        set_fx!(nlp_at_x, ft)
+        set_gx!(nlp_at_x, ∇f)
         OK = stop!(nlp_stop)
         Hx = hessian!(workspace, nlp, xt)
-        success && Stopping._smart_update!(nlp_at_x, Hx = Hx)
     end # while !OK
 
     return nlp_stop
