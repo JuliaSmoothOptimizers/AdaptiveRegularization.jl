@@ -11,7 +11,6 @@ for XData in (
     PDataKARC(S, T, n),
     PDataTRK(S, T, n),
     PDataST(S, T, n),
-    # PDataSpectral(S, T, n),
 )
     @testset "Allocation test in ARCTR.decrease for $(typeof(XData))" begin
         alloc_decrease() = @allocated ARCTR.decrease(XData, α, TR)
@@ -37,15 +36,9 @@ ng = norm(g)
 calls, max_calls = 0, 1000000
 
 for (Data, solve, limit_solve, limit_preprocess) in (
-    #:solve_diag,
-    #:solve_diagTR,
-    # (PDataSpectral(S, T, n), :solve_modelARCDiag),
-    # (PDataSpectral(S, T, n), :solve_modelARCDiagAbs),
-    (PDataKARC, :solve_modelKARC, 112, 4488),
-    (PDataTRK, :solve_modelTRK, 112, 2400),
-    (PDataST, :solve_modelST_TR, 560, 0),
-    #(PDataSpectral, :solve_modelTRDiag, 5408, 279328),
-    #(PDataSpectral, :solve_modelTRDiagAbs, 5408, 279328),
+    (PDataKARC, :solve_modelKARC, 112, 0),
+    (PDataTRK, :solve_modelTRK, 112, 0),
+    (PDataST, :solve_modelST_TR, 192, 0),
 )
     @testset "Allocation test in preprocess with $(Data)" begin
         XData = Data(S, T, n)

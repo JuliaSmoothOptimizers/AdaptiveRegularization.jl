@@ -18,7 +18,7 @@ struct HessSparse{T,S,Vi,It<:Integer}
     rows::Vi
     cols::Vi
     vals::S
-    H::Symmetric{T, SparseMatrixCSC{T, It}}
+    H::Symmetric{T,SparseMatrixCSC{T,It}}
     function HessSparse(nlp::AbstractNLPModel{T,S}, n) where {T,S}
         rows, cols = hess_structure(nlp)
         vals = S(undef, nlp.meta.nnzh)
