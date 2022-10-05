@@ -19,7 +19,7 @@ function solve_modelNLSST_TR(
     cgrtol = PData.cgrtol(ζ, ξ, maxtol, mintol, norm_∇f)
 
     solver = PData.solver
-    solve!(
+    Krylov.solve!(
         solver,
         Jx,
         Fx,
