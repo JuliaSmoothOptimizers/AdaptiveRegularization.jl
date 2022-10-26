@@ -21,7 +21,7 @@ function preprocess(PData::PDataLSKARC, Jx, Fx, gNorm2, calls, max_calls, α)
         return false
     end
     solver = PData.solver
-    solve!(
+    Krylov.solve!(
         solver,
         Jx,
         Fx,
