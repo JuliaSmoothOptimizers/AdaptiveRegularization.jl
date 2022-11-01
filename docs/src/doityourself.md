@@ -1,11 +1,15 @@
 # Your own way
 
-`ARCTR.jl` implements an unified algorithm for trust-region methods and adaptive regularization with cubics.
+`AdaptiveRegularization.jl` implements an unified algorithm for trust-region methods and adaptive regularization with cubics.
 This package implements by default some variants, but anyone can design its own and benchmark it against existing ones.
+
+```@example 1
+using AdaptiveRegularization, Krylov
+```
 
 The implemented variants are accessible here:
 ```@example 1
-ARCTR.ALL_solvers
+AdaptiveRegularization.ALL_solvers
 ```
 
 To make your own variant we need to implement:
@@ -16,11 +20,7 @@ To make your own variant we need to implement:
 In the rest of this tutorial, we implement a Steihaug-Toint trust-region method using `cg_lanczos` from [`Krylov.jl`](https://github.com/JuliaSmoothOptimizers/Krylov.jl) to solve the linear subproblem with trust-region constraint.
 
 ```@example 1
-using ARCTR, Krylov
-```
-
-```@example 1
-mutable struct PDataST{S,T} <: PData{T}
+mutable struct PDataST{S,T} <: AdaptiveRegularization.TPData{T}
     d::S                      # Mandatory: solution of the subproblem
     λ::T                      # Mandatory
     ζ::T                      # Inexact Newton order parameter: stop when ||∇q|| < ξ * ||g||^(1+ζ)
@@ -34,7 +34,7 @@ mutable struct PDataST{S,T} <: PData{T}
     solver::CgSolver          # Memory pre-allocation for `cg_lanczos`
 end
 ```
-The `PData` stuctures have a unified constructor with `(::Type{S}, ::Type{T}, n)` as arguments.
+The `TPData` stuctures have a unified constructor with `(::Type{S}, ::Type{T}, n)` as arguments.
 ```@example 1
 function PDataST(
     ::Type{S},
@@ -57,7 +57,7 @@ end
 ```
 For our Steihaug-Toint implementation, we do not run any preprocess operation, so we use the default one.
 ```@example 1
-function ARCTR.preprocess(PData::TPData, H, g, gNorm2, n1, n2, α)
+function AdaptiveRegularization.preprocess(PData::AdaptiveRegularization.TPData, H, g, gNorm2, n1, n2, α)
     return PData
 end
 ```
@@ -92,22 +92,21 @@ end
 
 We can now proceed with the main solver call specifying the used `pdata_type` and `solve_model`. Since, `Krylov.cg_lanczos` only uses matrix-vector products, it is sufficient to evaluate the Hessian matrix as an operator, so we provide `hess_type = HessOp`.
 ```@example 1
-ST_TROp(nlp) = TRARC(nlp, pdata_type = PDataST, solve_model = solve_modelST_TR, hess_type = HessOp)
+ST_TROp(nlp; kwargs...) = TRARC(nlp, pdata_type = PDataST, solve_model = solve_modelST_TR, hess_type = HessOp; kwargs...)
 ```
 Finally, we can apply our new method to any [`NLPModels`](https://github.com/JuliaSmoothOptimizers/NLPModels.jl).
 ```@example 1
 using ADNLPModels, OptimizationProblems
-nlp = OptimizationProblems.ADNLPModels.arglina()
+nlp = OptimizationProblems.ADNLPProblems.arglina()
 ST_TROp(nlp)
 ```
 
 ```@example 1
-using ADNLPModels, OptimizationProblems
-using NLPModels, LinearAlgebra
+using ADNLPModels, NLPModels, OptimizationProblems, SolverBenchmark
 
 meta = OptimizationProblems.meta
 problems = meta[meta.variable_nvar .& (meta.ncon .== 0) .& .!(meta.has_bounds), :name]
-n = 300
+n = 150
 op_problems = (OptimizationProblems.ADNLPProblems.eval(Meta.parse(pb))(n = n) for pb in problems)
 
 max_time = 120.0

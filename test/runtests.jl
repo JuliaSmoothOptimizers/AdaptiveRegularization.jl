@@ -1,5 +1,5 @@
 # This package
-using ARCTR
+using AdaptiveRegularization
 # stdlib
 using LinearAlgebra, SparseArrays, Test
 # JSO

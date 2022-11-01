@@ -1,6 +1,6 @@
-# ARCTR : A unified efficient implementation of trust-region type algorithms for unconstrained optimization
+# AdaptiveRegularization : A unified efficient implementation of trust-region type algorithms for unconstrained optimization
 
-ARCTR is a solver for unconstrained nonlinear problems,
+AdaptiveRegularization is a solver for unconstrained nonlinear problems,
 
     min f(x)
 
@@ -24,16 +24,16 @@ The initial implementation of this package follows (Dussault, J.-P. 2020):
 
 ## How to Cite
 
-If you use ARCTR.jl in your work, please cite using the format given in [CITATION.cff](https://github.com/vepiteski/ARCTR.jl/blob/main/CITATION.cff).  <!--https://citation-file-format.github.io/cff-initializer-javascript/#/ -->
+If you use AdaptiveRegularization.jl in your work, please cite using the format given in [CITATION.cff](https://github.com/JuliaSmoothOptimizers/AdaptiveRegularization.jl/blob/main/CITATION.cff).  <!--https://citation-file-format.github.io/cff-initializer-javascript/#/ -->
 
 ## Installation
 
-`pkg> add https://github.com/vepiteski/ARCTR.jl`
+`pkg> add https://github.com/JuliaSmoothOptimizers/AdaptiveRegularization.jl`
 
 ## Example
 
 ```julia
-using ARCTR, ADNLPModels
+using AdaptiveRegularization, ADNLPModels
 
 # Rosenbrock
 nlp = ADNLPModel(x -> 100 * (x[2] - x[1]^2)^2 + (x[1] - 1)^2, [-1.2; 1.0])
@@ -42,7 +42,7 @@ stats = ARCqKOp(nlp)
 
 # Bug reports and discussions
 
-If you think you found a bug, feel free to open an [issue](https://github.com/vepiteski/ARCTR.jl/issues).
+If you think you found a bug, feel free to open an [issue](https://github.com/JuliaSmoothOptimizers/AdaptiveRegularization.jl/issues).
 Focused suggestions and requests can also be opened as issues. Before opening a pull request, start an issue or a discussion on the topic, please.
 
 If you want to ask a question not suited for a bug report, feel free to start a discussion [here](https://github.com/JuliaSmoothOptimizers/Organization/discussions). This forum is for general discussion about this repository and the [JuliaSmoothOptimizers](https://github.com/JuliaSmoothOptimizers), so questions about any of our packages are welcome.

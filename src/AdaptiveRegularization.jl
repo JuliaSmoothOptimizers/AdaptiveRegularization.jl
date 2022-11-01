@@ -1,4 +1,4 @@
-module ARCTR
+module AdaptiveRegularization
 
 # stdlib
 using LinearAlgebra, SparseArrays
@@ -64,7 +64,7 @@ For advanced usage, the principal call to the solver uses a [`TRARCWorkspace`](@
 
     TRARC(stp, pdata, workspace, trust_region_parameters; kwargs...)
 
-Some variants of TRARC are already implemented and listed in `ARCTR.ALL_solvers`.
+Some variants of TRARC are already implemented and listed in `AdaptiveRegularization.ALL_solvers`.
 
 # References
 This method unifies the implementation of trust-region and adaptive regularization with cubics as described in
@@ -75,10 +75,14 @@ This method unifies the implementation of trust-region and adaptive regularizati
     10.1080/03155986.2019.1624490
 
 # Examples
+
 ```jldoctest
-julia> using ARCTR, ADNLPModels
-julia> nlp = ADNLPModel(x -> 100 * (x[2] - x[1]^2)^2 + (x[1] - 1)^2, [-1.2; 1.0]);
-julia> stats = TRARC(nlp)
+using AdaptiveRegularization, ADNLPModels
+nlp = ADNLPModel(x -> 100 * (x[2] - x[1]^2)^2 + (x[1] - 1)^2, [-1.2; 1.0]);
+stats = TRARC(nlp)
+
+# output
+
 "Execution stats: first-order stationary"
 ```
 """

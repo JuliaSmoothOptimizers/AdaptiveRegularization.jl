@@ -17,7 +17,7 @@ using SolverBenchmark
 Let us select unconstrained problems from CUTEst with a maximum of 300 variables.
 
 ``` @example ex1
-nmax = 300
+nmax = 100
 pnames = CUTEst.select(contype = "unc", max_var = nmax)
 
 cutest_problems = (CUTEstModel(p) for p in pnames)
@@ -25,13 +25,13 @@ cutest_problems = (CUTEstModel(p) for p in pnames)
 length(cutest_problems) # number of problems
 ```
 
-We compare here ARCTR with `trunk` from [`JSOSolvers.jl`](https://github.com/JuliaSmoothOptimizers/JSOSolvers.jl/) on a subset of CUTEst problems.
+We compare here AdaptiveRegularization with `trunk` from [`JSOSolvers.jl`](https://github.com/JuliaSmoothOptimizers/JSOSolvers.jl/) on a subset of CUTEst problems.
 
 ``` @example ex1
-using ARCTR, JSOSolvers
+using AdaptiveRegularization, JSOSolvers
 
 #Same time limit for all the solvers
-max_time = 1200. #20 minutes
+max_time = 60. #20 minutes
 atol, rtol = 1e-5, 1e-6
 
 solvers = Dict(
@@ -62,7 +62,7 @@ using JLD2
 ```
 The result of the benchmark can be explored via tables,
 ``` @example ex1
-pretty_stats(stats[:arcqk])
+pretty_stats(stats[:ARCqK])
 ```
 or it can also be used to make performance profiles.
 ``` @example ex1
@@ -104,5 +104,5 @@ print_pp_column(:elapsed_time, stats) # with respect to time
 ```
 
 ``` @example ex1
-print_pp_column(:neval_jac, stats) # with respect to number of jacobian evaluations
+print_pp_column(:neval_hprod, stats) # with respect to number of Hession-vector products
 ```
