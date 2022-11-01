@@ -75,10 +75,14 @@ This method unifies the implementation of trust-region and adaptive regularizati
     10.1080/03155986.2019.1624490
 
 # Examples
+
 ```jldoctest
-julia> using AdaptiveRegularization, ADNLPModels
-julia> nlp = ADNLPModel(x -> 100 * (x[2] - x[1]^2)^2 + (x[1] - 1)^2, [-1.2; 1.0]);
-julia> stats = TRARC(nlp)
+using AdaptiveRegularization, ADNLPModels
+nlp = ADNLPModel(x -> 100 * (x[2] - x[1]^2)^2 + (x[1] - 1)^2, [-1.2; 1.0]);
+stats = TRARC(nlp)
+
+# output
+
 "Execution stats: first-order stationary"
 ```
 """
