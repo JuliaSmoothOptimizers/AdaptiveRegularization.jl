@@ -1,4 +1,4 @@
-using NLPModels, Stopping, ARCTR
+using NLPModels, Stopping, AdaptiveRegularization
 
 mutable struct EmptyNLPModel{T,S} <: AbstractNLPModel{T,S}
     meta::NLPModelMeta{T,S}
@@ -41,7 +41,7 @@ end
 
 import NLPModels: hess, hess_coord!, hess_coord, hess_op, hess_op!, hprod, hprod!
 
-mutable struct NothingPData{T} <: ARCTR.TPData{T}
+mutable struct NothingPData{T} <: AdaptiveRegularization.TPData{T}
     OK::Any
     d::Any
     λ::Any
@@ -69,7 +69,7 @@ for (Workspace, limit) in (
     (HessOp, 2304), # independent of `n`
 )
     who = Workspace(nlp, n)
-    alloc_hessian(who, nlp, x0) = @allocated ARCTR.hessian!(who, nlp, x0)
+    alloc_hessian(who, nlp, x0) = @allocated AdaptiveRegularization.hessian!(who, nlp, x0)
     alloc_hessian(who, nlp, x0)
     @test (alloc_hessian(who, nlp, x0)) <= limit
     @show alloc_hessian(who, nlp, x0)
@@ -82,18 +82,18 @@ TRnothing = TrustRegion(10.0, max_unsuccinarow = 2)
 nlp = stp.pb
 S, T = typeof(x0), eltype(x0)
 PData = NothingPData(S, T, nlp.meta.nvar)
-workspace = ARCTR.TRARCWorkspace(nlp, HessOp)
+workspace = AdaptiveRegularization.TRARCWorkspace(nlp, HessOp)
 
-alloc_ARCTR(stp, PData, workspace, TRnothing, solve_nothing) =
+alloc_AdaptiveRegularization(stp, PData, workspace, TRnothing, solve_nothing) =
     @allocated TRARC(stp, PData, workspace, TRnothing, solve_model = solve_nothing)
-alloc_ARCTR(stp, PData, workspace, TRnothing, solve_nothing)
-alloc_ARCTR(stp, PData, workspace, TRnothing, solve_nothing)
-@show alloc_ARCTR(stp, PData, workspace, TRnothing, solve_nothing) # 11192
+alloc_AdaptiveRegularization(stp, PData, workspace, TRnothing, solve_nothing)
+alloc_AdaptiveRegularization(stp, PData, workspace, TRnothing, solve_nothing)
+@show alloc_AdaptiveRegularization(stp, PData, workspace, TRnothing, solve_nothing) # 11192
 
-workspace = ARCTR.TRARCWorkspace(nlp, HessSparseCOO)
+workspace = AdaptiveRegularization.TRARCWorkspace(nlp, HessSparseCOO)
 
-alloc_ARCTR_COO(stp, PData, workspace, TRnothing, solve_nothing) =
+alloc_AdaptiveRegularization_COO(stp, PData, workspace, TRnothing, solve_nothing) =
     @allocated TRARC(stp, PData, workspace, TRnothing, solve_model = solve_nothing)
-alloc_ARCTR_COO(stp, PData, workspace, TRnothing, solve_nothing)
-alloc_ARCTR_COO(stp, PData, workspace, TRnothing, solve_nothing)
-@show alloc_ARCTR_COO(stp, PData, workspace, TRnothing, solve_nothing) # 11192
+alloc_AdaptiveRegularization_COO(stp, PData, workspace, TRnothing, solve_nothing)
+alloc_AdaptiveRegularization_COO(stp, PData, workspace, TRnothing, solve_nothing)
+@show alloc_AdaptiveRegularization_COO(stp, PData, workspace, TRnothing, solve_nothing) # 11192

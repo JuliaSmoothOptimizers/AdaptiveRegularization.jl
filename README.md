@@ -1,19 +1,19 @@
-# ARCTR : A unified efficient implementation of trust-region type algorithms for unconstrained optimization
+# AdaptiveRegularization : A unified efficient implementation of trust-region type algorithms for unconstrained optimization
 
 [![docs-stable][docs-stable-img]][docs-stable-url] [![docs-dev][docs-dev-img]][docs-dev-url] [![build-ci][build-ci-img]][build-ci-url] [![codecov][codecov-img]][codecov-url] [![release][release-img]][release-url]
 
 [docs-stable-img]: https://img.shields.io/badge/docs-stable-blue.svg
-[docs-stable-url]: https://vepiteski.github.io/ARCTR.jl/stable
+[docs-stable-url]: https://JuliaSmoothOptimizers.github.io/AdaptiveRegularization.jl/stable
 [docs-dev-img]: https://img.shields.io/badge/docs-dev-purple.svg
-[docs-dev-url]: https://vepiteski.github.io/ARCTR.jl/dev
-[build-ci-img]: https://github.com/vepiteski/ARCTR.jl/workflows/CI/badge.svg?branch=main
-[build-ci-url]: https://github.com/vepiteski/ARCTR.jl/actions
-[codecov-img]: https://codecov.io/gh/vepiteski/ARCTR.jl/branch/main/graph/badge.svg
-[codecov-url]: https://codecov.io/gh/vepiteski/ARCTR.jl
-[release-img]: https://img.shields.io/github/v/release/vepiteski/ARCTR.jl.svg?style=flat-square
-[release-url]: https://github.com/vepiteski/ARCTR.jl/releases
+[docs-dev-url]: https://JuliaSmoothOptimizers.github.io/AdaptiveRegularization.jl/dev
+[build-ci-img]: https://github.com/JuliaSmoothOptimizers/AdaptiveRegularization.jl/workflows/CI/badge.svg?branch=main
+[build-ci-url]: https://github.com/JuliaSmoothOptimizers/AdaptiveRegularization.jl/actions
+[codecov-img]: https://codecov.io/gh/JuliaSmoothOptimizers/AdaptiveRegularization.jl/branch/main/graph/badge.svg
+[codecov-url]: https://codecov.io/gh/JuliaSmoothOptimizers/AdaptiveRegularization.jl
+[release-img]: https://img.shields.io/github/v/release/JuliaSmoothOptimizers/AdaptiveRegularization.jl.svg?style=flat-square
+[release-url]: https://github.com/JuliaSmoothOptimizers/AdaptiveRegularization.jl/releases
 
-ARCTR is a solver for unconstrained nonlinear problems,
+AdaptiveRegularization is a solver for unconstrained nonlinear problems,
 
     min f(x)
 
@@ -37,16 +37,16 @@ The initial implementation of this package follows (Dussault, J.-P. 2020):
 
 ## How to Cite
 
-If you use ARCTR.jl in your work, please cite using the format given in [CITATION.cff](https://github.com/vepiteski/ARCTR.jl/blob/main/CITATION.cff).  <!--https://citation-file-format.github.io/cff-initializer-javascript/#/ -->
+If you use AdaptiveRegularization.jl in your work, please cite using the format given in [CITATION.cff](https://github.com/JuliaSmoothOptimizers/AdaptiveRegularization.jl/blob/main/CITATION.cff).  <!--https://citation-file-format.github.io/cff-initializer-javascript/#/ -->
 
 ## Installation
 
-`pkg> add https://github.com/vepiteski/ARCTR.jl`
+`pkg> add https://github.com/JuliaSmoothOptimizers/AdaptiveRegularization.jl`
 
 ## Example
 
 ```julia
-using ARCTR, ADNLPModels
+using AdaptiveRegularization, ADNLPModels
 
 # Rosenbrock
 nlp = ADNLPModel(x -> 100 * (x[2] - x[1]^2)^2 + (x[1] - 1)^2, [-1.2; 1.0])
@@ -55,7 +55,7 @@ stats = ARCqKOp(nlp)
 
 # Bug reports and discussions
 
-If you think you found a bug, feel free to open an [issue](https://github.com/vepiteski/ARCTR.jl/issues).
+If you think you found a bug, feel free to open an [issue](https://github.com/JuliaSmoothOptimizers/AdaptiveRegularization.jl/issues).
 Focused suggestions and requests can also be opened as issues. Before opening a pull request, start an issue or a discussion on the topic, please.
 
 If you want to ask a question not suited for a bug report, feel free to start a discussion [here](https://github.com/JuliaSmoothOptimizers/Organization/discussions). This forum is for general discussion about this repository and the [JuliaSmoothOptimizers](https://github.com/JuliaSmoothOptimizers), so questions about any of our packages are welcome.

@@ -1,11 +1,11 @@
 # Your own way
 
-`ARCTR.jl` implements an unified algorithm for trust-region methods and adaptive regularization with cubics.
+`AdaptiveRegularization.jl` implements an unified algorithm for trust-region methods and adaptive regularization with cubics.
 This package implements by default some variants, but anyone can design its own and benchmark it against existing ones.
 
 The implemented variants are accessible here:
 ```@example 1
-ARCTR.ALL_solvers
+AdaptiveRegularization.ALL_solvers
 ```
 
 To make your own variant we need to implement:
@@ -16,7 +16,7 @@ To make your own variant we need to implement:
 In the rest of this tutorial, we implement a Steihaug-Toint trust-region method using `cg_lanczos` from [`Krylov.jl`](https://github.com/JuliaSmoothOptimizers/Krylov.jl) to solve the linear subproblem with trust-region constraint.
 
 ```@example 1
-using ARCTR, Krylov
+using AdaptiveRegularization, Krylov
 ```
 
 ```@example 1
@@ -57,7 +57,7 @@ end
 ```
 For our Steihaug-Toint implementation, we do not run any preprocess operation, so we use the default one.
 ```@example 1
-function ARCTR.preprocess(PData::TPData, H, g, gNorm2, n1, n2, α)
+function AdaptiveRegularization.preprocess(PData::TPData, H, g, gNorm2, n1, n2, α)
     return PData
 end
 ```

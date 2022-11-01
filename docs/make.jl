@@ -2,7 +2,7 @@ ENV["GKSwstype"] = "100"
 using ADNLPModels
 using Documenter
 using Printf
-using ARCTR
+using AdaptiveRegularization
 
 pages = [
     "Introduction" => "index.md",
@@ -12,14 +12,14 @@ pages = [
 ]
 
 makedocs(
-    sitename = "ARCTR.jl",
+    sitename = "AdaptiveRegularization.jl",
     format = Documenter.HTML(prettyurls = get(ENV, "CI", nothing) == "true"),
-    modules = [ARCTR],
+    modules = [AdaptiveRegularization],
     pages = pages,
 )
 
 deploydocs(
-    repo = "github.com/vepiteski/ARCTR.jl.git",
+    repo = "github.com/JuliaSmoothOptimizers/AdaptiveRegularization.jl.git",
     push_preview = true,
     devbranch = "main",
 )

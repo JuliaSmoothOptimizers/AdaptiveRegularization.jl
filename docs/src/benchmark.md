@@ -25,10 +25,10 @@ cutest_problems = (CUTEstModel(p) for p in pnames)
 length(cutest_problems) # number of problems
 ```
 
-We compare here ARCTR with `trunk` from [`JSOSolvers.jl`](https://github.com/JuliaSmoothOptimizers/JSOSolvers.jl/) on a subset of CUTEst problems.
+We compare here AdaptiveRegularization with `trunk` from [`JSOSolvers.jl`](https://github.com/JuliaSmoothOptimizers/JSOSolvers.jl/) on a subset of CUTEst problems.
 
 ``` @example ex1
-using ARCTR, JSOSolvers
+using AdaptiveRegularization, JSOSolvers
 
 #Same time limit for all the solvers
 max_time = 1200. #20 minutes
