@@ -14,15 +14,15 @@ include("./utils/utils.jl")
 include("./utils/increase_decrease.jl")
 
 path = joinpath(dirname(@__FILE__), "SolveModel")
-files = filter(x -> x[(end-2):end] == ".jl", readdir(path))
+files = filter(x -> x[(end - 2):end] == ".jl", readdir(path))
 for file in files
-    include("SolveModel/" * file)
+  include("SolveModel/" * file)
 end
 
 path = joinpath(dirname(@__FILE__), "PreProcess")
-files = filter(x -> x[(end-2):end] == ".jl", readdir(path))
+files = filter(x -> x[(end - 2):end] == ".jl", readdir(path))
 for file in files
-    include("PreProcess/" * file)
+  include("PreProcess/" * file)
 end
 
 include("main.jl")
@@ -88,39 +88,34 @@ stats = TRARC(nlp)
 """
 function TRARC end
 
-function TRARC(nlp::AbstractNLPModel{T,S}; kwargs...) where {T,S}
-    nlpstop = NLPStopping(nlp; optimality_check = (pb, state) -> norm(state.gx), kwargs...)
-    nlpstop = TRARC(nlpstop; kwargs...)
-    return stopping_to_stats(nlpstop)
+function TRARC(nlp::AbstractNLPModel{T, S}; kwargs...) where {T, S}
+  nlpstop = NLPStopping(nlp; optimality_check = (pb, state) -> norm(state.gx), kwargs...)
+  nlpstop = TRARC(nlpstop; kwargs...)
+  return stopping_to_stats(nlpstop)
 end
 
 for fun in union(keys(solvers_const), keys(solvers_nls_const))
-
-    ht, pt, sm, ka = merge(solvers_const, solvers_nls_const)[fun]
-    @eval begin
-        function $fun(nlpstop::NLPStopping; kwargs...)
-            kw_list = Dict{Symbol,Any}()
-            if $ka != ()
-                for t in $ka
-                    push!(kw_list, t)
-                end
-            end
-            merge!(kw_list, Dict(kwargs))
-            TRARC(nlpstop; hess_type = $ht, pdata_type = $pt, solve_model = $sm, kw_list...)
+  ht, pt, sm, ka = merge(solvers_const, solvers_nls_const)[fun]
+  @eval begin
+    function $fun(nlpstop::NLPStopping; kwargs...)
+      kw_list = Dict{Symbol, Any}()
+      if $ka != ()
+        for t in $ka
+          push!(kw_list, t)
         end
+      end
+      merge!(kw_list, Dict(kwargs))
+      TRARC(nlpstop; hess_type = $ht, pdata_type = $pt, solve_model = $sm, kw_list...)
     end
-    @eval begin
-        function $fun(nlp::AbstractNLPModel{T,S}; kwargs...) where {T,S}
-            nlpstop = NLPStopping(
-                nlp;
-                optimality_check = (pb, state) -> norm(state.gx),
-                kwargs...,
-            )
-            nlpstop = $fun(nlpstop; kwargs...)
-            return stopping_to_stats(nlpstop)
-        end
+  end
+  @eval begin
+    function $fun(nlp::AbstractNLPModel{T, S}; kwargs...) where {T, S}
+      nlpstop = NLPStopping(nlp; optimality_check = (pb, state) -> norm(state.gx), kwargs...)
+      nlpstop = $fun(nlpstop; kwargs...)
+      return stopping_to_stats(nlpstop)
     end
-    @eval export $fun
+  end
+  @eval export $fun
 end
 
 end # module
