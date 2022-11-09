@@ -94,7 +94,7 @@ function preprocess(
   max_hprod = stp.meta.max_cntrs[:neval_jprod_residual]
   Fx = workspace.Fx
   Jx = jac_op_residual!(stp.pb, workspace.xt, workspace.Hstruct.Jv, workspace.Hstruct.Jtv)
-  PData = ARCTR.preprocess(PData, Jx, Fx, norm_∇f, neval_jprod_residual(stp.pb), max_hprod, α)
+  PData = preprocess(PData, Jx, Fx, norm_∇f, neval_jprod_residual(stp.pb), max_hprod, α)
   return PData
 end
 
