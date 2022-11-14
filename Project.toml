@@ -21,7 +21,7 @@ NLPModels = "0.18, 0.19"
 SolverCore = "0.2, 0.3"
 SparseMatricesCOO = "0.1, 0.2"
 Stopping = "0.6"
-StoppingInterface = "0.3, 0.4"
+StoppingInterface = "0.3, 0.4, 0.5"
 julia = "^1.6"
 
 [extras]
