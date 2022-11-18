@@ -168,7 +168,7 @@ function TRARC(
   TR::TrustRegion;
   solve_model::Function = solve_modelKARC,
   robust::Bool = true,
-  verbose::Bool = false,
+  verbose::Integer = false,
   kwargs...,
 ) where {Pb, M, SRC, MStp, LoS, Score, S, T, Hess, ParamData}
   nlp, nlp_at_x = nlp_stop.pb, nlp_stop.current_state
@@ -196,11 +196,11 @@ function TRARC(
   iter = 0 # counter different than stop count
   succ, unsucc, verysucc, unsuccinarow = 0, 0, 0, 0
 
-  verbose && @info log_header(
+  verbose > 0 && @info log_header(
     [:iter, :f, :nrm_g, :λ, :status, :α, :nrm_dtr, :f_p_dTR, :ΔqN],
     [Int64, T, T, T, String, T, T, T],
   )
-  verbose && @info log_row(Any[iter, ft, norm_∇f, 0.0, "First iteration", α])
+  verbose > 0 && @info log_row(Any[iter, ft, norm_∇f, 0.0, "First iteration", α])
 
   while !OK
     PData = preprocess(nlp_stop, PData, workspace, ∇f, norm_∇f, α)
@@ -226,7 +226,7 @@ function TRARC(
       r, good_grad, ∇fnext = compute_r(nlp, ft, Δf, Δq, slope, d, xtnext, workspace, robust)
 
       if Δq < 0.0 # very unsucessful
-        verbose && @info log_row(Any[iter, ft, norm_∇f, λ, "VU", α, norm(d), Δq])
+        verbose > 0 && mod(iter, verbose) == 0 && @info log_row(Any[iter, ft, norm_∇f, λ, "VU", α, norm(d), Δq])
         unsucc += 1
         unsuccinarow += 1
         η = (1 - acceptance_threshold) / 10 # ∈ (acceptance_threshold, 1)
@@ -235,7 +235,7 @@ function TRARC(
         αbad = (1 - η) * slope / ((1 - η) * (ft + slope) + η * qksk - ftnext)
         α = min(decrease(PData, α, TR), max(TR.large_decrease_factor, αbad) * α)
       elseif r < acceptance_threshold # unsucessful
-        verbose && @info log_row(Any[iter, ft, norm_∇f, λ, "U", α, norm(d), Δq])
+        verbose > 0  && mod(iter, verbose) == 0 && @info log_row(Any[iter, ft, norm_∇f, λ, "U", α, norm(d), Δq])
         unsucc += 1
         unsuccinarow += 1
         α = decrease(PData, α, TR)
@@ -255,12 +255,12 @@ function TRARC(
         verysucc += 1
         if r > increase_threshold # very sucessful
           α = increase(PData, α, TR)
-          verbose && @info log_row(Any[iter, ft, norm_∇f, λ, "V", α, norm(d), Δq])
+          verbose > 0 && mod(iter, verbose) == 0 && @info log_row(Any[iter, ft, norm_∇f, λ, "V", α, norm(d), Δq])
         else # sucessful
           if r < reduce_threshold
             α = decrease(PData, α, TR)
           end
-          verbose && @info log_row(Any[iter, ft, norm_∇f, λ, "S", α, norm(d), Δq])
+          verbose > 0 && mod(iter, verbose) == 0 && @info log_row(Any[iter, ft, norm_∇f, λ, "S", α, norm(d), Δq])
           succ += 1
         end
       end
