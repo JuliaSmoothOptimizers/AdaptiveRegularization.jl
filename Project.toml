@@ -15,7 +15,7 @@ Stopping = "c4fe5a9e-e7fb-5c3d-89d5-7f405ab2214f"
 StoppingInterface = "53949629-e8ff-437b-b6e7-14da1a85bf25"
 
 [compat]
-Krylov = "^0.8.2"
+Krylov = "^0.8.2, 0.9"
 LinearOperators = "1, 2"
 NLPModels = "0.18, 0.19"
 SolverCore = "0.2, 0.3"
