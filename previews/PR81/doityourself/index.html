@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Do it yourself · AdaptiveRegularization.jl</title><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.045/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.24/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../">AdaptiveRegularization.jl</a></span></div><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">Introduction</a></li><li><a class="tocitem" href="../benchmark/">Tutorial</a></li><li class="is-active"><a class="tocitem" href>Do it yourself</a></li><li><a class="tocitem" href="../reference/">Reference</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Do it yourself</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Do it yourself</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/JuliaSmoothOptimizers/AdaptiveRegularization.jl/blob/main/docs/src/doityourself.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Your-own-way"><a class="docs-heading-anchor" href="#Your-own-way">Your own way</a><a id="Your-own-way-1"></a><a class="docs-heading-anchor-permalink" href="#Your-own-way" title="Permalink"></a></h1><p><code>AdaptiveRegularization.jl</code> implements an unified algorithm for trust-region methods and adaptive regularization with cubics. This package implements by default some variants, but anyone can design its own and benchmark it against existing ones.</p><pre><code class="language-julia hljs">using AdaptiveRegularization, Krylov</code></pre><p>The implemented variants are accessible here:</p><pre><code class="language-julia hljs">AdaptiveRegularization.ALL_solvers</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">KeySet for a Dict{Symbol, Tuple{UnionAll, UnionAll, Function, Any}} with 10 entries. Keys:
+  :TRKsparse
+  :ST_TROp
+  :ST_TRsparse
+  :TRKOp
+  :ARCqKsparse
+  :ARCqKdense
+  :TRKdense
+  :ARCqKOp
+  :ARCqKCOO
+  :ST_TRdense</code></pre><p>To make your own variant we need to implement:</p><ul><li>A new data structure <code>&lt;: PData{T}</code> for some real number type <code>T</code>.</li><li>A <code>preprocess(PData::TPData, H, g, gNorm2, α)</code> function called before each trust-region iteration.</li><li>A <code>solve_model(PData::PDataST, H, g, gNorm2, n1, n2, δ::T)</code> function used to solve the algorithm subproblem.</li></ul><p>In the rest of this tutorial, we implement a Steihaug-Toint trust-region method using <code>cg_lanczos</code> from <a href="https://github.com/JuliaSmoothOptimizers/Krylov.jl"><code>Krylov.jl</code></a> to solve the linear subproblem with trust-region constraint.</p><pre><code class="language-julia hljs">mutable struct PDataST{S,T} &lt;: AdaptiveRegularization.TPData{T}
+    d::S                      # Mandatory: solution of the subproblem
+    λ::T                      # Mandatory
+    ζ::T                      # Inexact Newton order parameter: stop when ||∇q|| &lt; ξ * ||g||^(1+ζ)
+    ξ::T                      # Inexact Newton order parameter: stop when ||∇q|| &lt; ξ * ||g||^(1+ζ)
+    maxtol::T                 # Largest tolerance for Inexact Newton
+    mintol::T                 # Smallest tolerance for Inexact Newton
+    cgatol                    # Absolute tolerance for `cg_lanczos`
+    cgrtol                    # Relative tolerance for `cg_lanczos`
+
+    OK::Bool                  # Mandatory: preprocess success
+    solver::CgSolver          # Memory pre-allocation for `cg_lanczos`
+end</code></pre><p>The <code>TPData</code> stuctures have a unified constructor with <code>(::Type{S}, ::Type{T}, n)</code> as arguments.</p><pre><code class="language-julia hljs">function PDataST(
+    ::Type{S},
+    ::Type{T},
+    n;
+    ζ = T(0.5),
+    ξ = T(0.01),
+    maxtol = T(0.01),
+    mintol = T(1.0e-8),
+    cgatol = (ζ, ξ, maxtol, mintol, gNorm2) -&gt; max(mintol, min(maxtol, ξ * gNorm2^(1 + ζ))),
+    cgrtol = (ζ, ξ, maxtol, mintol, gNorm2) -&gt; max(mintol, min(maxtol, ξ * gNorm2^ζ)),
+    kwargs...,
+) where {S,T}
+    d = S(undef, n)
+    λ = zero(T)
+    OK = true
+    solver = CgSolver(n, n, S)
+    return PDataST(d, λ, ζ, ξ, maxtol, mintol, cgatol, cgrtol, OK, solver)
+end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Main.PDataST</code></pre><p>For our Steihaug-Toint implementation, we do not run any preprocess operation, so we use the default one.</p><pre><code class="language-julia hljs">function AdaptiveRegularization.preprocess(PData::AdaptiveRegularization.TPData, H, g, gNorm2, n1, n2, α)
+    return PData
+end</code></pre><p>We now solve the subproblem.</p><pre><code class="language-julia hljs">function solve_modelST_TR(PData::PDataST, H, g, gNorm2, calls, max_calls, δ::T) where {T}
+    ζ, ξ, maxtol, mintol = PData.ζ, PData.ξ, PData.maxtol, PData.mintol
+    n = length(g)
+    # precision = max(1e-12, min(0.5, (gNorm2^ζ)))
+    # Tolerance used in Assumption 2.6b in the paper ( ξ &gt; 0, 0 &lt; ζ ≤ 1 )
+    cgatol = PData.cgatol(ζ, ξ, maxtol, mintol, gNorm2)
+    cgrtol = PData.cgrtol(ζ, ξ, maxtol, mintol, gNorm2)
+
+    solver = PData.solver
+    cg!(
+        solver,
+        H,
+        -g,
+        atol = cgatol,
+        rtol = cgrtol,
+        radius = δ,
+        itmax = min(max_calls - sum(calls), max(2 * n, 50)),
+        verbose = 0,
+    )
+
+    PData.d .= solver.x
+    PData.OK = solver.stats.solved
+
+    return PData.d, PData.λ
+end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">solve_modelST_TR (generic function with 1 method)</code></pre><p>We can now proceed with the main solver call specifying the used <code>pdata_type</code> and <code>solve_model</code>. Since, <code>Krylov.cg_lanczos</code> only uses matrix-vector products, it is sufficient to evaluate the Hessian matrix as an operator, so we provide <code>hess_type = HessOp</code>.</p><pre><code class="language-julia hljs">ST_TROp(nlp; kwargs...) = TRARC(nlp, pdata_type = PDataST, solve_model = solve_modelST_TR, hess_type = HessOp; kwargs...)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">ST_TROp (generic function with 1 method)</code></pre><p>Finally, we can apply our new method to any <a href="https://github.com/JuliaSmoothOptimizers/NLPModels.jl"><code>NLPModels</code></a>.</p><pre><code class="language-julia hljs">using ADNLPModels, OptimizationProblems
+nlp = OptimizationProblems.ADNLPProblems.arglina()
+ST_TROp(nlp)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">&quot;Execution stats: first-order stationary&quot;</code></pre><pre><code class="language-julia hljs">using ADNLPModels, NLPModels, OptimizationProblems, SolverBenchmark
+
+meta = OptimizationProblems.meta
+problems = meta[meta.variable_nvar .&amp; (meta.ncon .== 0) .&amp; .!(meta.has_bounds), :name]
+n = 150
+op_problems = (OptimizationProblems.ADNLPProblems.eval(Meta.parse(pb))(n = n) for pb in problems)
+
+max_time = 120.0
+max_ev = typemax(Int)
+max_iter = typemax(Int)
+atol = 1e-5
+rtol = 1e-6
+
+solvers = Dict(
+    :ARCqKOp =&gt;
+        nlp -&gt; ARCqKOp(
+            nlp,
+            verbose = false,
+            atol = atol,
+            rtol = rtol,
+            max_time = max_time,
+            max_iter = max_iter,
+        ),
+    :ST_TROp =&gt;
+        nlp -&gt; ST_TROp(
+            nlp,
+            verbose = false,
+            atol = atol,
+            rtol = rtol,
+            max_time = max_time,
+            max_iter = max_iter,
+        ),
+)
+stats = bmark_solvers(solvers, op_problems)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Dict{Symbol, DataFrames.DataFrame} with 2 entries:
+  :ST_TROp =&gt; 73×39 DataFrame…
+  :ARCqKOp =&gt; 73×39 DataFrame…</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../benchmark/">« Tutorial</a><a class="docs-footer-nextpage" href="../reference/">Reference »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.24 on <span class="colophon-date" title="Monday 6 February 2023 17:38">Monday 6 February 2023</span>. Using Julia version 1.8.5.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
