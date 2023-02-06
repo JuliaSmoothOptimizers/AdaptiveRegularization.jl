@@ -4,7 +4,7 @@ AdaptiveRegularization is a solver for unconstrained nonlinear problems,
 
     min f(x)
 
-It uses other [JuliaSmoothOptimizers](https://jso-docs.github.io) packages for development.
+It uses other [JuliaSmoothOptimizers](https://juliasmoothoptimizers.github.io/) packages for development.
 In particular, [NLPModels.jl](https://github.com/JuliaSmoothOptimizers/NLPModels.jl) is used for defining the problem, and [SolverCore.jl](https://github.com/JuliaSmoothOptimizers/SolverCore.jl) for the output.
 
 This package uses [`Stopping.jl`](https://github.com/SolverStoppingJulia/Stopping.jl) via `NLPStopping` to handle its workflow, you can also see [tutorials with `Stopping`](https://solverstoppingjulia.github.io/StoppingTutorials.jl) to learn more.
