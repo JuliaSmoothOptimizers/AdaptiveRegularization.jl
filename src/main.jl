@@ -167,6 +167,7 @@ function TRARC(
   workspace::TRARCWorkspace{T, S, Hess},
   TR::TrustRegion;
   solve_model::Function = solve_modelKARC,
+  callback = (args...) -> nothing,
   robust::Bool = true,
   verbose::Integer = false,
   kwargs...,
@@ -201,6 +202,8 @@ function TRARC(
     [Int64, T, T, T, String, T, T, T],
   )
   verbose > 0 && @info log_row(Any[iter, ft, norm_∇f, 0.0, "First iteration", α])
+
+  callback(nlp_stop, PData, workspace)
 
   while !OK
     PData = preprocess(nlp_stop, PData, workspace, ∇f, norm_∇f, α)
@@ -280,6 +283,8 @@ function TRARC(
     set_gx!(nlp_at_x, ∇f)
     OK = stop!(nlp_stop)
     Hx = hessian!(workspace, nlp, xt)
+
+    callback(nlp_stop, PData, workspace)
   end # while !OK
 
   return nlp_stop

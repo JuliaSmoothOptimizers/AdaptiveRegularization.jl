@@ -41,15 +41,24 @@ export TRARC
 
 Compute a local minimum of an unconstrained optimization problem using trust-region (TR)/adaptive regularization with cubics (ARC) methods.
 # Arguments
+
 - `nlp::AbstractNLPModel`: the model solved, see `NLPModels.jl`.
+
 The keyword arguments include
-- `TR::TrustRegion`: structure with trust-region/ARC parameters, see [`TrustRegion`](@ref). Default: `TrustRegion(T(10.0))`.
-- `hess_type::Type{Hess}`: Structure used to handle the hessian. The possible values are: `HessDense`, `HessSparse`, `HessSparseCOO`, `HessOp`. Default: `HessOp`.
-- `pdata_type::Type{ParamData}` Structure used for the preprocessing step. Default: `PDataKARC`.
-- `solve_model::Function` Function used to solve the subproblem. Default: `solve_modelKARC`.
-- `robust::Bool`: `true` implements a robust evaluation of the model. Default: `true`.
+
+- `TR::TrustRegion`: structure with trust-region/ARC parameters, see [`TrustRegion`](@ref). Default: `TrustRegion(T(10.0))`;
+- `hess_type::Type{Hess}`: Structure used to handle the hessian. The possible values are: `HessDense`, `HessSparse`, `HessSparseCOO`, `HessOp`. Default: `HessOp`;
+- `pdata_type::Type{ParamData}` Structure used for the preprocessing step. Default: `PDataKARC`;
+- `solve_model::Function` Function used to solve the subproblem. Default: `solve_modelKARC`;
+- `robust::Bool`: `true` implements a robust evaluation of the model. Default: `true`;
 - `verbose::Bool`: `true` prints iteration information. Default: `false`.
+
 Additional `kwargs` are used for stopping criterion, see `Stopping.jl`.
+
+# Callback
+The callback is called at each iteration.
+The expected signature of the callback is `callback(nlp_stop, PData, workspace)`, and its output is ignored.
+Changing any of the input arguments will affect the subsequent iterations.
 
 # Output
 The returned value is a `GenericExecutionStats`, see `SolverCore.jl`.
