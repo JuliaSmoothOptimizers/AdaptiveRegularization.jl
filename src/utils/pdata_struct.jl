@@ -51,6 +51,7 @@ Return a structure used for the preprocessing of ARCqK methods.
 mutable struct PDataKARC{S, T, Fatol, Frtol} <: PDataIter{T}
   d::S            # (H+λI)\g ; on first call = g
   λ::T                      # "active" value of λ; on first call = 0
+  α::T                      # ARC parameter
   ζ::T                      # Inexact Newton order parameter: stop when ||∇q|| < ξ * ||g||^(1+ζ)
   ξ::T                      # Inexact Newton order parameter: stop when ||∇q|| < ξ * ||g||^(1+ζ)
   maxtol::T                 # Largest tolerance for Inexact Newton
@@ -98,6 +99,7 @@ function PDataKARC(
   return PDataKARC(
     d,
     λ,
+    one(T), # α
     ζ,
     ξ,
     maxtol,

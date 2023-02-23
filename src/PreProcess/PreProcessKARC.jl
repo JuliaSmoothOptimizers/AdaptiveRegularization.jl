@@ -31,6 +31,7 @@ function preprocess(PData::PDataKARC, Hop, g, gNorm2, calls, max_calls, α)
     callback = cb,
   )
 
+  PData.α = α
   PData.indmin = 0
   PData.positives .= solver.converged
   for i = 1:nshifts
