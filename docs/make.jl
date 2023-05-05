@@ -6,7 +6,8 @@ using AdaptiveRegularization
 
 pages = [
   "Introduction" => "index.md",
-  "Tutorial" => "benchmark.md",
+  "Tutorial" => "tutorial.md",
+  "Benchmark" => "benchmark.md",
   "Do it yourself" => "doityourself.md",
   "Reference" => "reference.md",
 ]
