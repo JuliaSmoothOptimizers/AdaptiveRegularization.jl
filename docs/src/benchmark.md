@@ -76,7 +76,8 @@ legend = Dict(
   :neval_jac => "number of ∇c evals", 
   :neval_jprod => "number of ∇c*v evals", 
   :neval_jtprod  => "number of ∇cᵀ*v evals", 
-  :neval_hess  => "number of ∇²f evals", 
+  :neval_hess  => "number of ∇²f evals",
+  :neval_hprod => "number of ∇²f*v evals",
   :elapsed_time => "elapsed time"
 )
 perf_title(col) = "Performance profile on CUTEst w.r.t. $(string(legend[col]))"
