@@ -13,6 +13,8 @@ stats = ARCqKOp(nlp, verbose = true)
 It is possible to access the number of evaluations of each function of the NLPModel API using the following:
 
 ```@example ex1
+using NLPModels
+
 nobj = neval_obj(nlp) # return number of f call
 ngra = neval_grad(nlp) # return number of gradient call
 nhes = neval_hess(nlp) # return number of Hessian call
