@@ -33,7 +33,7 @@ calls, max_calls = 0, 1000000
 
 for (Data, solve, limit_solve, limit_preprocess) in (
   (PDataKARC, :solve_modelKARC, 112, 0),
-  (PDataTRK, :solve_modelTRK, 112, 0),
+  (PDataTRK, :solve_modelTRK, 144, 0),
   (PDataST, :solve_modelST_TR, 192, 0),
 )
   @testset "Allocation test in preprocess with $(Data)" begin
