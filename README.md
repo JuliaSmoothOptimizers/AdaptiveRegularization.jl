@@ -35,6 +35,11 @@ The initial implementation of this package follows (Dussault, J.-P. 2020):
 > INFOR: Information Systems and Operational Research, 58(2), 290-309.
 > [10.1080/03155986.2019.1624490](https://doi.org/10.1080/03155986.2019.1624490)
 
+> Dussault, J.-P., Migot, T. & Orban, D. (2023).
+> Scalable adaptive cubic regularization methods.
+> Mathematical Programming.
+> [10.1007/s10107-023-02007-6](https://doi.org/10.1007/s10107-023-02007-6)
+
 ## How to Cite
 
 If you use AdaptiveRegularization.jl in your work, please cite using the format given in [CITATION.cff](https://github.com/JuliaSmoothOptimizers/AdaptiveRegularization.jl/blob/main/CITATION.cff).  <!--https://citation-file-format.github.io/cff-initializer-javascript/#/ -->
