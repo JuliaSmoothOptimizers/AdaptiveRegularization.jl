@@ -23,19 +23,22 @@ end
   end
 end
 
-global nbsolver = 0
-for solver in ALL_solvers
-  global nbsolver += 1
-  nlp = extrosnb(n = 2)
-  nlpstop = NLPStopping(nlp)
-  println(nbsolver, "  ", solver)
-  eval(solver)(nlpstop, verbose = true)
-  final_nlp_at_x, optimal = nlpstop.current_state, nlpstop.meta.optimal
-  @test optimal
-  reset!(nlp)
-  stats = eval(solver)(nlp, verbose = false)
-  @test stats.status == :first_order
-  reset!(nlp)
+@testset "Invidivual tests on all solvers" begin
+  global nbsolver = 0
+  verbose = false # turn true for debug
+  @testset "Testing $solver individually" for solver in ALL_solvers
+    global nbsolver += 1
+    nlp = extrosnb(n = 2)
+    nlpstop = NLPStopping(nlp)
+    verbose && println(nbsolver, "  ", solver)
+    eval(solver)(nlpstop, verbose = verbose)
+    final_nlp_at_x, optimal = nlpstop.current_state, nlpstop.meta.optimal
+    @test optimal
+    reset!(nlp)
+    stats = eval(solver)(nlp, verbose = verbose)
+    @test stats.status == :first_order
+    reset!(nlp)
+  end
 end
 
 if VERSION >= v"1.7.0"
