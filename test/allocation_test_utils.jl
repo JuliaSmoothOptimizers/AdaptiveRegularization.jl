@@ -22,14 +22,14 @@ end
 @testset "Allocation test in increase/decrease" begin
   for XData in (PDataKARC(S, T, n), PDataTRK(S, T, n), PDataST(S, T, n))
     @testset "Allocation test in decrease for $(typeof(XData))" begin
-        alloc_decrease(XData, α, TR)
-        al = @allocated alloc_decrease(XData, α, TR)
-        @test al == 0
+      alloc_decrease(XData, α, TR)
+      al = @allocated alloc_decrease(XData, α, TR)
+      @test al == 0
     end
     @testset "Allocation test in increase for $(typeof(XData))" begin
-        alloc_increase(XData, α, TR)
-        al = @allocated alloc_increase(XData, α, TR)
-        @test al == 0
+      alloc_increase(XData, α, TR)
+      al = @allocated alloc_increase(XData, α, TR)
+      @test al == 0
     end
   end
 end
@@ -52,7 +52,7 @@ end
     (HessSparse, 944),
     (HessSparseCOO, 0),
     (HessOp, 960),
-    )
+  )
     who = Workspace(nlp, n)
     alloc_hessian(who, nlp, x0)
     al = @allocated alloc_hessian(who, nlp, x0)
