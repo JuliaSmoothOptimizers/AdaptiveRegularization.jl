@@ -39,6 +39,7 @@ for solver in ALL_solvers
 end
 
 if VERSION >= v"1.7.0"
+  include("allocation_test_utils.jl")
   include("allocation_test.jl")
   include("allocation_test_main.jl")
 end
