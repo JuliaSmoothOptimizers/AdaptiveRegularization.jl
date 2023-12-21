@@ -13,10 +13,8 @@ function alloc_AdaptiveRegularization(stp, PData, workspace, TRnothing)
   return nothing
 end
 
-@testset "Test TRARC allocations using $Hess" for (Hess, limit) in (
-  (HessOp, 1904),
-  (HessSparseCOO, 944),
-)
+@testset "Test TRARC allocations using $Hess" for (Hess, limit) in
+                                                  ((HessOp, 1904), (HessSparseCOO, 944))
   stp = NLPStopping(nlp)
   stp.meta.max_iter = 5
   workspace = AdaptiveRegularization.TRARCWorkspace(nlp, Hess)
