@@ -20,7 +20,7 @@ function alloc_solve_model(solve, XData, H, g, ng, calls, max_calls, α)
   return nothing
 end
 
-for (Data, solve) in (
+@testset "Allocation test in preprocess and solvemodel" for (Data, solve) in (
   (PDataKARC, AdaptiveRegularization.solve_modelKARC),
   (PDataTRK, AdaptiveRegularization.solve_modelTRK),
   (PDataST, AdaptiveRegularization.solve_modelST_TR),

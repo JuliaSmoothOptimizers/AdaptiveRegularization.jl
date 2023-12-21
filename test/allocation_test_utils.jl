@@ -19,16 +19,18 @@ function alloc_increase(XData, α, TR)
   return nothing
 end
 
-for XData in (PDataKARC(S, T, n), PDataTRK(S, T, n), PDataST(S, T, n))
-  @testset "Allocation test in AdaptiveRegularization.decrease for $(typeof(XData))" begin
-    alloc_decrease(XData, α, TR)
-    al = @allocated alloc_decrease(XData, α, TR)
-    @test al == 0
-  end
-  @testset "Allocation test in AdaptiveRegularization.decrease for $(typeof(XData))" begin
-    alloc_increase(XData, α, TR)
-    al = @allocated alloc_increase(XData, α, TR)
-    @test al == 0
+@testset "Allocation test in increase/decrease" begin
+  for XData in (PDataKARC(S, T, n), PDataTRK(S, T, n), PDataST(S, T, n))
+    @testset "Allocation test in decrease for $(typeof(XData))" begin
+        alloc_decrease(XData, α, TR)
+        al = @allocated alloc_decrease(XData, α, TR)
+        @test al == 0
+    end
+    @testset "Allocation test in increase for $(typeof(XData))" begin
+        alloc_increase(XData, α, TR)
+        al = @allocated alloc_increase(XData, α, TR)
+        @test al == 0
+    end
   end
 end
 
@@ -44,15 +46,17 @@ function alloc_hessian(who, nlp, x0)
   return nothing
 end
 
-@testset "Test in-place hessian allocations" for (Workspace, limit) in (
-  (HessDense, 1952),
-  (HessSparse, 944),
-  (HessSparseCOO, 0),
-  (HessOp, 960),
-)
-  who = Workspace(nlp, n)
-  alloc_hessian(who, nlp, x0)
-  al = @allocated alloc_hessian(who, nlp, x0)
-  @test al <= limit
-  println("Allocations for $Workspace is $al.")
+@testset "Test in-place hessian allocations" begin
+  @testset "$Workspace" for (Workspace, limit) in (
+    (HessDense, 1952),
+    (HessSparse, 944),
+    (HessSparseCOO, 0),
+    (HessOp, 960),
+    )
+    who = Workspace(nlp, n)
+    alloc_hessian(who, nlp, x0)
+    al = @allocated alloc_hessian(who, nlp, x0)
+    @test al <= limit
+    println("Allocations for $Workspace is $al.")
+  end
 end
