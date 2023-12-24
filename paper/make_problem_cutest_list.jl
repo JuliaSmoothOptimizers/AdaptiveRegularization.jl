@@ -10,7 +10,7 @@ pnamesNE = _pnames[findall(x -> occursin(r"NE\b", x), _pnames)]
 pnames = setdiff(_pnames, pnamesNE)
 
 open("list_problems_$nmax.dat", "w") do io
-    for name in pnames
-        write(io, name * "\n")
-    end
+  for name in pnames
+    write(io, name * "\n")
+  end
 end
