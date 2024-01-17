@@ -3,7 +3,7 @@ using AdaptiveRegularization
 # stdlib
 using LinearAlgebra, SparseArrays, Test
 # JSO
-using ADNLPModels, NLPModels, OptimizationProblems.ADNLPProblems, SolverTest
+using ADNLPModels, NLPModels, OptimizationProblems.ADNLPProblems, SolverCore, SolverTest
 # Stopping
 using Stopping
 

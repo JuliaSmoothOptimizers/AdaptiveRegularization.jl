@@ -25,8 +25,8 @@ for file in files
   include("PreProcess/" * file)
 end
 
-include("main.jl")
-
+include("trarc_solver.jl") # structure for the solve!
+include("main.jl") # main algo
 include("solvers.jl")
 
 export ALL_solvers, NLS_solvers
@@ -90,8 +90,8 @@ function TRARC end
 
 function TRARC(nlp::AbstractNLPModel{T, S}; kwargs...) where {T, S}
   nlpstop = NLPStopping(nlp; optimality_check = (pb, state) -> norm(state.gx), kwargs...)
-  nlpstop = TRARC(nlpstop; kwargs...)
-  return stopping_to_stats(nlpstop)
+  stats = TRARC(nlpstop; kwargs...)
+  return stats
 end
 
 for fun in union(keys(solvers_const), keys(solvers_nls_const))
@@ -111,8 +111,8 @@ for fun in union(keys(solvers_const), keys(solvers_nls_const))
   @eval begin
     function $fun(nlp::AbstractNLPModel{T, S}; kwargs...) where {T, S}
       nlpstop = NLPStopping(nlp; optimality_check = (pb, state) -> norm(state.gx), kwargs...)
-      nlpstop = $fun(nlpstop; kwargs...)
-      return stopping_to_stats(nlpstop)
+      stats = $fun(nlpstop; kwargs...)
+      return stats
     end
   end
   @eval export $fun

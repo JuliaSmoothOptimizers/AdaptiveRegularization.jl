@@ -1,81 +1,3 @@
-"""
-    TRARCWorkspace(nlp, ::Type{Hess}, n)
-Pre-allocate the memory used during the [`TRARC`](@ref) call for the problem `nlp` of size `n`.
-The possible values for `Hess` are: `HessDense`, `HessSparse`, `HessSparseCOO`, `HessOp`.
-Return a `TRARCWorkspace` structure.
-"""
-struct TRARCWorkspace{T, S, Hess}
-  xt::S
-  xtnext::S
-  d::S
-  ∇f::S
-  ∇fnext::S
-  Hstruct::Hess
-  Hd::S
-  Fx::S
-  function TRARCWorkspace(nlp::AbstractNLPModel{T, S}, ::Type{Hess}) where {T, S, Hess}
-    n = nlp.meta.nvar
-    Hstruct, Htype = init(Hess, nlp, n)
-    return new{T, S, Htype}(
-      S(undef, n), # xt
-      S(undef, n), # xtnext
-      S(undef, n), # d
-      S(undef, n), # ∇f
-      S(undef, n), # ∇fnext
-      Hstruct,
-      S(undef, n), # H * d
-      S(undef, 0),
-    )
-  end
-  function TRARCWorkspace(nlp::AbstractNLSModel{T, S}, ::Type{Hess}) where {T, S, Hess}
-    n = nlp.meta.nvar
-    Hstruct, Htype = init(Hess, nlp, n)
-    return new{T, S, Htype}(
-      S(undef, n), # xt
-      S(undef, n), # xtnext
-      S(undef, n), # d
-      S(undef, n), # ∇f
-      S(undef, n), # ∇fnext
-      Hstruct,
-      S(undef, n), # H * d
-      S(undef, nlp.nls_meta.nequ),
-    )
-  end
-end
-
-# Redefined NLP Model API to use workspace
-function NLPModels.objgrad!(nlp::AbstractNLPModel, x, workspace::TRARCWorkspace)
-  return objgrad!(nlp, x, workspace.∇f)
-end
-
-function NLPModels.obj(nlp::AbstractNLPModel, x, workspace::TRARCWorkspace)
-  return obj(nlp, x)
-end
-
-function NLPModels.grad!(nlp::AbstractNLPModel, x, workspace::TRARCWorkspace)
-  return grad!(nlp, x, workspace.∇f)
-end
-
-function NLPModels.objgrad!(nls::AbstractNLSModel, x, workspace::TRARCWorkspace)
-  increment!(nls, :neval_obj)
-  increment!(nls, :neval_grad)
-  Fx = residual!(nls, x, workspace.Fx)
-  ∇f = jtprod_residual!(nls, x, Fx, workspace.∇f)
-  return dot(Fx, Fx) / 2, ∇f
-end
-
-function NLPModels.obj(nls::AbstractNLSModel, x, workspace::TRARCWorkspace)
-  increment!(nls, :neval_obj)
-  Fx = residual!(nls, x, workspace.Fx)
-  return dot(Fx, Fx) / 2
-end
-
-function NLPModels.grad!(nls::AbstractNLSModel, x, workspace::TRARCWorkspace)
-  increment!(nls, :neval_grad)
-  Fx = workspace.Fx
-  return jtprod_residual!(nls, x, Fx, workspace.∇f)
-end
-
 function preprocess(stp::NLPStopping, PData::TPData, workspace::TRARCWorkspace, ∇f, norm_∇f, α)
   max_hprod = stp.meta.max_cntrs[:neval_hprod]
   Hx = workspace.Hstruct.H
@@ -131,22 +53,12 @@ function hessian!(workspace::TRARCWorkspace, nlp, x)
   return hessian!(workspace.Hstruct, nlp, x)
 end
 
-function TRARC(
-  nlp_stop::NLPStopping{Pb, M, SRC, NLPAtX{Score, T, S}, MStp, LoS};
-  TR::TrustRegion = TrustRegion(T(10.0)),
-  hess_type::Type{Hess} = HessOp,
-  pdata_type::Type{ParamData} = PDataKARC,
-  kwargs...,
-) where {Pb, M, SRC, MStp, LoS, Score, S, T, Hess, ParamData}
+function TRARC(nlp_stop::NLPStopping; kwargs...)
   nlp = nlp_stop.pb
-
-  if ParamData == PDataNLSST
-    PData = PDataNLSST(S, T, nlp.meta.nvar, nlp.nls_meta.nequ; kwargs...)
-  else
-    PData = ParamData(S, T, nlp.meta.nvar; kwargs...)
-  end
-  workspace = TRARCWorkspace(nlp, Hess)
-  return TRARC(nlp_stop, PData, workspace, TR; kwargs...)
+  solver = TRARCSolver(nlp; kwargs...)
+  stats = GenericExecutionStats(nlp)
+  SolverCore.solve!(solver, nlp_stop, stats; kwargs...)
+  return stats
 end
 
 """
@@ -161,19 +73,47 @@ function compute_Δq(workspace, Hx, d, ∇f)
   return -dot(workspace.Hd, d)
 end
 
-function TRARC(
+function SolverCore.solve!(
+  solver::TRARCSolver{T, V},
+  nlp::AbstractNLPModel{T, V},
+  stats::GenericExecutionStats{T, V};
+  x::V = nlp.meta.x0,
+  atol::T = √eps(T),
+  rtol::T = √eps(T),
+  max_time::Float64 = 300.0,
+  kwargs...,
+) where {T, V}
+  stp = solver.stp
+  stp.meta.atol = atol
+  stp.meta.rtol = rtol
+  stp.meta.max_time = max_time
+  if x != stp.current_state.x
+    stp.current_state.lambda .= zero(T)
+    set_x!(stp.current_state, x)
+    grad!(nlp, nlp.meta.x0, stp.current_state.gx)
+    cons!(nlp, nlp.meta.x0, stp.current_state.cx)
+    set_res!(stp.current_state, stp.current_state.gx)
+    # we would also need to reinit the `tol_check` function
+  end
+  return SolverCore.solve!(solver, stp, stats; kwargs...)
+end
+
+function SolverCore.solve!(
+  solver::TRARCSolver{T, S},
   nlp_stop::NLPStopping{Pb, M, SRC, NLPAtX{Score, T, S}, MStp, LoS},
-  PData::ParamData,
-  workspace::TRARCWorkspace{T, S, Hess},
-  TR::TrustRegion;
+  stats::GenericExecutionStats{T, S};
   solve_model::Function = solve_modelKARC,
   robust::Bool = true,
   verbose::Integer = false,
-  kwargs...,
-) where {Pb, M, SRC, MStp, LoS, Score, S, T, Hess, ParamData}
+  kwargs...
+) where {Pb, M, SRC, MStp, LoS, Score, S, T}
+  PData = solver.meta
+  workspace = solver.workspace
+  TR = solver.TR
   nlp, nlp_at_x = nlp_stop.pb, nlp_stop.current_state
   xt, xtnext, ∇f, ∇fnext = workspace.xt, workspace.xtnext, workspace.∇f, workspace.∇fnext
   d, Hx = workspace.d, workspace.Hstruct.H
+  reset!(stats)
 
   α = TR.α₀
   max_unsuccinarow = TR.max_unsuccinarow
@@ -195,6 +135,12 @@ function TRARC(
 
   iter = 0 # counter different than stop count
   succ, unsucc, verysucc, unsuccinarow = 0, 0, 0, 0
+
+  set_status!(stats, status_stopping_to_stats(nlp_stop))
+  set_solution!(stats, nlp_at_x.x)
+  set_objective!(stats, nlp_at_x.fx)
+  set_dual_residual!(stats, nlp_at_x.current_score)
+  set_time!(stats, nlp_at_x.current_time - nlp_stop.meta.start_time)
 
   verbose > 0 && @info log_header(
     [:iter, :f, :nrm_g, :λ, :status, :α, :nrm_dtr, :f_p_dTR, :ΔqN],
@@ -280,7 +226,15 @@ function TRARC(
     set_gx!(nlp_at_x, ∇f)
     OK = stop!(nlp_stop)
     Hx = hessian!(workspace, nlp, xt)
+
+    set_status!(stats, status_stopping_to_stats(nlp_stop))
+    set_solution!(stats, nlp_at_x.x)
+    set_objective!(stats, nlp_at_x.fx)
+    set_dual_residual!(stats, nlp_at_x.current_score)
+    set_iter!(stats, nlp_stop.meta.nb_of_stop)
+    set_time!(stats, nlp_at_x.current_time - nlp_stop.meta.start_time)
+    # TODO: callback(nlp, solver, stats)
   end # while !OK
 
-  return nlp_stop
+  stats
 end
