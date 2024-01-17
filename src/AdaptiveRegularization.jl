@@ -94,6 +94,14 @@ function TRARC(nlp::AbstractNLPModel{T, S}; kwargs...) where {T, S}
   return stats
 end
 
+function TRARC(nlp_stop::NLPStopping; kwargs...)
+  nlp = nlp_stop.pb
+  solver = TRARCSolver(nlp; kwargs...)
+  stats = GenericExecutionStats(nlp)
+  SolverCore.solve!(solver, nlp_stop, stats; kwargs...)
+  return stats
+end
+
 for fun in union(keys(solvers_const), keys(solvers_nls_const))
   ht, pt, sm, ka = merge(solvers_const, solvers_nls_const)[fun]
   @eval begin

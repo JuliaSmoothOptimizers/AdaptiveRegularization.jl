@@ -53,14 +53,6 @@ function hessian!(workspace::TRARCWorkspace, nlp, x)
   return hessian!(workspace.Hstruct, nlp, x)
 end
 
-function TRARC(nlp_stop::NLPStopping; kwargs...)
-  nlp = nlp_stop.pb
-  solver = TRARCSolver(nlp; kwargs...)
-  stats = GenericExecutionStats(nlp)
-  SolverCore.solve!(solver, nlp_stop, stats; kwargs...)
-  return stats
-end
-
 """
     compute_Δq(Hx, d, ∇f)
 
@@ -98,6 +90,7 @@ function SolverCore.solve!(
   return SolverCore.solve!(solver, stp, stats; kwargs...)
 end
 
+# Main algorithm
 function SolverCore.solve!(
   solver::TRARCSolver{T, S},
   nlp_stop::NLPStopping{Pb, M, SRC, NLPAtX{Score, T, S}, MStp, LoS},
