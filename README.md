@@ -58,6 +58,16 @@ nlp = ADNLPModel(x -> 100 * (x[2] - x[1]^2)^2 + (x[1] - 1)^2, [-1.2; 1.0])
 stats = ARCqKOp(nlp)
 ```
 
+```julia
+using AdaptiveRegularization, ADNLPModels, SolverCore
+
+# Rosenbrock
+nlp = ADNLPModel(x -> 100 * (x[2] - x[1]^2)^2 + (x[1] - 1)^2, [-1.2; 1.0])
+solver = TRARCSolver(nlp)
+stats = GenericExecutionStats(nlp)
+solve!(solver, nlp, stats, x = [-1.2; 1.0])
+```
+
 # Bug reports and discussions
 
 If you think you found a bug, feel free to open an [issue](https://github.com/JuliaSmoothOptimizers/AdaptiveRegularization.jl/issues).
