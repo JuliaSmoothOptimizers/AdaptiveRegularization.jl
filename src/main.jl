@@ -98,7 +98,7 @@ function SolverCore.solve!(
   solve_model::Function = solve_modelKARC,
   robust::Bool = true,
   verbose::Integer = false,
-  kwargs...
+  kwargs...,
 ) where {Pb, M, SRC, MStp, LoS, Score, S, T}
   PData = solver.meta
   workspace = solver.workspace
