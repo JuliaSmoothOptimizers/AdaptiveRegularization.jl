@@ -15,6 +15,8 @@ using Stopping
   end
 end
 
+include("restart.jl")
+
 @testset "Testing NLS solvers" begin
   @testset "$name" for name in union(ALL_solvers, NLS_solvers)
     solver = eval(name)
