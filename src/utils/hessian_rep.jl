@@ -48,10 +48,14 @@ Return a structure used for the evaluation of the Hessian matrix as an operator.
 """
 mutable struct HessOp{S}
   Hv::S
+  x_op::S
   H
-  function HessOp(::AbstractNLPModel{T, S}, n) where {T, S}
+  function HessOp(nlp::AbstractNLPModel{T, S}, n) where {T, S}
     H = LinearOperator{T}(n, n, true, true, v -> v, v -> v, v -> v)
-    return new{S}(S(undef, n), H)
+    x_op = copy(nlp.meta.x0)
+    Hv = S(undef, n)
+    H = hess_op!(nlp, x_op, Hv)
+    return new{S}(Hv, x_op, H)
   end
 end
 
@@ -94,7 +98,7 @@ function hessian!(workspace::HessDense, nlp, x)
 end
 
 function hessian!(workspace::HessOp, nlp, x)
-  workspace.H = hess_op!(nlp, x, workspace.Hv)
+  workspace.x_op .= x
   return workspace.H
 end
 
