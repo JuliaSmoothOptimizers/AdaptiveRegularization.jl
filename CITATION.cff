@@ -33,6 +33,7 @@ authors:
       Industrial Engineering, Polytechnique
       Montréal,             QC, Canada
     orcid: 'https://orcid.org/0000-0002-8017-7687'
+  - given-names: contributors
 identifiers:
   - type: doi
     value: 10.5281/zenodo.10434673
