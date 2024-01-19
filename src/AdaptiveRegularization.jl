@@ -60,9 +60,10 @@ This implementation uses `Stopping.jl`. Therefore, it is also possible to used
 
 which returns the `stp::NLPStopping` updated.
 
-For advanced usage, the principal call to the solver uses a [`TRARCWorkspace`](@ref).
+For advanced usage, the principal call to the solver uses a [`TRARCSolver`](@ref).
 
-    TRARC(stp, pdata, workspace, trust_region_parameters; kwargs...)
+    stats = solve!(solver, nlp)
+    stats = solve!(solver, nlp, stats)
 
 Some variants of TRARC are already implemented and listed in `AdaptiveRegularization.ALL_solvers`.
 
@@ -80,6 +81,29 @@ This method unifies the implementation of trust-region and adaptive regularizati
 using AdaptiveRegularization, ADNLPModels
 nlp = ADNLPModel(x -> 100 * (x[2] - x[1]^2)^2 + (x[1] - 1)^2, [-1.2; 1.0]);
 stats = TRARC(nlp)
+
+# output
+
+"Execution stats: first-order stationary"
+```
+
+```jldoctest; output = false
+using AdaptiveRegularization, ADNLPModels, SolverCore
+nlp = ADNLPModel(x -> 100 * (x[2] - x[1]^2)^2 + (x[1] - 1)^2, [-1.2; 1.0]);
+solver = TRARCSolver(nlp);
+stats = solve!(solver, nlp)
+
+# output
+
+"Execution stats: first-order stationary"
+```
+
+```jldoctest; output = false
+using AdaptiveRegularization, ADNLPModels, SolverCore
+nlp = ADNLPModel(x -> 100 * (x[2] - x[1]^2)^2 + (x[1] - 1)^2, [-1.2; 1.0]);
+solver = TRARCSolver(nlp);
+stats = GenericExecutionStats(nlp)
+stats = solve!(solver, nlp, stats)
 
 # output
 

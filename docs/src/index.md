@@ -32,7 +32,7 @@ If you use AdaptiveRegularization.jl in your work, please cite using the format 
 
 ## Example
 
-```julia
+```@example
 using AdaptiveRegularization, ADNLPModels
 
 # Rosenbrock
@@ -40,7 +40,7 @@ nlp = ADNLPModel(x -> 100 * (x[2] - x[1]^2)^2 + (x[1] - 1)^2, [-1.2; 1.0])
 stats = ARCqKOp(nlp)
 ```
 
-```julia
+```@example
 using AdaptiveRegularization, ADNLPModels, SolverCore
 
 # Rosenbrock
