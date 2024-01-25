@@ -1,4 +1,11 @@
-function preprocess!(stp::NLPStopping{Pb, M, SRC, NLPAtX{Score, T, S}, MStp, LoS}, PData::TPData{T}, workspace::TRARCWorkspace{T, S, Hess}, ∇f::S, norm_∇f::T, α::T) where {Pb, M, SRC, MStp, LoS, Score, S, T, Hess}
+function preprocess!(
+  stp::NLPStopping{Pb, M, SRC, NLPAtX{Score, T, S}, MStp, LoS},
+  PData::TPData{T},
+  workspace::TRARCWorkspace{T, S, Hess},
+  ∇f::S,
+  norm_∇f::T,
+  α::T,
+) where {Pb, M, SRC, MStp, LoS, Score, S, T, Hess}
   max_hprod = stp.meta.max_cntrs[:neval_hprod]
   Hx = workspace.Hstruct.H
   preprocess!(PData, Hx, ∇f, norm_∇f, neval_hprod(stp.pb), max_hprod, α)
