@@ -96,8 +96,13 @@ mutable struct TRARCSolver{
   S,
   # Hess,
   Pb <: AbstractNLPModel{T, S},
+  M,
+  SRC,
+  State,
+  MStp,
+  LoS,
 } <: AbstractOptimizationSolver
-  stp::NLPStopping{Pb}
+  stp::NLPStopping{Pb, M, SRC, State, MStp, LoS}
   meta
   workspace # ::TRARCWorkspace{T, S, Hess}
   TR # ::TrustRegion
