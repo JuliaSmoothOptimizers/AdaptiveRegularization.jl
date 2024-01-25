@@ -9,7 +9,7 @@ abstract type PDataIter{T} <: TPData{T} end # Variants using iterative (Krylov) 
 abstract type PDataIterLS{T} <: TPData{T} end # Variants using iterative (Krylov) solvers for least-square subproblem
 
 """
-    preprocess(PData::TPData, H, g, gNorm2, n1, n2, α)
+    preprocess!(PData::TPData, H, g, gNorm2, n1, n2, α)
 
 Function called in the `TRARC` algorithm every time a new iterate has been accepted.
 # Arguments
@@ -23,7 +23,7 @@ Function called in the `TRARC` algorithm every time a new iterate has been accep
 
 It returns `PData`.
 """
-function preprocess(PData::TPData, H, g, gNorm2, n1, n2, α)
+function preprocess!(PData::TPData{T}, H, g, gNorm2, n1, n2, α) where {T}
   return PData
 end
 
@@ -42,7 +42,7 @@ Function called in the `TRARC` algorithm to solve the subproblem.
 
 It returns a couple `(PData.d, PData.λ)`. Current implementations include: `solve_modelKARC`, `solve_modelTRK`, `solve_modelST_TR`.
 """
-function solve_model(X::TPData, H, g, gNorm2, n1, n2, α) end
+function solve_model(X::TPData{T}, H, g, gNorm2, n1, n2, α) where {T} end
 
 """
     PDataKARC(::Type{S}, ::Type{T}, n)

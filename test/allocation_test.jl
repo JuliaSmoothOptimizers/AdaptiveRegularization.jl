@@ -11,7 +11,7 @@ ng = norm(g)
 calls, max_calls = 0, 1000000
 
 function alloc_preprocess(XData, H, g, ng, calls, max_calls, α)
-  AdaptiveRegularization.preprocess(XData, H, g, ng, calls, max_calls, α)
+  AdaptiveRegularization.preprocess!(XData, H, g, ng, calls, max_calls, α)
   return nothing
 end
 

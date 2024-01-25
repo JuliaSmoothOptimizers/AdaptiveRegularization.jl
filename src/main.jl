@@ -1,19 +1,19 @@
-function preprocess(stp::NLPStopping, PData::TPData, workspace::TRARCWorkspace, ∇f, norm_∇f, α)
+function preprocess!(stp::NLPStopping{Pb, M, SRC, NLPAtX{Score, T, S}, MStp, LoS}, PData::TPData{T}, workspace::TRARCWorkspace{T, S, Hess}, ∇f::S, norm_∇f::T, α::T) where {Pb, M, SRC, MStp, LoS, Score, S, T, Hess}
   max_hprod = stp.meta.max_cntrs[:neval_hprod]
   Hx = workspace.Hstruct.H
-  PData = preprocess(PData, Hx, ∇f, norm_∇f, neval_hprod(stp.pb), max_hprod, α)
+  preprocess!(PData, Hx, ∇f, norm_∇f, neval_hprod(stp.pb), max_hprod, α)
   return PData
 end
 
 function compute_direction(
   stp::NLPStopping,
-  PData::TPData,
+  PData::TPData{T},
   workspace::TRARCWorkspace,
   ∇f,
   norm_∇f,
   α,
   solve_model,
-)
+) where {T}
   max_hprod = stp.meta.max_cntrs[:neval_hprod]
   Hx = workspace.Hstruct.H
   return solve_model(PData, Hx, ∇f, norm_∇f, neval_hprod(stp.pb), max_hprod, α)
@@ -80,10 +80,8 @@ function SolverCore.solve!(
   stp.meta.rtol = rtol
   stp.meta.max_time = max_time
   if x != stp.current_state.x
-    stp.current_state.lambda .= zero(T)
     set_x!(stp.current_state, x)
-    grad!(nlp, nlp.meta.x0, stp.current_state.gx)
-    cons!(nlp, nlp.meta.x0, stp.current_state.cx)
+    grad!(nlp, x, stp.current_state.gx)
     set_res!(stp.current_state, stp.current_state.gx)
     # we would also need to reinit the `tol_check` function
   end
@@ -142,7 +140,7 @@ function SolverCore.solve!(
   verbose > 0 && @info log_row(Any[iter, ft, norm_∇f, 0.0, "First iteration", α])
 
   while !OK
-    PData = preprocess(nlp_stop, PData, workspace, ∇f, norm_∇f, α)
+    preprocess!(nlp_stop, PData, workspace, ∇f, norm_∇f, α)
 
     if ~PData.OK
       @warn("Something wrong with PData")
