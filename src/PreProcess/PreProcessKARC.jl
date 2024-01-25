@@ -1,4 +1,12 @@
-function preprocess!(PData::PDataKARC{S, T, Fatol, Frtol}, Hop, g, gNorm2, calls, max_calls, α) where {S, T, Fatol, Frtol}
+function preprocess!(
+  PData::PDataKARC{S, T, Fatol, Frtol},
+  Hop,
+  g,
+  gNorm2,
+  calls,
+  max_calls,
+  α,
+) where {S, T, Fatol, Frtol}
   ζ, ξ, maxtol, mintol = PData.ζ, PData.ξ, PData.maxtol, PData.mintol
   nshifts = PData.nshifts
   shifts = PData.shifts
