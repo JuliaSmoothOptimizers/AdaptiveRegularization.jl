@@ -28,9 +28,10 @@ function preprocess!(PData::TPData{T}, H, g, gNorm2, n1, n2, α) where {T}
 end
 
 """
-    solve_model(PData::TPData, H, g, gNorm2, n1, n2, α)
+    solve_model!(PData::TPData, H, g, gNorm2, n1, n2, α)
 
 Function called in the `TRARC` algorithm to solve the subproblem.
+
 # Arguments
 - `PData::TPData`: data structure used for preprocessing.
 - `H`: current Hessian matrix.
@@ -40,9 +41,9 @@ Function called in the `TRARC` algorithm to solve the subproblem.
 - `n2`: Maximum number of Hessian-vector products accepted.
 - `α`: current value of the TR/ARC parameter.
 
-It returns a couple `(PData.d, PData.λ)`. Current implementations include: `solve_modelKARC`, `solve_modelTRK`, `solve_modelST_TR`.
+It returns a couple `(PData.d, PData.λ)`.
 """
-function solve_model(X::TPData{T}, H, g, gNorm2, n1, n2, α) where {T} end
+function solve_model!(X::TPData{T}, H, g, gNorm2, n1, n2, α) where {T} end
 
 """
     PDataKARC(::Type{S}, ::Type{T}, n)

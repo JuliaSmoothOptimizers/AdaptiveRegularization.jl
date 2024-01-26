@@ -9,7 +9,7 @@ S, T = typeof(x0), eltype(x0)
 PData = PDataKARC(S, T, n)
 
 function alloc_AdaptiveRegularization(stp, solver, stats)
-  solve!(solver, stp, stats, solve_model = AdaptiveRegularization.solve_modelKARC)
+  solve!(solver, stp, stats)
   return nothing
 end
 

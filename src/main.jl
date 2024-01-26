@@ -19,11 +19,11 @@ function compute_direction(
   ∇f,
   norm_∇f,
   α,
-  solve_model,
 ) where {T}
   max_hprod = stp.meta.max_cntrs[:neval_hprod]
   Hx = workspace.Hstruct.H
-  return solve_model(PData, Hx, ∇f, norm_∇f, neval_hprod(stp.pb), max_hprod, α)
+  solve_model!(PData, Hx, ∇f, norm_∇f, neval_hprod(stp.pb), max_hprod, α)
+  return PData.d, PData.λ
 end
 
 function compute_direction(
@@ -33,12 +33,12 @@ function compute_direction(
   ∇f,
   norm_∇f,
   α,
-  solve_model,
 )
   max_prod = stp.meta.max_cntrs[:neval_jprod_residual]
   Jx = jac_op_residual(stp.pb, workspace.xt)
   Fx = workspace.Fx
-  return solve_model(PData, Jx, Fx, norm_∇f, neval_jprod_residual(stp.pb), max_prod, α)
+  solve_model!(PData, Jx, Fx, norm_∇f, neval_jprod_residual(stp.pb), max_prod, α)
+  return PData.d, PData.λ
 end
 
 function compute_direction(
@@ -48,12 +48,12 @@ function compute_direction(
   ∇f,
   norm_∇f,
   α,
-  solve_model,
 ) where {T, S, Hess <: HessGaussNewtonOp}
   max_prod = stp.meta.max_cntrs[:neval_jprod_residual]
   Jx = jac_op_residual!(stp.pb, workspace.xt, workspace.Hstruct.Jv, workspace.Hstruct.Jtv)
   Fx = workspace.Fx
-  return solve_model(PData, Jx, Fx, norm_∇f, neval_jprod_residual(stp.pb), max_prod, α)
+  solve_model!(PData, Jx, Fx, norm_∇f, neval_jprod_residual(stp.pb), max_prod, α)
+  return PData.d, PData.λ
 end
 
 function hessian!(workspace::TRARCWorkspace, nlp, x)
@@ -100,7 +100,6 @@ function SolverCore.solve!(
   solver::TRARCSolver{T, S},
   nlp_stop::NLPStopping{Pb, M, SRC, NLPAtX{Score, T, S}, MStp, LoS},
   stats::GenericExecutionStats{T, S};
-  solve_model::Function = solve_modelKARC,
   robust::Bool = true,
   verbose::Integer = false,
   kwargs...,
@@ -156,7 +155,7 @@ function SolverCore.solve!(
 
     success = false
     while !success & (unsuccinarow < max_unsuccinarow)
-      d, λ = compute_direction(nlp_stop, PData, workspace, ∇f, norm_∇f, α, solve_model)
+      d, λ = compute_direction(nlp_stop, PData, workspace, ∇f, norm_∇f, α)
 
       slope = ∇f ⋅ d
       Δq = compute_Δq(workspace, Hx, d, ∇f)

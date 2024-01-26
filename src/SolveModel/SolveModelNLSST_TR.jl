@@ -1,4 +1,4 @@
-function solve_modelNLSST_TR(PData::PDataNLSST, Jx, Fx, norm_∇f, calls, max_calls, δ::T) where {T}
+function solve_model!(PData::PDataNLSST{S, T, Fatol, Frtol}, Jx, Fx, norm_∇f, calls, max_calls, δ::T) where {S, T, Fatol, Frtol}
   # cas particulier Steihaug-Toint
   # ϵ = sqrt(eps(T)) # * 100.0 # old
   # cgtol = max(ϵ, min(cgtol, 9 * cgtol / 10, 0.01 * norm(g)^(1.0 + PData.ζ))) # old
