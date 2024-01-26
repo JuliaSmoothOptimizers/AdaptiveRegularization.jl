@@ -1,4 +1,12 @@
-function solve_model!(X::PDataKARC{S, T, Fatol, Frtol}, H, g, gNorm2, calls, max_calls, α::T) where {S, T, Fatol, Frtol}
+function solve_model!(
+  X::PDataKARC{S, T, Fatol, Frtol},
+  H,
+  g,
+  gNorm2,
+  calls,
+  max_calls,
+  α::T,
+) where {S, T, Fatol, Frtol}
   # target value should be close to satisfy αλ=||d||
   start = findfirst(X.positives)
   if isnothing(start)
