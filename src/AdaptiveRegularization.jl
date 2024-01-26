@@ -46,7 +46,6 @@ The keyword arguments include
 - `TR::TrustRegion`: structure with trust-region/ARC parameters, see [`TrustRegion`](@ref). Default: `TrustRegion(T(10.0))`.
 - `hess_type::Type{Hess}`: Structure used to handle the hessian. The possible values are: `HessDense`, `HessSparse`, `HessSparseCOO`, `HessOp`. Default: `HessOp`.
 - `pdata_type::Type{ParamData}` Structure used for the preprocessing step. Default: `PDataKARC`.
-- `solve_model::Function` Function used to solve the subproblem. Default: `solve_modelKARC`.
 - `robust::Bool`: `true` implements a robust evaluation of the model. Default: `true`.
 - `verbose::Bool`: `true` prints iteration information. Default: `false`.
 Additional `kwargs` are used for stopping criterion, see `Stopping.jl`.
@@ -127,7 +126,7 @@ function TRARC(nlp_stop::NLPStopping; kwargs...)
 end
 
 for fun in union(keys(solvers_const), keys(solvers_nls_const))
-  ht, pt, sm, ka = merge(solvers_const, solvers_nls_const)[fun]
+  ht, pt, ka = merge(solvers_const, solvers_nls_const)[fun]
   @eval begin
     function $fun(nlpstop::NLPStopping; kwargs...)
       kw_list = Dict{Symbol, Any}()
@@ -137,7 +136,7 @@ for fun in union(keys(solvers_const), keys(solvers_nls_const))
         end
       end
       merge!(kw_list, Dict(kwargs))
-      TRARC(nlpstop; hess_type = $ht, pdata_type = $pt, solve_model = $sm, kw_list...)
+      TRARC(nlpstop; hess_type = $ht, pdata_type = $pt, kw_list...)
     end
   end
   @eval begin
