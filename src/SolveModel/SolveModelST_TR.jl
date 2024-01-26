@@ -1,4 +1,12 @@
-function solve_model!(PData::PDataST{S, T, Fatol, Frtol}, H, g, gNorm2, calls, max_calls, δ::T) where {S, T, Fatol, Frtol}
+function solve_model!(
+  PData::PDataST{S, T, Fatol, Frtol},
+  H,
+  g,
+  gNorm2,
+  calls,
+  max_calls,
+  δ::T,
+) where {S, T, Fatol, Frtol}
   # cas particulier Steihaug-Toint
   # ϵ = sqrt(eps(T)) # * 100.0 # old
   # cgtol = max(ϵ, min(cgtol, 9 * cgtol / 10, 0.01 * norm(g)^(1.0 + PData.ζ))) # old

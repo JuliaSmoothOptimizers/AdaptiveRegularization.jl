@@ -1,4 +1,12 @@
-function solve_model!(X::PDataTRK{S, T, Fatol, Frtol}, H, g, gNorm2, calls, max_calls, α::T) where {S, T, Fatol, Frtol}
+function solve_model!(
+  X::PDataTRK{S, T, Fatol, Frtol},
+  H,
+  g,
+  gNorm2,
+  calls,
+  max_calls,
+  α::T,
+) where {S, T, Fatol, Frtol}
   # target value should be close to satisfy α=||d||
   start = findfirst(X.positives)
   if isnothing(start)
