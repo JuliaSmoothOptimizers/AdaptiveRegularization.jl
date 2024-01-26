@@ -14,7 +14,7 @@ AdaptiveRegularization.ALL_solvers
 
 To make your own variant we need to implement:
 - A new data structure `<: PData{T}` for some real number type `T`.
-- A `preprocess(PData::TPData, H, g, gNorm2, α)` function called before each trust-region iteration.
+- A `preprocess!(PData::TPData, H, g, gNorm2, α)` function called before each trust-region iteration.
 - A `solve_model!(PData::TPData, H, g, gNorm2, n1, n2, δ::T)` function used to solve the algorithm subproblem.
 
 In the rest of this tutorial, we implement a Steihaug-Toint trust-region method using `cg_lanczos` from [`Krylov.jl`](https://github.com/JuliaSmoothOptimizers/Krylov.jl) to solve the linear subproblem with trust-region constraint.
@@ -57,13 +57,13 @@ end
 ```
 For our Steihaug-Toint implementation, we do not run any preprocess operation, so we use the default one.
 ```@example 1
-function AdaptiveRegularization.preprocess(PData::AdaptiveRegularization.TPData, H, g, gNorm2, n1, n2, α)
+function AdaptiveRegularization.preprocess!(PData::AdaptiveRegularization.TPData, H, g, gNorm2, n1, n2, α)
     return PData
 end
 ```
 We now solve the subproblem.
 ```@example 1
-function solve_model!(PData::PDataST, H, g, gNorm2, calls, max_calls, δ::T) where {T}
+function AdaptiveRegularization.solve_model!(PData::PDataST, H, g, gNorm2, calls, max_calls, δ::T) where {T}
     ζ, ξ, maxtol, mintol = PData.ζ, PData.ξ, PData.maxtol, PData.mintol
     n = length(g)
     # precision = max(1e-12, min(0.5, (gNorm2^ζ)))
