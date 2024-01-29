@@ -94,18 +94,19 @@ The keyword arguments may include:
 mutable struct TRARCSolver{
   T,
   S,
-  # Hess,
+  Hess <: AbstractHess,
   Pb <: AbstractNLPModel{T, S},
   M,
   SRC,
-  State,
+  Score,
   MStp,
   LoS,
+  Data <: TPData{T},
 } <: AbstractOptimizationSolver
-  stp::NLPStopping{Pb, M, SRC, State, MStp, LoS}
-  meta
-  workspace # ::TRARCWorkspace{T, S, Hess}
-  TR # ::TrustRegion
+  stp::NLPStopping{Pb, M, SRC, NLPAtX{Score, T, S}, MStp, LoS}
+  meta::Data
+  workspace::TRARCWorkspace{T, S, Hess}
+  TR::TrustRegion{T}
 end
 
 export TRARCSolver
