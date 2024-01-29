@@ -7,7 +7,7 @@ function preprocess!(
   α::T,
 ) where {Pb, M, SRC, MStp, LoS, Score, S, T, Hess}
   max_hprod = stp.meta.max_cntrs[:neval_hprod]
-  Hx = workspace.Hstruct.H
+  Hx = get_hess(workspace.Hstruct)
   preprocess!(PData, Hx, ∇f, norm_∇f, neval_hprod(stp.pb), max_hprod, α)
   return PData
 end
@@ -21,7 +21,7 @@ function compute_direction(
   α,
 ) where {T}
   max_hprod = stp.meta.max_cntrs[:neval_hprod]
-  Hx = workspace.Hstruct.H
+  Hx = get_hess(workspace.Hstruct)
   solve_model!(PData, Hx, ∇f, norm_∇f, neval_hprod(stp.pb), max_hprod, α)
   return PData.d, PData.λ
 end

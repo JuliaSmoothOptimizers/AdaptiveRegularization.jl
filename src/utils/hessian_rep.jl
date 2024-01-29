@@ -1,8 +1,14 @@
+abstract type AbstractHess end
+
+function get_hess(Hstruct::AbstractHess)
+  Hstruct.H
+end
+
 """
     HessDense(::AbstractNLPModel{T,S}, n)
 Return a structure used for the evaluation of dense Hessian matrix.
 """
-struct HessDense{T}
+struct HessDense{T} <: AbstractHess
   H::Matrix{T}
   function HessDense(::AbstractNLPModel{T, S}, n) where {T, S}
     H = Matrix{Float64}(undef, n, n)
@@ -14,7 +20,7 @@ end
     HessSparse(::AbstractNLPModel{T,S}, n)
 Return a structure used for the evaluation of sparse Hessian matrix.
 """
-struct HessSparse{T, S, Vi, It <: Integer}
+struct HessSparse{T, S, Vi, It <: Integer} <: AbstractHess
   rows::Vi
   cols::Vi
   vals::S
@@ -31,7 +37,7 @@ end
     HessSparseCOO(::AbstractNLPModel{T,S}, n)
 Return a structure used for the evaluation of sparse Hessian matrix in COO-format.
 """
-struct HessSparseCOO{Tv, Ti}
+struct HessSparseCOO{Tv, Ti} <: AbstractHess
   H::Symmetric{Tv, SparseMatrixCOO{Tv, Ti}}
 end
 
@@ -46,16 +52,16 @@ end
     HessOp(::AbstractNLPModel{T,S}, n)
 Return a structure used for the evaluation of the Hessian matrix as an operator.
 """
-mutable struct HessOp{S}
+mutable struct HessOp{S, Op} <: AbstractHess
   Hv::S
   x_op::S
-  H
+  H::Op
   function HessOp(nlp::AbstractNLPModel{T, S}, n) where {T, S}
     H = LinearOperator{T}(n, n, true, true, v -> v, v -> v, v -> v)
     x_op = copy(nlp.meta.x0)
     Hv = S(undef, n)
     H = hess_op!(nlp, x_op, Hv)
-    return new{S}(Hv, x_op, H)
+    return new{S, typeof(H)}(Hv, x_op, H)
   end
 end
 
@@ -63,7 +69,7 @@ end
     HessGaussNewtonOp(::AbstractNLSModel{T,S}, n)
 Return a structure used for the evaluation of the Hessian matrix as an operator.
 """
-mutable struct HessGaussNewtonOp{S}
+mutable struct HessGaussNewtonOp{S} <: AbstractHess
   Jv::S
   Jtv::S
   H
@@ -80,17 +86,17 @@ export HessDense, HessSparse, HessSparseCOO, HessOp, HessGaussNewtonOp
 
 Return the hessian structure `Hess` and its composite type.
 """
-function init(::Type{Hess}, nlp::AbstractNLPModel{T, S}, n) where {Hess, T, S}
+function init(::Type{Hess}, nlp::AbstractNLPModel{T, S}, n) where {Hess <: AbstractHess, T, S}
   Hstruct = Hess(nlp, n)
   return Hstruct, typeof(Hstruct)
 end
 
 """
-    hessian!(workspace::HessDense, nlp, x)
+    hessian!(workspace, nlp, x)
 
 Return the Hessian matrix of `nlp` at `x` in-place with memory update of `workspace`.
 """
-function hessian! end
+function hessian!(workspace::AbstractHess, nlp, x) end
 
 function hessian!(workspace::HessDense, nlp, x)
   workspace.H .= Matrix(hess(nlp, x))
