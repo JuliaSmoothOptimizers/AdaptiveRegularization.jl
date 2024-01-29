@@ -51,7 +51,7 @@ end
     (HessDense, 1952),
     (HessSparse, 944),
     (HessSparseCOO, 0),
-    (HessOp, 960),
+    (HessOp, 0),
   )
     who = Workspace(nlp, n)
     alloc_hessian(who, nlp, x0)

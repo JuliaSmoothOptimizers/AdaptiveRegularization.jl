@@ -44,8 +44,7 @@ end
 end
 
 if VERSION >= v"1.7.0"
-  include("allocs")
-  include("allocation_test_utils.jl")
-  include("allocation_test.jl")
-  include("allocation_test_main.jl")
+  include("allocation_test_utils.jl") # utils functions
+  include("allocation_test.jl") # solve_model and preprocess
+  include("allocs.jl") # solve!
 end
