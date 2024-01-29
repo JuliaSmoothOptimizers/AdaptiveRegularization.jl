@@ -16,7 +16,7 @@ function alloc_preprocess(XData, H, g, ng, calls, max_calls, α)
 end
 
 function alloc_solve_model(XData, H, g, ng, calls, max_calls, α)
-  solve_model!(XData, H, g, ng, calls, max_calls, α)
+  AdaptiveRegularization.solve_model!(XData, H, g, ng, calls, max_calls, α)
   return nothing
 end
 
@@ -29,7 +29,7 @@ end
       @test al == 0
     end
 
-    @testset "Allocation test in $solve with $(Data)" begin
+    @testset "Allocation test in with $(Data)" begin
       alloc_solve_model(XData, H, g, ng, calls, max_calls, α)
       al = @allocated alloc_solve_model(XData, H, g, ng, calls, max_calls, α)
       @test al == 0
