@@ -32,11 +32,11 @@ using AdaptiveRegularization
 using NLPModelsTest, NLPModels, SolverCore
 
   @testset "Allocation tests" begin
-    @testset "$symsolver" for symsolver in (:TRARCSolver,)
+    @testset "$symsolver with $ht" for symsolver in (:TRARCSolver,), ht in (HessOp, HessSparseCOO)
       for model in NLPModelsTest.nlp_problems
         nlp = eval(Meta.parse(model))()
         if unconstrained(nlp)
-          solver = eval(symsolver)(nlp)
+          solver = eval(symsolver)(nlp; hess_type = ht)
           stats = GenericExecutionStats(nlp)
           SolverCore.solve!(solver, nlp, stats)
           reset!(solver)
