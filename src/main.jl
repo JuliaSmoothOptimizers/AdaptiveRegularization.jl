@@ -13,13 +13,13 @@ function preprocess!(
 end
 
 function compute_direction(
-  stp::NLPStopping,
+  stp::NLPStopping{Pb, M, SRC, NLPAtX{Score, T, S}, MStp, LoS},
   PData::TPData{T},
-  workspace::TRARCWorkspace,
-  ∇f,
-  norm_∇f,
-  α,
-) where {T}
+  workspace::TRARCWorkspace{T, S, Hess},
+  ∇f::S,
+  norm_∇f::T,
+  α::T,
+) where {Pb, M, SRC, MStp, LoS, Score, S, T, Hess}
   max_hprod = stp.meta.max_cntrs[:neval_hprod]
   Hx = get_hess(workspace.Hstruct)
   solve_model!(PData, Hx, ∇f, norm_∇f, neval_hprod(stp.pb), max_hprod, α)
@@ -27,13 +27,13 @@ function compute_direction(
 end
 
 function compute_direction(
-  stp::NLPStopping,
-  PData::PDataIterLS,
-  workspace::TRARCWorkspace,
-  ∇f,
-  norm_∇f,
-  α,
-)
+  stp::NLPStopping{Pb, M, SRC, NLPAtX{Score, T, S}, MStp, LoS},
+  PData::PDataIterLS{T},
+  workspace::TRARCWorkspace{T, S, Hess},
+  ∇f::S,
+  norm_∇f::T,
+  α::T,
+) where {Pb, M, SRC, MStp, LoS, Score, S, T, Hess}
   max_prod = stp.meta.max_cntrs[:neval_jprod_residual]
   Jx = jac_op_residual(stp.pb, workspace.xt)
   Fx = workspace.Fx
@@ -42,13 +42,13 @@ function compute_direction(
 end
 
 function compute_direction(
-  stp::NLPStopping,
-  PData::PDataIterLS,
+  stp::NLPStopping{Pb, M, SRC, NLPAtX{Score, T, S}, MStp, LoS},
+  PData::PDataIterLS{T},
   workspace::TRARCWorkspace{T, S, Hess},
-  ∇f,
-  norm_∇f,
-  α,
-) where {T, S, Hess <: HessGaussNewtonOp}
+  ∇f::S,
+  norm_∇f::T,
+  α::T,
+)  where {Pb, M, SRC, MStp, LoS, Score, S, T, Hess <: HessGaussNewtonOp}
   max_prod = stp.meta.max_cntrs[:neval_jprod_residual]
   Jx = jac_op_residual!(stp.pb, workspace.xt, workspace.Hstruct.Jv, workspace.Hstruct.Jtv)
   Fx = workspace.Fx
@@ -67,7 +67,7 @@ Update `Δq = -(∇f + 0.5 * (Hx * d)) ⋅ d` in-place.
 """
 function compute_Δq(workspace, Hx, d, ∇f)
   mul!(workspace.Hd, Hx, d)
-  workspace.Hd .*= 0.5
+  workspace.Hd .*= 1 // 2
   workspace.Hd .+= ∇f
   return -dot(workspace.Hd, d)
 end
@@ -109,7 +109,8 @@ function SolverCore.solve!(
   TR = solver.TR
   nlp, nlp_at_x = nlp_stop.pb, nlp_stop.current_state
   xt, xtnext, ∇f, ∇fnext = workspace.xt, workspace.xtnext, workspace.∇f, workspace.∇fnext
-  d, Hx = workspace.d, workspace.Hstruct.H
+  d = workspace.d
+  Hx = get_hess(workspace.Hstruct)
   reset!(stats)
 
   α = TR.α₀
