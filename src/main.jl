@@ -48,7 +48,7 @@ function compute_direction(
   ∇f::S,
   norm_∇f::T,
   α::T,
-)  where {Pb, M, SRC, MStp, LoS, Score, S, T, Hess <: HessGaussNewtonOp}
+) where {Pb, M, SRC, MStp, LoS, Score, S, T, Hess <: HessGaussNewtonOp}
   max_prod = stp.meta.max_cntrs[:neval_jprod_residual]
   Jx = jac_op_residual!(stp.pb, workspace.xt, workspace.Hstruct.Jv, workspace.Hstruct.Jtv)
   Fx = workspace.Fx
