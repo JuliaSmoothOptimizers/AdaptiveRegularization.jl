@@ -32,11 +32,26 @@ using AdaptiveRegularization
 using NLPModelsTest, NLPModels, SolverCore
 
   @testset "Allocation tests" begin
-    @testset "$symsolver with $ht" for symsolver in (:TRARCSolver,), ht in (HessOp, HessSparseCOO), pt in (PDataKARC, PDataTRK, PDataST)
+    @testset "TRARCSolver-NLS with $ht and $pt" for ht in (HessOp, HessSparseCOO, HessGaussNewtonOp), pt in (PDataKARC, PDataTRK, PDataST)
+      for model in NLPModelsTest.nls_problems
+        nlp = eval(Meta.parse(model))()
+        if unconstrained(nlp)
+          solver = TRARCSolver(nlp; hess_type = ht, pdata_type = PDataKARC)
+          stats = GenericExecutionStats(nlp)
+          SolverCore.solve!(solver, nlp, stats)
+          reset!(solver)
+          reset!(nlp)
+          al = @wrappedallocs SolverCore.solve!(solver, nlp, stats)
+          @test al == 0
+        end
+      end
+    end
+
+    @testset "TRARCSolver with $ht and $pt" for ht in (HessOp, HessSparseCOO), pt in (PDataKARC, PDataTRK, PDataST)
       for model in NLPModelsTest.nlp_problems
         nlp = eval(Meta.parse(model))()
         if unconstrained(nlp)
-          solver = eval(symsolver)(nlp; hess_type = ht, pdata_type = PDataKARC)
+          solver = TRARCSolver(nlp; hess_type = ht, pdata_type = PDataKARC)
           stats = GenericExecutionStats(nlp)
           SolverCore.solve!(solver, nlp, stats)
           reset!(solver)
@@ -50,10 +65,10 @@ using NLPModelsTest, NLPModels, SolverCore
 
 #=
 using AdaptiveRegularization
-using NLPModelsTest, NLPModels, SolverCore
-problems = NLPModelsTest.nlp_problems
+using NLPModelsTest, NLPModels, SolverCore, LinearAlgebra
+problems = NLPModelsTest.nls_problems
 nlp = eval(Meta.parse(first(problems)))()
-solver = TRARCSolver(nlp)
+solver = TRARCSolver(nlp, hess_type = HessGaussNewtonOp)
 stats = GenericExecutionStats(nlp)
 
 stp = solver.stp
