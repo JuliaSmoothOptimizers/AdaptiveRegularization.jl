@@ -69,13 +69,17 @@ end
     HessGaussNewtonOp(::AbstractNLSModel{T,S}, n)
 Return a structure used for the evaluation of the Hessian matrix as an operator.
 """
-mutable struct HessGaussNewtonOp{S} <: AbstractHess
+mutable struct HessGaussNewtonOp{S, Op} <: AbstractHess
   Jv::S
   Jtv::S
-  H
+  x_op::S
+  H::Op
   function HessGaussNewtonOp(nls::AbstractNLSModel{T, S}, n) where {T, S}
-    Jx = LinearOperator{T}(nls.nls_meta.nequ, n, false, false, v -> v, v -> v, v -> v)
-    return new{S}(S(undef, nls.nls_meta.nequ), S(undef, n), Jx' * Jx)
+    Jv, Jtv = S(undef, nls.nls_meta.nequ), S(undef, n)
+    x_op = copy(nls.meta.x0)
+    Jx = jac_op_residual!(nls, x_op, Jv, Jtv)
+    H = Jx' * Jx
+    return new{S, typeof(H)}(Jv, Jtv, x_op, H)
   end
 end
 
@@ -109,8 +113,7 @@ function hessian!(workspace::HessOp, nlp, x)
 end
 
 function hessian!(workspace::HessGaussNewtonOp, nlp, x)
-  Jx = jac_op_residual!(nlp, x, workspace.Jv, workspace.Jtv)
-  workspace.H = Jx' * Jx
+  workspace.x_op .= x
   return workspace.H
 end
 

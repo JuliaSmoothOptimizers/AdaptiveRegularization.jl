@@ -88,7 +88,8 @@ function SolverCore.solve!(
   stp.meta.max_time = max_time
   if x != stp.current_state.x
     set_x!(stp.current_state, x)
-    grad!(nlp, x, stp.current_state.gx)
+    grad!(nlp, x, solver.workspace)
+    set_gx!(stp.current_state, solver.workspace.∇f)
     set_res!(stp.current_state, stp.current_state.gx)
     # we would also need to reinit the `tol_check` function
   end
