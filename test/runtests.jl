@@ -7,6 +7,8 @@ using ADNLPModels, NLPModels, OptimizationProblems.ADNLPProblems, SolverCore, So
 # Stopping
 using Stopping
 
+include("callback.jl")
+
 @testset "Testing NLP solvers" begin
   @testset "$name" for name in ALL_solvers
     solver = eval(name)
