@@ -39,9 +39,14 @@ export TRARC
 """
     TRARC(nlp; kwargs...)
 
-Compute a local minimum of an unconstrained optimization problem using trust-region (TR)/adaptive regularization with cubics (ARC) methods.
+Compute a local minimum of an unconstrained optimization problem using
+trust-region (TR)/adaptive regularization with cubics (ARC) methods.
+
+Some variants of TRARC are already implemented and listed in `AdaptiveRegularization.ALL_solvers`.
+
 # Arguments
 - `nlp::AbstractNLPModel`: the model solved, see `NLPModels.jl`.
+
 The keyword arguments include
 - `TR::TrustRegion`: structure with trust-region/ARC parameters, see [`TrustRegion`](@ref). Default: `TrustRegion(T(10.0))`.
 - `hess_type::Type{Hess}`: Structure used to handle the hessian. The possible values are: `HessDense`, `HessSparse`, `HessSparseCOO`, `HessOp`. Default: `HessOp`.
@@ -59,12 +64,16 @@ This implementation uses `Stopping.jl`. Therefore, it is also possible to used
 
 which returns the `stp::NLPStopping` updated.
 
-For advanced usage, the principal call to the solver uses a [`TRARCSolver`](@ref).
+For advanced usage, first define a [`TRARCSolver`](@ref) to preallocate the
+ memory used in the algorithm, and then call `solve!`:
 
     stats = solve!(solver, nlp)
     stats = solve!(solver, nlp, stats)
 
-Some variants of TRARC are already implemented and listed in `AdaptiveRegularization.ALL_solvers`.
+To choose a particular variant, the keyword arguments `hess_type` and `pdata_type` can be used as follows:
+   `TRARCSolver(nlp; hess_type = ht, pdata_type = PDataKARC)`
+the former specifying how to handle the Hessian information, i.e. matrix-free or sparse matrix, while
+the latter specifies the type of adaptive approach, e.g. trust-region or ARC.
 
 # References
 This method unifies the implementation of trust-region and adaptive regularization with cubics as described in
@@ -128,7 +137,7 @@ end
 for fun in union(keys(solvers_const), keys(solvers_nls_const))
   ht, pt, ka = merge(solvers_const, solvers_nls_const)[fun]
   @eval begin
-    function $fun(nlpstop::NLPStopping; kwargs...)
+    @doc (@doc TRARC) function $fun(nlpstop::NLPStopping; kwargs...)
       kw_list = Dict{Symbol, Any}()
       if $ka != ()
         for t in $ka
