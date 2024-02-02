@@ -103,6 +103,7 @@ function SolverCore.solve!(
   stats::GenericExecutionStats{T, S};
   robust::Bool = true,
   verbose::Integer = false,
+  callback = (args...) -> nothing,
   kwargs...,
 ) where {Pb, M, SRC, MStp, LoS, Score, S, T}
   PData = solver.meta
@@ -139,6 +140,7 @@ function SolverCore.solve!(
   set_solution!(stats, nlp_at_x.x)
   set_objective!(stats, nlp_at_x.fx)
   set_dual_residual!(stats, nlp_at_x.current_score)
+  set_iter!(stats, 0)
   set_time!(stats, nlp_at_x.current_time - nlp_stop.meta.start_time)
 
   verbose > 0 && @info log_header(
@@ -147,7 +149,9 @@ function SolverCore.solve!(
   )
   verbose > 0 && @info log_row(Any[iter, ft, norm_∇f, 0.0, "First iteration", α])
 
-  while !OK
+  callback(nlp, solver, stats)
+
+  while !OK && (stats.status != :user)
     preprocess!(nlp_stop, PData, workspace, ∇f, norm_∇f, α)
 
     if ~PData.OK
@@ -232,7 +236,7 @@ function SolverCore.solve!(
     set_dual_residual!(stats, nlp_at_x.current_score)
     set_iter!(stats, nlp_stop.meta.nb_of_stop)
     set_time!(stats, nlp_at_x.current_time - nlp_stop.meta.start_time)
-    # TODO: callback(nlp, solver, stats)
+    callback(nlp, solver, stats)
   end # while !OK
 
   stats
