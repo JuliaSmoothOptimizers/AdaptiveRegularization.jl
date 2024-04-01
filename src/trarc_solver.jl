@@ -88,7 +88,7 @@ The keyword arguments may include:
 - `stp::NLPStopping`: `Stopping` structure for this algorithm workflow;
 - `meta::ParamData`: see [`ParamData`](@ref);
 - `workspace::TRARCWorkspace`: allocated space for the solver itself;
-- `TR::TrustRegion`: trust-region parameters.
+- `TR::ARTrustRegion`: trust-region parameters.
 
 """
 mutable struct TRARCSolver{
@@ -106,7 +106,7 @@ mutable struct TRARCSolver{
   stp::NLPStopping{Pb, M, SRC, NLPAtX{Score, T, S}, MStp, LoS}
   meta::Data
   workspace::TRARCWorkspace{T, S, Hess}
-  TR::TrustRegion{T}
+  TR::ARTrustRegion{T}
 end
 
 export TRARCSolver
@@ -118,7 +118,7 @@ end
 
 function TRARCSolver(
   stp::NLPStopping{Pb, M, SRC, NLPAtX{Score, T, S}, MStp, LoS};
-  TR::TrustRegion = TrustRegion(T(10.0)),
+  TR::ARTrustRegion = ARTrustRegion(T(10.0)),
   hess_type::Type{Hess} = HessOp,
   pdata_type::Type{ParamData} = PDataKARC,
   kwargs...,

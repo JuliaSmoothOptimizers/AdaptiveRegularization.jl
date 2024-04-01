@@ -3,14 +3,13 @@ module AdaptiveRegularization
 # stdlib
 using LinearAlgebra, SparseArrays
 # JSO
-using Krylov, LinearOperators, NLPModels, SparseMatricesCOO, SolverCore
+using Krylov, LinearOperators, NLPModels, SparseMatricesCOO, SolverCore, SolverTools
 # Stopping
 using Stopping, StoppingInterface
 
 # Selective includes.
 include("./utils/hessian_rep.jl")
 include("./utils/pdata_struct.jl")
-include("./utils/utils.jl")
 include("./utils/increase_decrease.jl")
 
 path = joinpath(dirname(@__FILE__), "SolveModel")
@@ -48,7 +47,7 @@ Some variants of TRARC are already implemented and listed in `AdaptiveRegulariza
 - `nlp::AbstractNLPModel`: the model solved, see `NLPModels.jl`.
 
 The keyword arguments include
-- `TR::TrustRegion`: structure with trust-region/ARC parameters, see [`TrustRegion`](@ref). Default: `TrustRegion(T(10.0))`.
+- `TR::ARTrustRegion`: structure with trust-region/ARC parameters, see [`SolverTools.jl`](https://github.com/JuliaSmoothOptimizers/SolverTools.jl). Default: `ARTrustRegion(T(10.0))`.
 - `hess_type::Type{Hess}`: Structure used to handle the hessian. The possible values are: `HessDense`, `HessSparse`, `HessSparseCOO`, `HessOp`. Default: `HessOp`.
 - `pdata_type::Type{ParamData}` Structure used for the preprocessing step. Default: `PDataKARC`.
 - `robust::Bool`: `true` implements a robust evaluation of the model. Default: `true`.

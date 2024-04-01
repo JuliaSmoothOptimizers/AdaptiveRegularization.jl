@@ -1,23 +1,23 @@
 """
-    decrease(X::TPData, α::T, TR::TrustRegion)
+    decrease(X::TPData, α::T, TR::ARTrustRegion)
 
 Return a decreased `α`.
 """
-function decrease(X::TPData, α::T, TR::TrustRegion) where {T}
+function decrease(X::TPData, α::T, TR::ARTrustRegion) where {T}
   return α * TR.decrease_factor
 end
 
 """
-    increase(X::TPData, α::T, TR::TrustRegion)
+    increase(X::TPData, α::T, TR::ARTrustRegion)
 
 Return an increased `α`.
 """
-function increase(::TPData, α::T, TR::TrustRegion) where {T}
+function increase(::TPData, α::T, TR::ARTrustRegion) where {T}
   return min(α * TR.increase_factor, TR.max_α)
 end
 
 # X.indmin is between 1 and nshifts
-function decrease(X::PDataKARC, α::T, TR::TrustRegion) where {T}
+function decrease(X::PDataKARC, α::T, TR::ARTrustRegion) where {T}
   X.indmin += 1 # the step wasn't successful so we need to change something
   α2 = max(X.norm_dirs[X.indmin] / X.shifts[X.indmin], eps(T))
 
@@ -41,7 +41,7 @@ function decrease(X::PDataKARC, α::T, TR::TrustRegion) where {T}
   return α2
 end
 
-function decrease(X::PDataTRK, α::T, TR::TrustRegion) where {T}
+function decrease(X::PDataTRK, α::T, TR::ARTrustRegion) where {T}
   X.indmin += 1
   α2 = X.norm_dirs[X.indmin]
 
