@@ -4,7 +4,7 @@ T = Float64
 S = Vector{T}
 n = 1000
 
-TR = TrustRegion(T(10))
+TR = ARTrustRegion(T(10))
 α = T(100)
 
 # Test increase / decrease

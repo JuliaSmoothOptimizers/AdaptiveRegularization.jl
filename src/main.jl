@@ -172,7 +172,7 @@ function SolverCore.solve!(
 
       iter += 1
 
-      r, good_grad, ∇fnext = compute_r(nlp, ft, Δf, Δq, slope, d, xtnext, workspace, robust)
+      r, good_grad, ∇fnext = SolverTools.compute_r(nlp, ft, Δf, Δq, slope, d, xtnext, workspace, robust)
 
       if Δq < 0.0 # very unsucessful
         verbose > 0 &&
