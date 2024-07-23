@@ -148,8 +148,8 @@ function SolverCore.solve!(
     [Int64, T, T, T, String, T, T, T],
   )
   verbose > 0 && @info log_row(Any[iter, ft, norm_∇f, 0.0, "First iteration", α])
-
-  callback(nlp, solver, stats)
+  # Pass the nlp_at_x so that we have access to xᵢₜₑᵣ
+  callback(nlp_at_x, solver, stats)
 
   while !OK && (stats.status != :user)
     preprocess!(nlp_stop, PData, workspace, ∇f, norm_∇f, α)
@@ -177,7 +177,7 @@ function SolverCore.solve!(
 
       if Δq < 0.0 # very unsucessful
         verbose > 0 &&
-          mod(iter, verbose) == 0 &&
+          mod(iter, verbose) == 0 && 
           @info log_row(Any[iter, ft, norm_∇f, λ, "VU", α, norm(d), Δq])
         unsucc += 1
         unsuccinarow += 1
@@ -188,7 +188,7 @@ function SolverCore.solve!(
         α = min(decrease(PData, α, TR), max(TR.large_decrease_factor, αbad) * α)
       elseif r < acceptance_threshold # unsucessful
         verbose > 0 &&
-          mod(iter, verbose) == 0 &&
+          mod(iter, verbose) == 0 && 
           @info log_row(Any[iter, ft, norm_∇f, λ, "U", α, norm(d), Δq])
         unsucc += 1
         unsuccinarow += 1
@@ -205,25 +205,23 @@ function SolverCore.solve!(
           ∇f = grad!(nlp, xt, workspace)
         end
         norm_∇f = norm(∇f)
-
-        verysucc += 1
         if r > increase_threshold # very sucessful
           α = increase(PData, α, TR)
           verbose > 0 &&
-            mod(iter, verbose) == 0 &&
+            mod(iter, verbose) == 0 && 
             @info log_row(Any[iter, ft, norm_∇f, λ, "V", α, norm(d), Δq])
+          verysucc += 1 # TODO: check if this makes sense
         else # sucessful
           if r < reduce_threshold
             α = decrease(PData, α, TR)
           end
-          verbose > 0 &&
-            mod(iter, verbose) == 0 &&
+          verbose > 0 && 
+            mod(iter, verbose) == 0 && 
             @info log_row(Any[iter, ft, norm_∇f, λ, "S", α, norm(d), Δq])
           succ += 1
         end
       end
     end # while !success
-
     nlp_stop.meta.nb_of_stop = iter
     set_x!(nlp_at_x, xt)
     set_fx!(nlp_at_x, ft)
@@ -237,7 +235,11 @@ function SolverCore.solve!(
     set_dual_residual!(stats, nlp_at_x.current_score)
     set_iter!(stats, nlp_stop.meta.nb_of_stop)
     set_time!(stats, nlp_at_x.current_time - nlp_stop.meta.start_time)
-    callback(nlp, solver, stats)
+    if !success & (unsuccinarow >= max_unsuccinarow)
+      # don't just cycle if we have to many unsucessful iterations 
+      stats.status = :user
+    end
+    callback(nlp_at_x, solver, stats)
   end # while !OK
 
   stats
