@@ -234,8 +234,7 @@ function SolverCore.solve!(
     set_dual_residual!(stats, nlp_at_x.current_score)
     set_iter!(stats, nlp_stop.meta.nb_of_stop)
     set_time!(stats, nlp_at_x.current_time - nlp_stop.meta.start_time)
-    if !success & (unsuccinarow >= max_unsuccinarow)
-      # don't just cycle if we have to many unsucessful iterations 
+    if unsuccinarow >= max_unsuccinarow
       stats.status = :user
     end
     callback(nlp, solver, stats)
