@@ -176,7 +176,7 @@ function SolverCore.solve!(
 
       if Δq < 0.0 # very unsucessful
         verbose > 0 &&
-          mod(iter, verbose) == 0 && 
+          mod(iter, verbose) == 0 &&
           @info log_row(Any[iter, ft, norm_∇f, λ, "VU", α, norm(d), Δq])
         unsucc += 1
         unsuccinarow += 1
@@ -187,7 +187,7 @@ function SolverCore.solve!(
         α = min(decrease(PData, α, TR), max(TR.large_decrease_factor, αbad) * α)
       elseif r < acceptance_threshold # unsucessful
         verbose > 0 &&
-          mod(iter, verbose) == 0 && 
+          mod(iter, verbose) == 0 &&
           @info log_row(Any[iter, ft, norm_∇f, λ, "U", α, norm(d), Δq])
         unsucc += 1
         unsuccinarow += 1
@@ -207,15 +207,15 @@ function SolverCore.solve!(
         if r > increase_threshold # very sucessful
           α = increase(PData, α, TR)
           verbose > 0 &&
-            mod(iter, verbose) == 0 && 
+            mod(iter, verbose) == 0 &&
             @info log_row(Any[iter, ft, norm_∇f, λ, "V", α, norm(d), Δq])
           verysucc += 1
         else # sucessful
           if r < reduce_threshold
             α = decrease(PData, α, TR)
           end
-          verbose > 0 && 
-            mod(iter, verbose) == 0 && 
+          verbose > 0 &&
+            mod(iter, verbose) == 0 &&
             @info log_row(Any[iter, ft, norm_∇f, λ, "S", α, norm(d), Δq])
           succ += 1
         end
