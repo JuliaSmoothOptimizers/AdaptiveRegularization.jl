@@ -148,8 +148,7 @@ function SolverCore.solve!(
     [Int64, T, T, T, String, T, T, T],
   )
   verbose > 0 && @info log_row(Any[iter, ft, norm_∇f, 0.0, "First iteration", α])
-  # Pass the nlp_at_x so that we have access to xᵢₜₑᵣ
-  callback(nlp_at_x, solver, stats)
+  callback(nlp, solver, stats)
 
   while !OK && (stats.status != :user)
     preprocess!(nlp_stop, PData, workspace, ∇f, norm_∇f, α)
@@ -210,7 +209,7 @@ function SolverCore.solve!(
           verbose > 0 &&
             mod(iter, verbose) == 0 && 
             @info log_row(Any[iter, ft, norm_∇f, λ, "V", α, norm(d), Δq])
-          verysucc += 1 # TODO: check if this makes sense
+          verysucc += 1
         else # sucessful
           if r < reduce_threshold
             α = decrease(PData, α, TR)
@@ -239,7 +238,7 @@ function SolverCore.solve!(
       # don't just cycle if we have to many unsucessful iterations 
       stats.status = :user
     end
-    callback(nlp_at_x, solver, stats)
+    callback(nlp, solver, stats)
   end # while !OK
 
   stats
