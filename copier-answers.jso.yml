@@ -1,0 +1,8 @@
+PackageName: "AdaptiveRegularization"
+PackageOwner: "JuliaSmoothOptimizers"
+PackageUUID: "79adfba0-1eab-50d9-8528-0589417a2bfe"
+_src_path: "https://github.com/JuliaSmoothOptimizers/JSOBestieTemplate.jl"
+_commit: "v0.13.0"
+AddBreakage: true
+AddBenchmark: false
+AddBenchmarkCI: true
