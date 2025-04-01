@@ -141,7 +141,7 @@ end
 function SolverCore.reset!(solver::TRARCSolver, nlp::AbstractNLPModel)
   @assert nlp.meta.nvar == solver.stp.pb.meta.nvar
   @assert nlp.meta.ncon == solver.stp.pb.meta.ncon
-  reset!(solver)
+  SolverCore.reset!(solver)
   solver.stp.pb = nlp
   reinit!(solver.stp)
   solver

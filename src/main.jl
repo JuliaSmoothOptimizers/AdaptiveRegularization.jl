@@ -113,7 +113,7 @@ function SolverCore.solve!(
   xt, xtnext, ∇f, ∇fnext = workspace.xt, workspace.xtnext, workspace.∇f, workspace.∇fnext
   d = workspace.d
   Hx = get_hess(workspace.Hstruct)
-  reset!(stats)
+  SolverCore.reset!(stats)
 
   α = TR.α₀
   max_unsuccinarow = TR.max_unsuccinarow

@@ -41,8 +41,8 @@ using NLPModelsTest, NLPModels, SolverCore
         solver = TRARCSolver(nlp; hess_type = ht, pdata_type = PDataKARC)
         stats = GenericExecutionStats(nlp)
         SolverCore.solve!(solver, nlp, stats)
-        reset!(solver)
-        reset!(nlp)
+        SolverCore.reset!(solver)
+        NLPModels.reset!(nlp)
         al = @wrappedallocs SolverCore.solve!(solver, nlp, stats)
         @test al == 0
       end
@@ -58,8 +58,8 @@ using NLPModelsTest, NLPModels, SolverCore
         solver = TRARCSolver(nlp; hess_type = ht, pdata_type = PDataKARC)
         stats = GenericExecutionStats(nlp)
         SolverCore.solve!(solver, nlp, stats)
-        reset!(solver)
-        reset!(nlp)
+        SolverCore.reset!(solver)
+        NLPModels.reset!(nlp)
         al = @wrappedallocs SolverCore.solve!(solver, nlp, stats)
         @test al == 0
       end
@@ -88,10 +88,10 @@ norm_∇f = norm(∇f)
 using Profile, PProf
 Profile.Allocs.clear()
 NLPModels.reset!(nlp)
-reset!(solver)
+SolverCore.reset!(solver)
 @time solve!(solver, nlp, stats)
 NLPModels.reset!(nlp)
-reset!(solver)
+SolverCore.reset!(solver)
 @time Profile.Allocs.@profile sample_rate=1 solve!(solver, nlp, stats)
 PProf.Allocs.pprof(from_c = false)
 

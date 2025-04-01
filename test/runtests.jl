@@ -39,10 +39,10 @@ end
     eval(solver)(nlpstop, verbose = verbose)
     final_nlp_at_x, optimal = nlpstop.current_state, nlpstop.meta.optimal
     @test optimal
-    reset!(nlp)
+    NLPModels.reset!(nlp)
     stats = eval(solver)(nlp, verbose = verbose)
     @test stats.status == :first_order
-    reset!(nlp)
+    NLPModels.reset!(nlp)
   end
 end
 
