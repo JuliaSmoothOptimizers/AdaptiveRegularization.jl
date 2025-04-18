@@ -33,7 +33,7 @@ mutable struct PDataST{S,T} <: AdaptiveRegularization.TPData{T}
     cgrtol                    # Relative tolerance for `cg_lanczos`
 
     OK::Bool                  # Mandatory: preprocess success
-    solver::CgSolver          # Memory pre-allocation for `cg_lanczos`
+    solver::CgWorkspace       # Memory pre-allocation for `cg_lanczos`
 end
 ```
 
