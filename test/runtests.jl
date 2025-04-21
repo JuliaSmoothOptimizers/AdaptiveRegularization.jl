@@ -1,4 +1,3 @@
-# This package
 using AdaptiveRegularization
 # stdlib
 using LinearAlgebra, SparseArrays, Test
@@ -8,45 +7,21 @@ using SolverCore, SolverTools, SolverTest
 # Stopping
 using Stopping
 
-include("callback.jl")
+#=
+Don't add your tests to runtests.jl. Instead, create files named
 
-@testset "Testing NLP solvers" begin
-  @testset "$name" for name in ALL_solvers
-    solver = eval(name)
-    unconstrained_nlp(solver)
-    multiprecision_nlp(solver, :unc, precisions = (Float32, Float64))
+    test-title-for-my-test.jl
+
+The file will be automatically included inside a `@testset` with title "Title For My Test".
+=#
+for (root, dirs, files) in walkdir(@__DIR__)
+  for file in files
+    if isnothing(match(r"^test-.*\.jl$", file))
+      continue
+    end
+    title = titlecase(replace(splitext(file[6:end])[1], "-" => " "))
+    @testset "$title" begin
+      include(file)
+    end
   end
-end
-
-include("restart.jl")
-
-@testset "Testing NLS solvers" begin
-  @testset "$name" for name in union(ALL_solvers, NLS_solvers)
-    solver = eval(name)
-    unconstrained_nls(solver)
-    multiprecision_nls(solver, :unc, precisions = (Float32, Float64))
-  end
-end
-
-@testset "Invidivual tests on all solvers" begin
-  global nbsolver = 0
-  verbose = false # turn true for debug
-  @testset "Testing $solver individually" for solver in ALL_solvers
-    global nbsolver += 1
-    nlp = extrosnb(n = 2)
-    nlpstop = NLPStopping(nlp)
-    verbose && println(nbsolver, "  ", solver)
-    eval(solver)(nlpstop, verbose = verbose)
-    final_nlp_at_x, optimal = nlpstop.current_state, nlpstop.meta.optimal
-    @test optimal
-    NLPModels.reset!(nlp)
-    stats = eval(solver)(nlp, verbose = verbose)
-    @test stats.status == :first_order
-    NLPModels.reset!(nlp)
-  end
-end
-
-if VERSION >= v"1.7.0"
-  include("allocation_test_utils.jl") # utils functions
-  include("allocs.jl") # solve!
 end

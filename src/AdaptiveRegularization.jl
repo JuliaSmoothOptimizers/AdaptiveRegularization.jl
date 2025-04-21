@@ -7,22 +7,65 @@ using Krylov, LinearOperators, NLPModels, SparseMatricesCOO, SolverCore, SolverT
 # Stopping
 using Stopping, StoppingInterface
 
+using Krylov: Krylov, CgLanczosShiftSolver, CgSolver, CglsSolver, LsqrSolver, cg!, cg_lanczos_shift!
+using LinearAlgebra: LinearAlgebra, Symmetric, mul!, norm
+using LinearOperators: LinearOperators, LinearOperator
+using NLPModels:
+  NLPModels,
+  AbstractNLPModel,
+  AbstractNLSModel,
+  hess_coord!,
+  hess_op!,
+  hess_structure,
+  increment!,
+  jac_op_residual,
+  jac_op_residual!,
+  jtprod_residual!,
+  neval_hprod,
+  neval_jprod_residual,
+  residual!
+using SolverCore:
+  SolverCore,
+  AbstractOptimizationSolver,
+  GenericExecutionStats,
+  log_header,
+  log_row,
+  set_dual_residual!,
+  set_iter!,
+  set_objective!,
+  set_solution!,
+  set_status!,
+  set_time!
+using SolverTools: SolverTools, ARTrustRegion, dot, grad!, hess, obj, objgrad!
+using SparseArrays: SparseArrays, SparseMatrixCSC, sparse, spzeros
+using SparseMatricesCOO: SparseMatricesCOO, SparseMatrixCOO, rows
+using Stopping:
+  Stopping,
+  NLPAtX,
+  NLPStopping,
+  copy,
+  length,
+  reinit!,
+  set_fx!,
+  set_gx!,
+  set_res!,
+  set_x!,
+  start!,
+  stop!
+using StoppingInterface: StoppingInterface, status_stopping_to_stats
+
 # Selective includes.
 include("./utils/hessian_rep.jl")
 include("./utils/pdata_struct.jl")
 include("./utils/increase_decrease.jl")
 
-path = joinpath(dirname(@__FILE__), "SolveModel")
-files = filter(x -> x[(end - 2):end] == ".jl", readdir(path))
-for file in files
-  include("SolveModel/" * file)
-end
+include("./SolveModel/SolveModelKARC.jl")
+include("./SolveModel/SolveModelNLSST_TR.jl")
+include("./SolveModel/SolveModelST_TR.jl")
+include("./SolveModel/SolveModelTRK.jl")
 
-path = joinpath(dirname(@__FILE__), "PreProcess")
-files = filter(x -> x[(end - 2):end] == ".jl", readdir(path))
-for file in files
-  include("PreProcess/" * file)
-end
+include("./PreProcess/PreProcessKARC.jl")
+include("./PreProcess/PreProcessTRK.jl")
 
 include("trarc_solver.jl") # structure for the solve!
 include("main.jl") # main algo
@@ -75,7 +118,7 @@ Notably, you can access, and modify, the following:
 
 
 This implementation uses `Stopping.jl`. Therefore, it is also possible to used
-        
+
     TRARC(stp; kwargs...)
 
 which returns the `stp::NLPStopping` updated.
