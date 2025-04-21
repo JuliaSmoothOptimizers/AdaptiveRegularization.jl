@@ -8,11 +8,13 @@ using AdaptiveRegularization, Krylov
 ```
 
 The implemented variants are accessible here:
+
 ```@example 1
 AdaptiveRegularization.ALL_solvers
 ```
 
 To make your own variant we need to implement:
+
 - A new data structure `<: PData{T}` for some real number type `T`.
 - A `preprocess!(PData::TPData, H, g, gNorm2, α)` function called before each trust-region iteration.
 - A `solve_model!(PData::TPData, H, g, gNorm2, n1, n2, δ::T)` function used to solve the algorithm subproblem.
@@ -34,7 +36,9 @@ mutable struct PDataST{S,T} <: AdaptiveRegularization.TPData{T}
     solver::CgSolver          # Memory pre-allocation for `cg_lanczos`
 end
 ```
+
 The `TPData` stuctures have a unified constructor with `(::Type{S}, ::Type{T}, n)` as arguments.
+
 ```@example 1
 function PDataST(
     ::Type{S},
@@ -55,13 +59,17 @@ function PDataST(
     return PDataST(d, λ, ζ, ξ, maxtol, mintol, cgatol, cgrtol, OK, solver)
 end
 ```
+
 For our Steihaug-Toint implementation, we do not run any preprocess operation, so we use the default one.
+
 ```@example 1
 function AdaptiveRegularization.preprocess!(PData::AdaptiveRegularization.TPData, H, g, gNorm2, n1, n2, α)
     return PData
 end
 ```
+
 We now solve the subproblem.
+
 ```@example 1
 function AdaptiveRegularization.solve_model!(PData::PDataST, H, g, gNorm2, calls, max_calls, δ::T) where {T}
     ζ, ξ, maxtol, mintol = PData.ζ, PData.ξ, PData.maxtol, PData.mintol
@@ -91,10 +99,13 @@ end
 ```
 
 We can now proceed with the main solver call specifying the used `pdata_type` and `solve_model`. Since, `Krylov.cg_lanczos` only uses matrix-vector products, it is sufficient to evaluate the Hessian matrix as an operator, so we provide `hess_type = HessOp`.
+
 ```@example 1
 ST_TROp(nlp; kwargs...) = TRARC(nlp, pdata_type = PDataST, hess_type = HessOp; kwargs...)
 ```
+
 Finally, we can apply our new method to any [`NLPModels`](https://github.com/JuliaSmoothOptimizers/NLPModels.jl).
+
 ```@example 1
 using ADNLPModels, OptimizationProblems
 nlp = OptimizationProblems.ADNLPProblems.arglina()

@@ -14,7 +14,9 @@
 
 AdaptiveRegularization is a solver for unconstrained nonlinear problems,
 
+```julia
     min f(x)
+```
 
 It uses other [JuliaSmoothOptimizers](https://juliasmoothoptimizers.github.io/) packages for development.
 In particular, [NLPModels.jl](https://github.com/JuliaSmoothOptimizers/NLPModels.jl) is used for defining the problem, and [SolverCore.jl](https://github.com/JuliaSmoothOptimizers/SolverCore.jl) for the output.
@@ -33,7 +35,7 @@ The initial implementation of this package follows (Dussault, J.-P. 2020):
 > A unified efficient implementation of trust-region type algorithms for unconstrained optimization.
 > INFOR: Information Systems and Operational Research, 58(2), 290-309.
 > [10.1080/03155986.2019.1624490](https://doi.org/10.1080/03155986.2019.1624490)
-
+>
 > Dussault, J.-P., Migot, T. & Orban, D. (2023).
 > Scalable adaptive cubic regularization methods.
 > Mathematical Programming.

@@ -8,7 +8,9 @@ Documentation for [AdaptiveRegularization](https://github.com/JuliaSmoothOptimiz
 
 AdaptiveRegularization is a solver for unconstrained nonlinear problems,
 
+```julia
     min f(x)
+```
 
 It uses other [JuliaSmoothOptimizers](https://juliasmoothoptimizers.github.io/) packages for development.
 In particular, [NLPModels.jl](https://github.com/JuliaSmoothOptimizers/NLPModels.jl) is used for defining the problem, and [SolverCore.jl](https://github.com/JuliaSmoothOptimizers/SolverCore.jl) for the output.
