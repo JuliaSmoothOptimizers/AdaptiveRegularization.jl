@@ -1,4 +1,10 @@
-# AdaptiveRegularization : A unified efficient implementation of trust-region type algorithms for unconstrained optimization
+```@meta
+CurrentModule = AdaptiveRegularization
+```
+
+# AdaptiveRegularization
+
+Documentation for [AdaptiveRegularization](https://github.com/JuliaSmoothOptimizers/AdaptiveRegularization.jl).
 
 AdaptiveRegularization is a solver for unconstrained nonlinear problems,
 
@@ -13,46 +19,17 @@ This package uses [`Stopping.jl`](https://github.com/SolverStoppingJulia/Stoppin
 
 The initial implementation of this package follows (Dussault, J.-P. 2020):
 
-*Adaptive cubic regularization (ARC) and trust-region (TR) methods use modified linear systems to compute their steps. The modified systems consist in adding some multiple of the identity matrix (or a well-chosen positive definite matrix) to the Hessian to obtain a sufficiently positive definite linear system, the so called shifted system. This type of system was first proposed by Levenberg and Marquardt. Some trial and error is often involved to obtain a specified value for this shift parameter. We provide an efficient unified implementation to track the shift parameter; our implementation encompasses many ARC and TR variants.*
+*Adaptive cubic regularization (ARC) and trust-region (TR) methods use modified linear systems to compute their steps. The modified systems consist in adding some multiple of the identity matrix (or a well-chosen positive definite matrix) to the Hessian to obtain a sufficiently positive definite linear system, the so called shifted system. This type of system was first proposed by Levenberg and Marquardt. Some trial and error is often involved to obtain a specified value for this shift parameter. We provide an efficient unified implementation to track the shift parameter; our implementation encompasses many ARC and TR variants.
 
-## References
+## Contributors
 
-> Dussault, J.-P. (2020).
-> A unified efficient implementation of trust-region type algorithms for unconstrained optimization.
-> INFOR: Information Systems and Operational Research, 58(2), 290-309.
-> [10.1080/03155986.2019.1624490](https://doi.org/10.1080/03155986.2019.1624490)
+```@raw html
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
 
-## How to Cite
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
 
-If you use AdaptiveRegularization.jl in your work, please cite using the format given in [CITATION.cff](https://github.com/JuliaSmoothOptimizers/AdaptiveRegularization.jl/blob/main/CITATION.cff).  <!--https://citation-file-format.github.io/cff-initializer-javascript/#/ -->
-
-## Installation
-
-`pkg> add https://github.com/JuliaSmoothOptimizers/AdaptiveRegularization.jl`
-
-## Example
-
-```@example
-using AdaptiveRegularization, ADNLPModels
-
-# Rosenbrock
-nlp = ADNLPModel(x -> 100 * (x[2] - x[1]^2)^2 + (x[1] - 1)^2, [-1.2; 1.0])
-stats = ARCqKOp(nlp)
+<!-- ALL-CONTRIBUTORS-LIST:END -->
 ```
-
-```@example
-using AdaptiveRegularization, ADNLPModels, SolverCore
-
-# Rosenbrock
-nlp = ADNLPModel(x -> 100 * (x[2] - x[1]^2)^2 + (x[1] - 1)^2, [-1.2; 1.0])
-solver = TRARCSolver(nlp)
-stats = GenericExecutionStats(nlp)
-solve!(solver, nlp, stats, x = [-1.2; 1.0])
-```
-
-# Bug reports and discussions
-
-If you think you found a bug, feel free to open an [issue](https://github.com/JuliaSmoothOptimizers/AdaptiveRegularization.jl/issues).
-Focused suggestions and requests can also be opened as issues. Before opening a pull request, start an issue or a discussion on the topic, please.
-
-If you want to ask a question not suited for a bug report, feel free to start a discussion [here](https://github.com/JuliaSmoothOptimizers/Organization/discussions). This forum is for general discussion about this repository and the [JuliaSmoothOptimizers](https://github.com/JuliaSmoothOptimizers), so questions about any of our packages are welcome.

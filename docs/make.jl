@@ -1,26 +1,21 @@
-ENV["GKSwstype"] = "100"
-using ADNLPModels
-using Documenter
-using Printf
 using AdaptiveRegularization
+using Documenter
 
-pages = [
-  "Introduction" => "index.md",
-  "Tutorial" => "tutorial.md",
-  "Benchmark" => "benchmark.md",
-  "Do it yourself" => "doityourself.md",
-  "Reference" => "reference.md",
+DocMeta.setdocmeta!(AdaptiveRegularization, :DocTestSetup, :(using AdaptiveRegularization); recursive = true)
+
+const page_rename = Dict("developer.md" => "Developer docs") # Without the numbers
+const numbered_pages = [
+    file for file in readdir(joinpath(@__DIR__, "src")) if
+    file != "index.md" && splitext(file)[2] == ".md"
 ]
 
-makedocs(
-  sitename = "AdaptiveRegularization.jl",
-  format = Documenter.HTML(prettyurls = get(ENV, "CI", nothing) == "true"),
-  modules = [AdaptiveRegularization],
-  pages = pages,
+makedocs(;
+    modules = [AdaptiveRegularization],
+    authors = "Dussault, Jean-Pierre <Jean-Pierre.Dussault@usherbrooke.ca >, Goyette, Samuel <samuel.goyette@usherbrooke.ca>, Migot, Tangi <tangi.migot@gmail.com>",
+    repo = "https://github.com/JuliaSmoothOptimizers/AdaptiveRegularization.jl/blob/{commit}{path}#{line}",
+    sitename = "AdaptiveRegularization.jl",
+    format = Documenter.HTML(; canonical = "https://JuliaSmoothOptimizers.github.io/AdaptiveRegularization.jl"),
+    pages = ["index.md"; numbered_pages],
 )
 
-deploydocs(
-  repo = "github.com/JuliaSmoothOptimizers/AdaptiveRegularization.jl.git",
-  push_preview = true,
-  devbranch = "main",
-)
+deploydocs(; repo = "github.com/JuliaSmoothOptimizers/AdaptiveRegularization.jl")

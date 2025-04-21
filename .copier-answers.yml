@@ -1,0 +1,30 @@
+# Changes here will be overwritten by Copier
+AddAllcontributors: true
+AddCodeOfConduct: true
+AddContributionDocs: true
+AddCopierCI: false
+AddGitHubTemplates: true
+AddMacToCI: true
+AddPrecommit: true
+AddWinToCI: true
+AnswerStrategy: ask
+Authors: Dussault, Jean-Pierre <Jean-Pierre.Dussault@usherbrooke.ca >, Goyette, Samuel
+    <samuel.goyette@usherbrooke.ca>, Migot, Tangi <tangi.migot@gmail.com>
+AutoIncludeTests: true
+CheckExplicitImports: true
+CodeOfConductContact: Tangi Migot <tangi.migot@gmail.com>
+ConfigIndentation: 2
+ExplicitImportsChecklist: exclude_all_qualified_access_are_public
+JuliaIndentation: 2
+JuliaMinCIVersion: lts
+JuliaMinVersion: lts
+License: MIT
+LicenseCopyrightHolders: Dussault, Jean-Pierre, Goyette, Samuel, Migot, Tangi
+MarkdownIndentation: 2
+PackageName: AdaptiveRegularization
+PackageOwner: JuliaSmoothOptimizers
+PackageUUID: 79adfba0-1eab-50d9-8528-0589417a2bfe
+RunJuliaNightlyOnCI: true
+UseCirrusCI: false
+_commit: v0.15.0
+_src_path: https://github.com/JuliaBesties/BestieTemplate.jl

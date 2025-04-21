@@ -1,17 +1,17 @@
-# Reference
-​
+# [Reference](@id reference)
+
 ## Contents
-​
+
 ```@contents
-Pages = ["reference.md"]
+Pages = ["95-reference.md"]
 ```
-​
+
 ## Index
-​
+
 ```@index
-Pages = ["reference.md"]
+Pages = ["95-reference.md"]
 ```
-​
+
 ```@autodocs
 Modules = [AdaptiveRegularization]
 ```
