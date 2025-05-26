@@ -19,7 +19,7 @@ function solve_model!(
   cgrtol = PData.cgrtol(ζ, ξ, maxtol, mintol, norm_∇f)
 
   solver = PData.solver
-  Krylov.solve!(
+  krylov_solve!(
     solver,
     Jx,
     Fx,
