@@ -34,12 +34,12 @@ The initial implementation of this package follows (Dussault, J.-P. 2020):
 > Dussault, J.-P. (2020).
 > A unified efficient implementation of trust-region type algorithms for unconstrained optimization.
 > INFOR: Information Systems and Operational Research, 58(2), 290-309.
-> [10.1080/03155986.2019.1624490](https://doi.org/10.1080/03155986.2019.1624490)
+> [10.1080/03155986.2019.1624490](https://www.tandfonline.com/doi/full/10.1080/03155986.2019.1624490)
 >
 > Dussault, J.-P., Migot, T. & Orban, D. (2023).
 > Scalable adaptive cubic regularization methods.
 > Mathematical Programming.
-> [10.1007/s10107-023-02007-6](https://doi.org/10.1007/s10107-023-02007-6)
+> [10.1007/s10107-023-02007-6](https://link.springer.com/article/10.1007/s10107-023-02007-6)
 
 ## How to Cite
 
