@@ -68,7 +68,7 @@ mutable struct PDataKARC{S, T, Fatol, Frtol} <: PDataIter{T}
   norm_dirs::Array{T, 1}     # norms of xShifts
   OK::Bool                  # preprocess success
 
-  solver::CgLanczosShiftSolver{T, T, S}
+  solver::CgLanczosShiftWorkspace{T, T, S}
 end
 
 function PDataKARC(
@@ -95,7 +95,7 @@ function PDataKARC(
   end
   norm_dirs = S(undef, nshifts)
   OK = true
-  solver = CgLanczosShiftSolver(n, n, nshifts, S)
+  solver = CgLanczosShiftWorkspace(n, n, nshifts, S)
   return PDataKARC(
     d,
     λ,
@@ -139,7 +139,7 @@ mutable struct PDataTRK{S, T, Fatol, Frtol} <: PDataIter{T}
   norm_dirs::Array{T, 1}     # norms of xShifts
   OK::Bool                  # preprocess success
 
-  solver::CgLanczosShiftSolver{T, T, S}
+  solver::CgLanczosShiftWorkspace{T, T, S}
 end
 
 function PDataTRK(
@@ -166,7 +166,7 @@ function PDataTRK(
   end
   norm_dirs = S(undef, nshifts)
   OK = true
-  solver = CgLanczosShiftSolver(n, n, nshifts, S)
+  solver = CgLanczosShiftWorkspace(n, n, nshifts, S)
   return PDataTRK(
     d,
     λ,
@@ -202,7 +202,7 @@ mutable struct PDataST{S, T, Fatol, Frtol} <: PDataIter{T}
   cgrtol::Frtol
 
   OK::Bool    # preprocess success
-  solver::CgSolver{T, T, S}
+  solver::CgWorkspace{T, T, S}
 end
 
 function PDataST(
@@ -220,7 +220,7 @@ function PDataST(
   d = S(undef, n)
   λ = zero(T)
   OK = true
-  solver = CgSolver(n, n, S)
+  solver = CgWorkspace(n, n, S)
   return PDataST(d, λ, ζ, ξ, maxtol, mintol, cgatol, cgrtol, OK, solver)
 end
 
@@ -239,7 +239,7 @@ mutable struct PDataNLSST{S, T, Fatol, Frtol} <: PDataIterLS{T}
   cgrtol::Frtol
 
   OK::Bool    # preprocess success
-  solver::Union{CglsSolver{T, T, S}, LsqrSolver{T, T, S}}
+  solver::Union{CglsWorkspace{T, T, S}, LsqrWorkspace{T, T, S}}
 end
 
 function PDataNLSST(
@@ -260,9 +260,9 @@ function PDataNLSST(
   λ = zero(T)
   OK = true
   solver = if solver_method == :cgls
-    CglsSolver(m, n, S)
+    CglsWorkspace(m, n, S)
   else
-    LsqrSolver(m, n, S)
+    LsqrWorkspace(m, n, S)
   end
   return PDataNLSST(d, λ, ζ, ξ, maxtol, mintol, cgatol, cgrtol, OK, solver)
 end
