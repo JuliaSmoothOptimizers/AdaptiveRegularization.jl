@@ -20,7 +20,7 @@
     cgrtol                    # Relative tolerance for `cg_lanczos`
 
     OK::Bool                  # Mandatory: preprocess success
-    solver::CgSolver          # Memory pre-allocation for `cg_lanczos`
+    solver::CgWorkspace       # Memory pre-allocation for `cg_lanczos`
 end</code></pre><p>The <code>TPData</code> stuctures have a unified constructor with <code>(::Type{S}, ::Type{T}, n)</code> as arguments.</p><pre><code class="language-julia hljs">function PDataST(
     ::Type{S},
     ::Type{T},
@@ -64,9 +64,9 @@ end</code></pre><p>We now solve the subproblem.</p><pre><code class="language-ju
     PData.OK = solver.stats.solved
 
     return PData.d, PData.λ
-end</code></pre><p>We can now proceed with the main solver call specifying the used <code>pdata_type</code> and <code>solve_model</code>. Since, <code>Krylov.cg_lanczos</code> only uses matrix-vector products, it is sufficient to evaluate the Hessian matrix as an operator, so we provide <code>hess_type = HessOp</code>.</p><pre><code class="language-julia hljs">ST_TROp(nlp; kwargs...) = TRARC(nlp, pdata_type = PDataST, hess_type = HessOp; kwargs...)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">ST_TROp (generic function with 1 method)</code></pre><p>Finally, we can apply our new method to any <a href="https://github.com/JuliaSmoothOptimizers/NLPModels.jl"><code>NLPModels</code></a>.</p><pre><code class="language-julia hljs">using ADNLPModels, OptimizationProblems
+end</code></pre><p>We can now proceed with the main solver call specifying the used <code>pdata_type</code> and <code>solve_model</code>. Since, <code>Krylov.cg_lanczos</code> only uses matrix-vector products, it is sufficient to evaluate the Hessian matrix as an operator, so we provide <code>hess_type = HessOp</code>.</p><pre><code class="language-julia hljs">ST_TROp(nlp; kwargs...) = TRARC(nlp, pdata_type = PDataST, hess_type = HessOp; kwargs...)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">ST_TROp (generic function with 1 method)</code></pre><p>Finally, we can apply our new method to any <a href="https://github.com/JuliaSmoothOptimizers/NLPModels.jl"><code>NLPModels</code></a>.</p><pre><code class="language- hljs">using ADNLPModels, OptimizationProblems
 nlp = OptimizationProblems.ADNLPProblems.arglina()
-ST_TROp(nlp)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">&quot;Execution stats: first-order stationary&quot;</code></pre><pre><code class="language-julia hljs">using ADNLPModels, NLPModels, OptimizationProblems, SolverBenchmark
+ST_TROp(nlp)</code></pre><pre><code class="language-julia hljs">using ADNLPModels, NLPModels, OptimizationProblems, SolverBenchmark
 
 meta = OptimizationProblems.meta
 problems = meta[meta.variable_nvar .&amp; (meta.ncon .== 0) .&amp; .!(meta.has_bounds), :name]
@@ -100,5 +100,5 @@ solvers = Dict(
         ),
 )
 stats = bmark_solvers(solvers, op_problems)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Dict{Symbol, DataFrames.DataFrame} with 2 entries:
-  :ST_TROp =&gt; 79×39 DataFrame…
-  :ARCqKOp =&gt; 79×39 DataFrame…</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../2-benchmark/">« Benchmarks</a><a class="docs-footer-nextpage" href="../90-contributing/">Contributing guidelines »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.25 on <span class="colophon-date" title="Monday 21 April 2025 21:19">Monday 21 April 2025</span>. Using Julia version 1.11.5.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+  :ST_TROp =&gt; 79×40 DataFrame…
+  :ARCqKOp =&gt; 79×40 DataFrame…</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../2-benchmark/">« Benchmarks</a><a class="docs-footer-nextpage" href="../90-contributing/">Contributing guidelines »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.25 on <span class="colophon-date" title="Tuesday 3 June 2025 22:43">Tuesday 3 June 2025</span>. Using Julia version 1.11.5.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
