@@ -7,7 +7,7 @@
 [![Lint workflow Status](https://github.com/JuliaSmoothOptimizers/AdaptiveRegularization.jl/actions/workflows/Lint.yml/badge.svg?branch=main)](https://github.com/JuliaSmoothOptimizers/AdaptiveRegularization.jl/actions/workflows/Lint.yml?query=branch%3Amain)
 [![Docs workflow Status](https://github.com/JuliaSmoothOptimizers/AdaptiveRegularization.jl/actions/workflows/Docs.yml/badge.svg?branch=main)](https://github.com/JuliaSmoothOptimizers/AdaptiveRegularization.jl/actions/workflows/Docs.yml?query=branch%3Amain)
 [![Coverage](https://codecov.io/gh/JuliaSmoothOptimizers/AdaptiveRegularization.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/JuliaSmoothOptimizers/AdaptiveRegularization.jl)
-[![DOI](https://zenodo.org/badge/DOI/FIXME)](https://doi.org/FIXME)
+[![DOI](https://img.shields.io/badge/DOI-10.1007%2Fs10107--023--01989--3-blue)](https://doi.org/10.1007/s10107-023-02007-6)
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](CODE_OF_CONDUCT.md)
 [![All Contributors](https://img.shields.io/github/all-contributors/JuliaSmoothOptimizers/AdaptiveRegularization.jl?labelColor=5e1ec7&color=c0ffee&style=flat-square)](#contributors)
 [![BestieTemplate](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/JuliaBesties/BestieTemplate.jl/main/docs/src/assets/badge.json)](https://github.com/JuliaBesties/BestieTemplate.jl)
