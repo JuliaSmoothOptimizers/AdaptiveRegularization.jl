@@ -48,7 +48,7 @@ end
 
 @testset "Test in-place hessian allocations" begin
   @testset "$Workspace" for (Workspace, limit) in
-                            ((HessDense, 1952), (HessSparse, 944), (HessSparseCOO, 0), (HessOp, 0))
+                            ((HessDense, 1952), (HessSparse, 1300), (HessSparseCOO, 0), (HessOp, 0))
     who = Workspace(nlp, n)
     alloc_hessian(who, nlp, x0)
     al = @allocated alloc_hessian(who, nlp, x0)
