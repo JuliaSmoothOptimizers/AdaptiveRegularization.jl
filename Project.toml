@@ -1,7 +1,7 @@
 name = "AdaptiveRegularization"
 uuid = "79adfba0-1eab-50d9-8528-0589417a2bfe"
 authors = ["Dussault, Jean-Pierre <Jean-Pierre.Dussault@usherbrooke.ca >, Goyette, Samuel <samuel.goyette@usherbrooke.ca>, Migot, Tangi <tangi.migot@gmail.com>"]
-version = "0.2.1"
+version = "0.2.2"
 
 [deps]
 Krylov = "ba0b0d4f-ebba-5204-a429-3ac8c609bfb7"
