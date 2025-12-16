@@ -9,7 +9,7 @@ using Stopping, StoppingInterface
 
 using Krylov: Krylov, cg!, cg_lanczos_shift!
 using Krylov: CgLanczosShiftWorkspace, CgWorkspace, CglsWorkspace, LsqrWorkspace, krylov_solve!
-using LinearAlgebra: LinearAlgebra, Symmetric, mul!, norm
+using LinearAlgebra: LinearAlgebra, Symmetric, mul!, norm, /, ⋅
 using LinearOperators: LinearOperators, LinearOperator
 using NLPModels:
   NLPModels,
